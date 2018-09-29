@@ -1,0 +1,92 @@
+<!-- 级别从高到低 OFF 、 FATAL 、 ERROR 、 WARN 、 INFO 、 DEBUG 、 TRACE 、 ALL -->
+<!-- 日志输出规则 根据当前ROOT 级别，日志输出时，级别高于root默认的级别时 会输出 -->
+<!-- 以下 每个配置的 filter 是过滤掉输出文件里面，会出现高级别文件，依然出现低级别的日志信息，通过filter 过滤只记录本级别的日志 -->
+<!-- scan 当此属性设置为true时，配置文件如果发生改变，将会被重新加载，默认值为true。 -->
+<!-- scanPeriod 设置监测配置文件是否有修改的时间间隔，如果没有给出时间单位，默认单位是毫秒。当scan为true时，此属性生效。默认的时间间隔为1分钟。 -->
+<!-- debug 当此属性设置为true时，将打印出logback内部日志信息，实时查看logback运行状态。默认值为false。 -->
+<configuration debug="false" scan="true" scanPeriod="60 seconds" packagingData="true">
+    <!-- 定义日志文件 输出位置 -->
+     <property name="log_dir" value="./logs" />
+    <!-- 最大日志数量 -->
+    <property name="maxHistory" value="30" />
+
+    <!-- ConsoleAppender 控制台输出日志 -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <Encoding>UTF-8</Encoding>
+        <encoder>
+            <pattern>
+                <!-- 设置日志输出格式 -->
+                %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n
+            </pattern>
+        </encoder>
+    </appender>
+
+    <!--文件日志-->
+    <!-- 滚动记录文件，先将日志记录到指定文件 -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!--当前日志文件名-->
+        <file>${log_dir}/root/root.log</file>
+        <!-- 最常用的滚动策略，它根据时间来制定滚动策略.既负责滚动也负责触发滚动 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!--归档日志输出位置 可相对、和绝对路径,.zip结尾，归档日志自动压缩 -->
+            <fileNamePattern>
+                ${log_dir}/root/%d{yyyy_MM_dd}-root.log.zip
+            </fileNamePattern>
+            <!-- 可选节点，控制保留的归档文件的最大数量-->
+            <maxHistory>${maxHistory}</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>
+                <!-- 设置日志输出格式 -->
+                %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n
+            </pattern>
+        </encoder>
+    </appender>
+
+    <!--文件日志-->
+    <!-- 滚动记录文件，先将日志记录到指定文件 -->
+    <appender name="ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!--当前日志文件名-->
+        <file>${log_dir}/error/error.log</file>
+        <!-- 最常用的滚动策略，它根据时间来制定滚动策略.既负责滚动也负责触发滚动 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!--归档日志输出位置 可相对、和绝对路径,.zip结尾，归档日志自动压缩 -->
+            <fileNamePattern>
+                ${log_dir}/error/%d{yyyy_MM_dd}-error.log.zip
+            </fileNamePattern>
+            <!-- 可选节点，控制保留的归档文件的最大数量-->
+            <maxHistory>${maxHistory}</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>
+                <!-- 设置日志输出格式 -->
+                %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %logger{36} - %msg%n
+            </pattern>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <!-- 设置过滤级别 -->
+            <level>ERROR</level>
+            <!-- 用于配置符合过滤条件的操作 -->
+            <onMatch>ACCEPT</onMatch>
+            <!-- 用于配置不符合过滤条件的操作 -->
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+    <logger name="com.mmorpg" level="debug" additivity="false">
+        <appender-ref ref="CONSOLE" />
+        <!-- 文件输出 -->
+        <appender-ref ref="FILE" />
+        <appender-ref ref="ERROR_FILE"/>
+    </logger>
+
+    <!-- root级别 ERROR -->
+    <root level="error">
+        <!-- 打印error级别日志及以上级别日志 -->
+        <!-- 控制台输出 -->
+        <appender-ref ref="CONSOLE" />
+        <!-- 文件输出 -->
+        <appender-ref ref="FILE" />
+        <appender-ref ref="ERROR_FILE"/>
+    </root>
+</configuration>
