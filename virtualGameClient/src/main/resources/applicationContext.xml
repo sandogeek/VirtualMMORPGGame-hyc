@@ -13,23 +13,23 @@
     <context:component-scan base-package="com.mmorpg.nb" />
 
     <!-- 配置文件载入 -->
-    <bean id="propertyConfigurer"
-          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-        <property name="locations">
-            <list>
-                <value>jdbc.properties</value>
-            </list>
-        </property>
-    </bean>
+    <!--<bean id="propertyConfigurer"-->
+          <!--class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">-->
+        <!--<property name="locations">-->
+            <!--<list>-->
+                <!--<value>jdbc.properties</value>-->
+            <!--</list>-->
+        <!--</property>-->
+    <!--</bean>-->
     <!-- 配置数据库连接 -->
-    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
-          destroy-method="close">
-        <property name="driverClassName" value="${jdbc.driverClassName}" />
-        <property name="url" value="${jdbc.url}" />
-        <property name="username" value="${jdbc.username}" />
-        <property name="password" value="${jdbc.password}" />
-        <property name="poolPreparedStatements" value="true" />
-        <property name="defaultAutoCommit" value="true" />
-    </bean>
+    <!--<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"-->
+          <!--destroy-method="close">-->
+        <!--<property name="driverClassName" value="${jdbc.driverClassName}" />-->
+        <!--<property name="url" value="${jdbc.url}" />-->
+        <!--<property name="username" value="${jdbc.username}" />-->
+        <!--<property name="password" value="${jdbc.password}" />-->
+        <!--<property name="poolPreparedStatements" value="true" />-->
+        <!--<property name="defaultAutoCommit" value="true" />-->
+    <!--</bean>-->
 
 </beans>
