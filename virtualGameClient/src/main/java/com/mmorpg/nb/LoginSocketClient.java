@@ -19,16 +19,16 @@ public class LoginSocketClient {
     private static final String IP = "127.0.0.1";
     private static final int PORT = 8088;
 
-    private static final EventLoopGroup group = new NioEventLoopGroup();
+    private static final EventLoopGroup GROUP = new NioEventLoopGroup();
 
     @SuppressWarnings("rawtypes")
     protected static void  run() throws Exception {
         Bootstrap bootstrap = new Bootstrap();
-        bootstrap.group(group);
+        bootstrap.group(GROUP);
         bootstrap.channel(NioSocketChannel.class);
         bootstrap.handler(new ChannelInitializer() {
             @Override
-            protected void initChannel(Channel channel) throws Exception {
+            protected void initChannel(Channel channel) {
                 ChannelPipeline channelPipeline = channel.pipeline();
                 channelPipeline.addLast("framer", new DelimiterBasedFrameDecoder(8192, Delimiters.lineDelimiter()));
                 channelPipeline.addLast("decoder", new StringDecoder());
@@ -54,7 +54,7 @@ public class LoginSocketClient {
         } catch (Exception e) {
             e.printStackTrace();
         }finally{
-            group.shutdownGracefully();
+            GROUP.shutdownGracefully();
         }
     }
 
