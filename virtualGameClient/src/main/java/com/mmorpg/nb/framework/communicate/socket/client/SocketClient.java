@@ -1,4 +1,4 @@
-package com.mmorpg.nb;
+package com.mmorpg.nb.framework.communicate.socket.client;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
@@ -14,8 +14,12 @@ import io.netty.handler.codec.string.StringEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class LoginSocketClient {
-    private static final Logger logger = LoggerFactory.getLogger(LoginSocketClient.class);
+/**
+ * 基于socket的客户端
+ * @author sando
+ */
+public class SocketClient {
+    private static final Logger logger = LoggerFactory.getLogger(SocketClient.class);
     private static final String IP = "127.0.0.1";
     private static final int PORT = 8088;
 
@@ -41,8 +45,13 @@ public class LoginSocketClient {
         // 连接服务端
         Channel channel = bootstrap.connect(IP,PORT).sync().channel();
 
-        String message="客户端数据c"+"\r\n";
+        String message="客户端数据c";
         channel.writeAndFlush(message);
+        Thread.sleep(5000);
+        channel.writeAndFlush("怎么说");
+        channel.writeAndFlush("\r\n");
+        channel.writeAndFlush("怎么说");
+
 
         logger.info("向Socket服务器发送数据:"+message);
     }
