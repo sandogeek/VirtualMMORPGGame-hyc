@@ -10,17 +10,11 @@ public class SocketServerHandler extends SimpleChannelInboundHandler<String> {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext channelHandlerContext, Throwable throwable) throws Exception {
-        // TODO Auto-generated method stub
 
     }
 
     @Override
-    public void channelRead(ChannelHandlerContext channelHandlerContext, Object msg) throws Exception {
-        // TODO Auto-generated method stub
-        logger.info("数据内容：data="+msg);
-    }
-
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, String s) throws Exception {
-
+        logger.info("数据内容：data="+ s);
     }
 }

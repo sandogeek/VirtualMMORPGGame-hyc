@@ -27,7 +27,7 @@ public class SocketServer {
     private static final EventLoopGroup bossGroup = new NioEventLoopGroup(THREADSIZEGROUPFORBUSSINESS);
     private static final EventLoopGroup workerGroup = new NioEventLoopGroup(THREAD_SIZE_EACH_GROUP);
 
-    protected static void  bind(String netHost,int netPort) throws Exception {
+    protected static void  bind(int netPort) throws Exception {
         ServerBootstrap bootstrap = new ServerBootstrap();
         bootstrap.group(bossGroup, workerGroup);
         bootstrap.channel(NioServerSocketChannel.class);
@@ -42,7 +42,7 @@ public class SocketServer {
                 pipeline.addLast(new SocketServerHandler());
             }
         });
-        bootstrap.bind(netHost,netPort).sync();
+        bootstrap.bind(netPort).sync();
         logger.info("Socket服务器已启动完成");
     }
 
@@ -53,7 +53,7 @@ public class SocketServer {
 
     public static void  main(String[] args) throws Exception {
         logger.info("开始启动Socket服务器...");
-        bind(IP,PORT);
+        bind(PORT);
     }
 
 }
