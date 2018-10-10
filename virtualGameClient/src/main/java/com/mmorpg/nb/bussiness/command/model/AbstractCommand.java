@@ -1,6 +1,6 @@
-package com.mmorpg.nb.command.model;
+package com.mmorpg.nb.bussiness.command.model;
 
-import com.mmorpg.nb.command.manager.CommandManager;
+import com.mmorpg.nb.bussiness.command.manager.CommandManager;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -16,8 +16,8 @@ import java.util.regex.Pattern;
 public abstract class AbstractCommand {
     @Autowired
     private CommandManager commandManager;
-
-    private static Pattern pattern=Pattern.compile("-(\\w+)\\s+((?:\\w|[\\u4e00-\\u9fa5])+)\\s*");
+    // 参数值可以为空字符串，则选项表示一个flag
+    private static Pattern pattern=Pattern.compile("-(\\w+)\\s+((?:\\w|[\\u4e00-\\u9fa5])*)\\s*");
 
     // Option.argName->Option
     protected Map<String,Option> optionsMap=new HashMap<>();
@@ -60,7 +60,9 @@ public abstract class AbstractCommand {
             if (entry.getValue().isRequired()){
                 String value=commandMap.get(entry.getKey());
                 if (value==null){
-                    throw new RuntimeException(String.format("命令[%s]必备选项-[%s]未设置",this.getClass().getName(),entry.getValue()));
+                    throw new RuntimeException(
+                            String.format("命令[%s]必备选项[-%s]未包含在命令中",
+                                    this.getClass().getSimpleName(),entry.getValue().getArgName()));
                 }
                 entry.getValue().setValue(value);
             } else if (commandMap.containsKey(entry.getKey())){
@@ -69,7 +71,7 @@ public abstract class AbstractCommand {
         }
     }
     /**
-     * 使所有选项失效，在setOptions前调用
+     * 使所有选项失效，在{@link AbstractCommand#setOptions}前调用
      */
     private void disableAll(){
         for (Option option : this.optionsMap.values()) {

@@ -1,7 +1,7 @@
-package com.mmorpg.nb.command.manager;
+package com.mmorpg.nb.bussiness.command.manager;
 
-import com.mmorpg.nb.command.model.AbstractCommand;
-import com.mmorpg.nb.command.model.CommandType;
+import com.mmorpg.nb.bussiness.command.model.AbstractCommand;
+import com.mmorpg.nb.bussiness.command.model.CommandType;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

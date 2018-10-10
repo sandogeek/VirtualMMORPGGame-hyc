@@ -1,4 +1,4 @@
-package com.mmorpg.nb.command.model;
+package com.mmorpg.nb.bussiness.command.model;
 
 /**
  * 命令类型，每种类型对于一个AbstractCommand对象

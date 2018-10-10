@@ -1,4 +1,4 @@
-package com.mmorpg.nb.command.model;
+package com.mmorpg.nb.bussiness.command.model;
 
 /**
  * 命令选项
