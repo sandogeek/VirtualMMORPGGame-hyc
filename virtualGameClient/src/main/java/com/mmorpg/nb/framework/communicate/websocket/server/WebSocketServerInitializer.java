@@ -5,6 +5,7 @@ import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
+import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
 import io.netty.handler.stream.ChunkedWriteHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -17,7 +18,7 @@ import org.springframework.stereotype.Component;
 public class WebSocketServerInitializer extends ChannelInitializer<SocketChannel> {
 
     @Autowired
-    private WebSocketPacketHandler webSocketPacketHandler;
+    private WebSocketServerHandler webSocketServerHandler;
 
     @Override
     public void initChannel(SocketChannel ch) throws Exception {
@@ -28,16 +29,17 @@ public class WebSocketServerInitializer extends ChannelInitializer<SocketChannel
         pipeline.addLast("chunkedWriteHandler",new ChunkedWriteHandler());
         // netty是基于分段请求的，HttpObjectAggregator的作用是将请求分段再聚合,参数是聚合字节的最大长度
         pipeline.addLast("httpObjectAggregator",new HttpObjectAggregator(1024*1024*1024));
-        // pipeline.addLast(new WebSocketServerCompressionHandler());
-        // ws://server:port/websocketPath
-        // 于是客户端连接此websocketServer需要访问：ws://localhost:8088/
-        // pipeline.addLast(new WebSocketServerProtocolHandler("",null,true,65535));
+        /**
+         * 消除运行websocket服务器的粗活处理器
+         * 它可以帮我们处理握手（handshaking）和控制帧（control frames (Close, Ping, Pong)），文本和二进制数据将会交给下一个
+         * 你自己实现的handler处理
+         */
+        pipeline.addLast(new WebSocketServerProtocolHandler("",null,true,65535));
 
         // 目前每个浏览器端只连接一个本应用，所以这里不需要区分来自哪个浏览器，不需要像真正的服务端那样
         // 用sessionHandler sessionManager专门记录不同的用户
         // pipeline.addLast("sessionHandler",);
 
-        // websocket定义了传递数据的6中frame类型
-        pipeline.addLast(webSocketPacketHandler);
+        pipeline.addLast(webSocketServerHandler);
     }
 }
