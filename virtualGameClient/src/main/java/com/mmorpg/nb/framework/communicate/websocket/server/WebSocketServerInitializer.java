@@ -19,7 +19,6 @@ public class WebSocketServerInitializer extends ChannelInitializer<SocketChannel
 
     @Autowired
     private WebSocketServerHandler webSocketServerHandler;
-
     @Override
     public void initChannel(SocketChannel ch) throws Exception {
         ChannelPipeline pipeline = ch.pipeline();
@@ -34,7 +33,7 @@ public class WebSocketServerInitializer extends ChannelInitializer<SocketChannel
          * 它可以帮我们处理握手（handshaking）和控制帧（control frames (Close, Ping, Pong)），文本和二进制数据将会交给下一个
          * 你自己实现的handler处理
          */
-        pipeline.addLast(new WebSocketServerProtocolHandler("",null,true,65535));
+        pipeline.addLast(new WebSocketServerProtocolHandler("/websocket",null,true,65535));
 
         // 目前每个浏览器端只连接一个本应用，所以这里不需要区分来自哪个浏览器，不需要像真正的服务端那样
         // 用sessionHandler sessionManager专门记录不同的用户

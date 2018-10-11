@@ -52,61 +52,12 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
         String packetString=StringUtils.left(msg,StringUtils.indexOf(msg,"|"));
         String jsonString=StringUtils.right(msg,StringUtils.indexOf(msg,"|"));
         int packetID = Integer.valueOf(packetString);*/
-        logger.debug("\n                                                    ---------channelRead进入成功-----------");
         if (msg instanceof FullHttpRequest) {
-            logger.debug("处理http请求");
-            HttpHeaders httpHeaders = ((FullHttpRequest) msg).headers();
-            handleHttpRequest(ctx, (FullHttpRequest) msg);
+            logger.error("还有http请求？");
         } else if (msg instanceof WebSocketFrame) {
             handleWebSocketFrame(ctx, (WebSocketFrame) msg);
         }else {
             logger.debug("无法识别的消息类型");
-        }
-    }
-
-    private void handleHttpRequest(ChannelHandlerContext ctx, FullHttpRequest req){
-        /*// 处理解码失败的http，返回一个状态为400 Bad Request的http响应包
-        if (!req.decoderResult().isSuccess()) {
-            sendHttpResponse(ctx, req, new DefaultFullHttpResponse(HTTP_1_1, BAD_REQUEST));
-            return;
-        }
-        // 只处理get请求，否则返回403 FORBIDDEN
-        if (req.method() != GET) {
-            sendHttpResponse(ctx, req, new DefaultFullHttpResponse(HTTP_1_1, FORBIDDEN));
-            return;
-        }*/
-        // 处理握手
-        /*WebSocketServerHandshakerFactory webSocketServerHandshakerFactory =
-                new WebSocketServerHandshakerFactory(getWebSocketLocation(req), null, true);
-        handshaker = webSocketServerHandshakerFactory.newHandshaker(req);
-        if (handshaker == null) {
-            WebSocketServerHandshakerFactory.sendUnsupportedVersionResponse(ctx.channel());
-        } else {
-            ChannelFuture channelFuture = handshaker.handshake(ctx.channel(), req);
-            // 握手成功之后,业务逻辑
-            if (channelFuture.isSuccess()) {
-                logger.info("握手成功...");
-
-            }
-        }*/
-    }
-    // 获取websocket服务的url
-    private String getWebSocketLocation(FullHttpRequest req) {
-        String location = req.headers().get(HOST) + WEBSOCKET_PATH;
-        return "ws://" + location;
-    }
-
-    private void sendHttpResponse(ChannelHandlerContext ctx, FullHttpRequest req, FullHttpResponse res) {
-        // 浏览器访问时，将显示一个错误码
-        if (res.status().code() != 200) {
-            ByteBuf buf = Unpooled.copiedBuffer(res.status().toString(), CharsetUtil.UTF_8);
-            res.content().writeBytes(buf);
-            buf.release();
-            res.headers().set(CONTENT_LENGTH, res.content().readableBytes());
-        }
-        ChannelFuture f = ctx.channel().writeAndFlush(res);
-        if (!HttpUtil.isKeepAlive(req)||res.status().code() != 200){
-            f.addListener(ChannelFutureListener.CLOSE);
         }
     }
 
@@ -124,6 +75,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
             // BinaryWebSocketFrame binaryWebSocketFrame=new BinaryWebSocketFrame(Unpooled.buffer().writeBytes("xxx".getBytes()));
             // ctx.channel().writeAndFlush(binaryWebSocketFrame);
         }else if (frame instanceof CloseWebSocketFrame) {
+            logger.debug("收到CloseWebSocketFrame");
             handshaker.close(ctx.channel(), (CloseWebSocketFrame) frame);
             return;
         }else {
@@ -152,5 +104,12 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         logger.info(String.format("与客户端[channel.id=%s]间的channel Inactive",ctx.channel().id()));
+    }
+    @Override
+    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception{
+        if (evt instanceof WebSocketServerProtocolHandler.HandshakeComplete){
+            logger.info("握手成功");
+        }
+
     }
 }
