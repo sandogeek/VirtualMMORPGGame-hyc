@@ -35,7 +35,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<WebSocke
     }
 
     @Override
-    public void channelRead0(ChannelHandlerContext ctx, WebSocketFrame msg) throws Exception {
+    public void channelRead0(ChannelHandlerContext ctx, WebSocketFrame frame) throws Exception {
         // 字符串流协议包样例：10001|{json格式串}
         /*msg= StringUtils.trim(msg);
         if(StringUtils.isBlank(msg)){
@@ -44,14 +44,9 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<WebSocke
         String packetString=StringUtils.left(msg,StringUtils.indexOf(msg,"|"));
         String jsonString=StringUtils.right(msg,StringUtils.indexOf(msg,"|"));
         int packetID = Integer.valueOf(packetString);*/
-
-        handleWebSocketFrame(ctx, (WebSocketFrame) msg);
-    }
-
-    private void handleWebSocketFrame(ChannelHandlerContext ctx, WebSocketFrame frame){
         if(frame instanceof TextWebSocketFrame){
             String command = ((TextWebSocketFrame)frame).text();
-            logger.info("收到命令："+command);
+            logger.info("收到TextWebSocketFrame，内容为："+command);
             // 执行命令
             commandManager.executeCommand(command);
             // TODO 客户端用哪种WebSocketFrame就用哪种WebSocketFrame发回去
@@ -65,6 +60,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<WebSocke
             logger.error("不支持的WebSocketFrame子类型");
         }
     }
+
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) {
         ctx.flush();
