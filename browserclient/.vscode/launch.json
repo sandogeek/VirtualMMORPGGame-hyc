@@ -1,0 +1,43 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "启动浏览器方式调试",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:4200/",
+      "webRoot": "${workspaceFolder}",
+      // "runtimeExecutable":"C:/Users/sando/AppData/Local/360Chrome/Chrome/Application/360chrome.exe",
+      // "runtimeArgs":[
+      //   "--remote-debugging-port=9222"
+      // ]
+    },
+    // 来自：https://github.com/Microsoft/vscode-chrome-debug
+    {
+        "name": "Attach",
+        "type": "chrome",
+        "request": "attach",
+        "sourceMaps": true,
+        "port": 8989,
+        "url": "http://localhost:4200/dashboard",
+        "webRoot": "${workspaceFolder}",
+        "trace": true,
+        "userDataDir": "${workspaceRoot}/.vscode/chrome"
+    },
+    {
+      "name": "ng test",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:9876/debug.html",
+      "webRoot": "${workspaceFolder}"
+    },
+    {
+      "name": "ng e2e",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/node_modules/protractor/bin/protractor",
+      "protocol": "inspector",
+      "args": ["${workspaceFolder}/e2e/protractor.conf.js"]
+    }
+  ]
+}
