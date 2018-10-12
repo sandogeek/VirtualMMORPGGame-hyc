@@ -41,8 +41,16 @@ public class CommandManager {
             return;
         }
         String commandTypeName=StringUtils.left(command,StringUtils.indexOf(command," "));
-        CommandType commandType=CommandType.valueOf(StringUtils.upperCase(commandTypeName));
-        this.commandMap.get(commandType).execute(command);
+        CommandType commandType=null;
+        try{
+            commandType=CommandType.valueOf(StringUtils.upperCase(commandTypeName));
+        }catch (Exception e){
+            logger.error(String.format("指令执行失败，指令不存在或指令格式有误"));
+            return;
+        }
+        if (commandType!=null){
+            this.commandMap.get(commandType).execute(command);
+        }
     }
 
     public static void main(String[] args){
