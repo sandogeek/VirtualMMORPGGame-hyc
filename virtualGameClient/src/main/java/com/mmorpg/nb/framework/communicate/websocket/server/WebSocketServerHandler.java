@@ -4,7 +4,6 @@ import com.mmorpg.nb.bussiness.command.manager.CommandManager;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.websocketx.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +17,7 @@ import javax.annotation.PostConstruct;
  */
 @ChannelHandler.Sharable
 @Component
-public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> {
+public class WebSocketServerHandler extends SimpleChannelInboundHandler<WebSocketFrame> {
     private static final Logger logger= LoggerFactory.getLogger(WebSocketServerHandler.class);
     // 在 "ws://localhost:8088"+WEBSOCKET_PATH 提供websocket服务
     private static final String WEBSOCKET_PATH = "";
@@ -36,7 +35,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
     }
 
     @Override
-    public void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception {
+    public void channelRead0(ChannelHandlerContext ctx, WebSocketFrame msg) throws Exception {
         // 字符串流协议包样例：10001|{json格式串}
         /*msg= StringUtils.trim(msg);
         if(StringUtils.isBlank(msg)){
@@ -45,14 +44,8 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
         String packetString=StringUtils.left(msg,StringUtils.indexOf(msg,"|"));
         String jsonString=StringUtils.right(msg,StringUtils.indexOf(msg,"|"));
         int packetID = Integer.valueOf(packetString);*/
-        if (msg instanceof FullHttpRequest) {
-            logger.error("还有http请求？");
-            logger.debug(""+(FullHttpRequest)msg);
-        } else if (msg instanceof WebSocketFrame) {
-            handleWebSocketFrame(ctx, (WebSocketFrame) msg);
-        }else {
-            logger.debug("无法识别的消息类型");
-        }
+
+        handleWebSocketFrame(ctx, (WebSocketFrame) msg);
     }
 
     private void handleWebSocketFrame(ChannelHandlerContext ctx, WebSocketFrame frame){
@@ -79,16 +72,18 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
             throws Exception {
+        logger.error("捕获到异常："+cause);
         ctx.close();
     }
     @Override
-    public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        logger.info(String.format("与客户端[channel.id=%s]间的channel Active",ctx.channel().id()));
+    public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
+        // TODO 如果有多浏览器的需求可以考虑在此处将channel添加到某个数据结构中
+        logger.debug("channel成功注册到EventLoop");
     }
-
     @Override
-    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        logger.info(String.format("与客户端[channel.id=%s]间的channel Inactive",ctx.channel().id()));
+    public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
+        // TODO 如果有多浏览器的需求可以考虑在此处将channel从某个数据结构中删除
+        logger.debug("channel从EventLoop中移除注册");
     }
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception{

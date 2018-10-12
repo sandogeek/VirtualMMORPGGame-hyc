@@ -30,10 +30,10 @@ public class WebSocketServerInitializer extends ChannelInitializer<SocketChannel
         pipeline.addLast("httpObjectAggregator",new HttpObjectAggregator(1024*1024*1024));
         /**
          * 消除运行websocket服务器的粗活处理器
-         * 它可以帮我们处理握手（handshaking）和控制帧（control frames (Close, Ping, Pong)），文本和二进制数据将会交给下一个
-         * 你自己实现的handler处理
+         * 它可以帮我们处理握手（handshaking）和控制帧（control frames (Close, Ping, Pong)），
+         * 文本和二进制WebSocketFrame将会交给下一个你自己实现的handler处理
          */
-        pipeline.addLast(new WebSocketServerProtocolHandler("/websocket",null,true,65535));
+        pipeline.addLast(new WebSocketServerProtocolHandler("/",null,true,65535));
 
         // 目前每个浏览器端只连接一个本应用，所以这里不需要区分来自哪个浏览器，不需要像真正的服务端那样
         // 用sessionHandler sessionManager专门记录不同的用户
