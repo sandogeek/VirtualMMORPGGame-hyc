@@ -1,24 +1,17 @@
 package com.mmorpg.nb.framework.communicate.websocket.server;
 
 import com.mmorpg.nb.bussiness.command.manager.CommandManager;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
-import io.netty.channel.*;
+import io.netty.channel.ChannelHandler;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.FullHttpRequest;
-import io.netty.handler.codec.http.FullHttpResponse;
-import io.netty.handler.codec.http.HttpHeaders;
-import io.netty.handler.codec.http.HttpUtil;
 import io.netty.handler.codec.http.websocketx.*;
-import io.netty.util.CharsetUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-
-import static io.netty.handler.codec.http.HttpHeaderNames.CONTENT_LENGTH;
-import static io.netty.handler.codec.http.HttpHeaderNames.HOST;
 
 /**
  * @author sando
@@ -54,6 +47,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
         int packetID = Integer.valueOf(packetString);*/
         if (msg instanceof FullHttpRequest) {
             logger.error("还有http请求？");
+            logger.debug(""+(FullHttpRequest)msg);
         } else if (msg instanceof WebSocketFrame) {
             handleWebSocketFrame(ctx, (WebSocketFrame) msg);
         }else {
@@ -74,10 +68,6 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
             logger.info("收到二进制消息："+((BinaryWebSocketFrame)frame).content().readableBytes());
             // BinaryWebSocketFrame binaryWebSocketFrame=new BinaryWebSocketFrame(Unpooled.buffer().writeBytes("xxx".getBytes()));
             // ctx.channel().writeAndFlush(binaryWebSocketFrame);
-        }else if (frame instanceof CloseWebSocketFrame) {
-            logger.debug("收到CloseWebSocketFrame");
-            handshaker.close(ctx.channel(), (CloseWebSocketFrame) frame);
-            return;
         }else {
             logger.error("不支持的WebSocketFrame子类型");
         }
@@ -85,11 +75,6 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) {
         ctx.flush();
-    }
-    @Override
-    public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
-        Channel channel = ctx.channel();
-        logger.info("收到" + channel.remoteAddress() + " 握手请求");
     }
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
