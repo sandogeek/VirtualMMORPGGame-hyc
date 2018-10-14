@@ -22,7 +22,6 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<WebSocke
     // 在 "ws://localhost:8088"+WEBSOCKET_PATH 提供websocket服务
     private static final String WEBSOCKET_PATH = "";
 
-    private WebSocketServerHandshaker handshaker;
     @Autowired
     private CommandManager commandManager;
 
@@ -87,5 +86,4 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<WebSocke
             logger.info("握手成功");
         }
 
-    }
-}
+    }}
