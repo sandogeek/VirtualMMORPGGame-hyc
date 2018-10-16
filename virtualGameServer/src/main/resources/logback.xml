@@ -67,14 +67,14 @@
         </filter>
     </appender>
 
-    <logger name="com.mmorpg" level="debug"  additivity="false">
+    <logger name="com.mmorpg.mbdl.bussiness" level="debug"  additivity="false">
         <appender-ref ref="STDOUT" />
         <appender-ref ref="FILE" />
         <appender-ref ref="ERROR_FILE" />
     </logger>
 
 
-    <root level="info">
+    <root level="debug">
         <appender-ref ref="STDOUT" />
         <appender-ref ref="FILE" />
         <appender-ref ref="ERROR_FILE" />
