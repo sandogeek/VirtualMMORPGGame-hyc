@@ -1,4 +1,4 @@
-package com.mmorpg.mbdl.framework.communicate.websocket.server;
+package com.mmorpg.mbdl.framework.communicate.websocket.server.websocket;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler;
@@ -35,9 +35,12 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<WebSocke
             throw new RuntimeException(String.format("不支持的WebSocketFrame类型[%s]",frame.getClass()));
         }
         ByteBuf byteBuf=((BinaryWebSocketFrame)frame).content();
+        logger.info(String.format("packetId=%s",byteBuf.getShort(0)));
+        byteBuf.retain();
         // BinaryWebSocketFrame binaryWebSocketFrame=new BinaryWebSocketFrame(Unpooled.buffer().writeBytes("xxx".getBytes()));
         // ctx.channel().writeAndFlush(binaryWebSocketFrame);
-        ctx.fireChannelRead(byteBuf);
+       // ctx.fireChannelRead(byteBuf);
+       //  ctx.close();
     }
 
     @Override

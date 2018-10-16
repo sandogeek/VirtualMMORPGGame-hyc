@@ -1,4 +1,4 @@
-package com.mmorpg.mbdl.framework.communicate.websocket.server;
+package com.mmorpg.mbdl.framework.communicate.websocket.server.websocket;
 
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
