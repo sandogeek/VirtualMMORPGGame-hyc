@@ -31,15 +31,14 @@ public class WebSocketServerInitializer extends ChannelInitializer<SocketChannel
         // 以块的方式来写的处理器
         pipeline.addLast("chunkedWriteHandler",new ChunkedWriteHandler());
         // netty是基于分段请求的，HttpObjectAggregator的作用是将请求分段再聚合,参数是聚合字节的最大长度
-        pipeline.addLast("httpObjectAggregator",new HttpObjectAggregator(1024*1024*1024));
+        pipeline.addLast("httpObjectAggregator",new HttpObjectAggregator(65536));
         /**
          * 消除运行websocket服务器的粗活处理器
          * 它可以帮我们处理握手（handshaking）和控制帧（control frames (Close, Ping, Pong)），
          * 文本和二进制WebSocketFrame将会交给下一个你自己实现的handler处理
          */
-        pipeline.addLast(new WebSocketServerProtocolHandler(WEBSOCKET_PATH,null,true,65535));
+        pipeline.addLast(new WebSocketServerProtocolHandler(WEBSOCKET_PATH));
 
-        // 目前每个浏览器端只连接一个本应用，所以这里不需要区分来自哪个浏览器，不需要像真正的服务端那样
         // 用sessionHandler sessionManager专门记录不同的用户
         // pipeline.addLast("sessionHandler",);
 

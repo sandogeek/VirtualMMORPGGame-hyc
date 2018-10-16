@@ -5,7 +5,6 @@ import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
-import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
 import org.slf4j.Logger;
@@ -32,33 +31,13 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<WebSocke
 
     @Override
     public void channelRead0(ChannelHandlerContext ctx, WebSocketFrame frame) throws Exception {
-        // 字符串流协议包样例：10001|{json格式串}
-        /*msg= StringUtils.trim(msg);
-        if(StringUtils.isBlank(msg)){
-            return;
+        if(!(frame instanceof BinaryWebSocketFrame)){
+            throw new RuntimeException(String.format("不支持的WebSocketFrame类型[%s]",frame.getClass()));
         }
-        String packetString=StringUtils.left(msg,StringUtils.indexOf(msg,"|"));
-        String jsonString=StringUtils.right(msg,StringUtils.indexOf(msg,"|"));
-        int packetID = Integer.valueOf(packetString);*/
-        if(frame instanceof TextWebSocketFrame){
-            String command = ((TextWebSocketFrame)frame).text();
-            logger.info("收到TextWebSocketFrame，内容为："+command);
-            // 执行命令
-            // commandManager.executeCommand(command);
-            // TODO 客户端用哪种WebSocketFrame就用哪种WebSocketFrame发回去
-            logger.info("返回内容："+String.format("命令[%s]执行成功",command));
-            ctx.channel().writeAndFlush(new TextWebSocketFrame(String.format("命令[%s]执行成功",command)));
-//            ctx.channel().writeAndFlush(new TextWebSocketFrame("123456"));
-        }else if(frame instanceof BinaryWebSocketFrame){
-            ByteBuf byteBuf=((BinaryWebSocketFrame)frame).content();
-            logger.info("收到二进制消息长度："+byteBuf.readableBytes());
-            logger.info("读出前2个字节："+byteBuf.getShort(0));
-            logger.info("读出最后4个字节："+byteBuf.getInt(2));
-            // BinaryWebSocketFrame binaryWebSocketFrame=new BinaryWebSocketFrame(Unpooled.buffer().writeBytes("xxx".getBytes()));
-            // ctx.channel().writeAndFlush(binaryWebSocketFrame);
-        }else {
-            logger.error("不支持的WebSocketFrame子类型");
-        }
+        ByteBuf byteBuf=((BinaryWebSocketFrame)frame).content();
+        // BinaryWebSocketFrame binaryWebSocketFrame=new BinaryWebSocketFrame(Unpooled.buffer().writeBytes("xxx".getBytes()));
+        // ctx.channel().writeAndFlush(binaryWebSocketFrame);
+        ctx.fireChannelRead(byteBuf);
     }
 
     @Override
@@ -68,7 +47,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<WebSocke
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
             throws Exception {
-        logger.error("捕获到异常："+cause);
+        logger.error("捕获到异常：",cause);
         ctx.close();
     }
     @Override
@@ -84,7 +63,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<WebSocke
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception{
         if (evt instanceof WebSocketServerProtocolHandler.HandshakeComplete){
-            logger.info("握手成功");
+            logger.debug(String.format("channel[%s]握手成功",ctx.channel().remoteAddress().toString()));
         }
     }
 }
