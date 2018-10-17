@@ -1,14 +1,17 @@
 package com.mmorpg.mbdl.framework.communicate.websocket.server;
 
-import io.netty.buffer.ByteBuf;
+import com.baidu.bjf.remoting.protobuf.Codec;
+import com.mmorpg.mbdl.bussiness.common.AbstractPacket;
+import com.mmorpg.mbdl.bussiness.common.PacketId;
+import com.mmorpg.mbdl.bussiness.login.packet.LoginAuthReq;
+import com.mmorpg.mbdl.framework.communicate.websocket.model.WsPacket;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
-import io.netty.handler.codec.http.websocketx.WebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -18,8 +21,11 @@ import javax.annotation.PostConstruct;
  */
 @ChannelHandler.Sharable
 @Component
-public class WebSocketServerHandler extends SimpleChannelInboundHandler<WebSocketFrame> {
+public class WebSocketServerHandler extends SimpleChannelInboundHandler<WsPacket> {
     private static final Logger logger= LoggerFactory.getLogger(WebSocketServerHandler.class);
+
+    @Autowired
+    private PacketId packetId;
 
     private static WebSocketServerHandler instance;
     public static WebSocketServerHandler getInstance(){return instance;}
@@ -30,17 +36,23 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<WebSocke
     }
 
     @Override
-    public void channelRead0(ChannelHandlerContext ctx, WebSocketFrame frame) throws Exception {
-        if(!(frame instanceof BinaryWebSocketFrame)){
-            throw new RuntimeException(String.format("不支持的WebSocketFrame类型[%s]",frame.getClass()));
+    public void channelRead0(ChannelHandlerContext ctx, WsPacket wsPacket) throws Exception {
+        short packetId = wsPacket.getPacketId();
+        logger.debug(String.format("packetId=%s", packetId));
+        // 接下来将WsPacket里面的byte[] data转化为AbstractPacket对象，因而
+        // 一个<packetId->protobuf编解码代理对象>的map
+        Codec codec = this.packetId.getCodec(packetId);
+        Object abstractPacket = codec.decode(wsPacket.getData());
+        if (abstractPacket instanceof LoginAuthReq) {
+            logger.debug("账号："+((LoginAuthReq)abstractPacket).getAccount());
+            logger.debug("密码："+((LoginAuthReq)abstractPacket).getPassword());
         }
-        ByteBuf byteBuf=((BinaryWebSocketFrame)frame).content();
-        logger.info(String.format("packetId=%s",byteBuf.getShort(0)));
-        byteBuf.retain();
-        // BinaryWebSocketFrame binaryWebSocketFrame=new BinaryWebSocketFrame(Unpooled.buffer().writeBytes("xxx".getBytes()));
-        // ctx.channel().writeAndFlush(binaryWebSocketFrame);
-       // ctx.fireChannelRead(byteBuf);
-       //  ctx.close();
+
+        if (abstractPacket instanceof AbstractPacket){
+            // 把AbstractPacket对象往pineline后面传递
+            ctx.fireChannelRead((AbstractPacket)abstractPacket);
+        }
+
     }
 
     @Override

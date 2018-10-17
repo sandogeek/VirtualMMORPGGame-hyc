@@ -1,5 +1,6 @@
 package com.mmorpg.mbdl.framework.communicate.websocket.server;
 
+import com.mmorpg.mbdl.framework.communicate.websocket.codec.WebSocketFrameToWsPacketCodec;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
@@ -38,6 +39,8 @@ public class WebSocketServerInitializer extends ChannelInitializer<SocketChannel
          * 文本和二进制WebSocketFrame将会交给下一个你自己实现的handler处理
          */
         pipeline.addLast(new WebSocketServerProtocolHandler(WEBSOCKET_PATH));
+        // 接收WebSocketServerProtocolHandler传来的WebSocketFrame，转化为WRequest后继续往后传
+        pipeline.addLast(new WebSocketFrameToWsPacketCodec());
 
         // 用sessionHandler sessionManager专门记录不同的用户
         // pipeline.addLast("sessionHandler",);

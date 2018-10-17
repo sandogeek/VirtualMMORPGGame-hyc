@@ -1,17 +1,17 @@
 package com.mmorpg.mbdl.framework.communicate.websocket.model;
 
 /**
- * websocket请求包
+ * websocket字节包
  * @author sando
  */
-public class WRequest {
+public class WsPacket {
     // 请求包id
     private short packetId;
     // protobuf编码的字节数据
     private byte[] data;
 
-    public static WRequest valueOf(short packetId,byte[] data){
-        WRequest wRequest = new WRequest();
+    public static WsPacket valueOf(short packetId, byte[] data){
+        WsPacket wRequest = new WsPacket();
         wRequest.setPacketId(packetId);
         wRequest.setData(data);
         return wRequest;
