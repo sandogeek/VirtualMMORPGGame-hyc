@@ -1,4 +1,4 @@
-package com.mmorpg.mbdl.framework.communicate.websocket.server.socket;
+package com.mmorpg.mbdl.framework.communicate.socket;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
