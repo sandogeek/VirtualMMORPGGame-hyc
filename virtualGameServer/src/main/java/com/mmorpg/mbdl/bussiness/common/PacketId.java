@@ -16,7 +16,7 @@ import java.util.Map;
  */
 @Component
 public class PacketId {
-    private BiMap<Short,AbstractPacket> packetId2AbstractPacket = HashBiMap.create();
+    private BiMap<Short,Class<? extends AbstractPacket>> packetId2AbstractPacket = HashBiMap.create();
     // <packetId->protobuf编解码代理对象>
     private Map<Short, Codec> packetId2Codec = new HashMap<>();
 
@@ -32,7 +32,7 @@ public class PacketId {
     }
 
     public void registerAbstractPacket(AbstractPacket abstractPacket){
-        packetId2AbstractPacket.put(abstractPacket.getPacketId(),abstractPacket);
+        packetId2AbstractPacket.put(abstractPacket.getPacketId(),abstractPacket.getClass());
     }
     public void registerCodec(AbstractPacket abstractPacket){
         packetId2Codec.put(abstractPacket.getPacketId(),ProtobufProxy.create(abstractPacket.getClass()));

@@ -47,10 +47,9 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<WsPacket
             logger.debug("账号："+((LoginAuthReq)abstractPacket).getAccount());
             logger.debug("密码："+((LoginAuthReq)abstractPacket).getPassword());
         }
-
         if (abstractPacket instanceof AbstractPacket){
             // 把AbstractPacket对象往pineline后面传递
-            ctx.fireChannelRead((AbstractPacket)abstractPacket);
+            ctx.fireChannelRead(abstractPacket);
         }
 
     }
