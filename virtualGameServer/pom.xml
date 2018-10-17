@@ -80,8 +80,34 @@
             <artifactId>jprotobuf</artifactId>
             <version>2.2.5</version>
         </dependency>
-
-
+        <!--支持maven编译时同时进行jprotobuf对象的预编译操作-->
+        <dependency>
+            <groupId>com.baidu</groupId>
+            <artifactId>jprotobuf-precompile-plugin</artifactId>
+            <version>1.2.8</version>
+        </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <!--支持maven编译时同时进行jprotobuf对象的预编译操作-->
+            <plugin>
+                <groupId>com.baidu</groupId>
+                <artifactId>jprotobuf-precompile-plugin</artifactId>
+                <version>1.2.8</version>
+                <configuration>
+                    <filterClassPackage>com.mmorpg</filterClassPackage>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>precompile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>
