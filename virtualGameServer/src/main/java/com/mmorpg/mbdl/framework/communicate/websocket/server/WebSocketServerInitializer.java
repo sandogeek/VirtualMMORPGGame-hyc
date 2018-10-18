@@ -1,6 +1,7 @@
 package com.mmorpg.mbdl.framework.communicate.websocket.server;
 
 import com.mmorpg.mbdl.framework.communicate.websocket.codec.WebSocketFrameToWsPacketCodec;
+import com.mmorpg.mbdl.framework.communicate.websocket.handler.AbstractPacketDispacherHandler;
 import com.mmorpg.mbdl.framework.communicate.websocket.handler.WsPacketInboundHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
@@ -21,6 +22,8 @@ public class WebSocketServerInitializer extends ChannelInitializer<SocketChannel
 
     @Autowired
     private WsPacketInboundHandler webSocketServerHandler;
+    @Autowired
+    private AbstractPacketDispacherHandler abstractPacketDispacherHandler;
 
     // 在 "ws://localhost:netPort"+WEBSOCKET_PATH 提供websocket服务
     private static final String WEBSOCKET_PATH = "/";
@@ -47,6 +50,7 @@ public class WebSocketServerInitializer extends ChannelInitializer<SocketChannel
         // pipeline.addLast("sessionHandler",);
 
         pipeline.addLast(webSocketServerHandler);
+        pipeline.addLast(abstractPacketDispacherHandler);
     }
 }
 

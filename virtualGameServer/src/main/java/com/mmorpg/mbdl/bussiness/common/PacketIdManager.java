@@ -32,6 +32,9 @@ public class PacketIdManager {
     @PostConstruct
     public void init(){
         self=this;
+        // TODO 自动生成浏览器端的PacketId.ts
+        // 把浏览器端的src\app\shared\model\packet和src\assets\proto作为一个仓库，每当新增协议后端push变更的内容
+        // 前端利用tasks npm boot更新这两个文件夹的内容
     }
 
     public void registerAbstractPacket(AbstractPacket abstractPacket){
