@@ -1,8 +1,8 @@
-package com.mmorpg.mbdl.framework.communicate.websocket.server;
+package com.mmorpg.mbdl.framework.communicate.websocket.handler;
 
 import com.baidu.bjf.remoting.protobuf.Codec;
-import com.mmorpg.mbdl.bussiness.common.AbstractPacket;
-import com.mmorpg.mbdl.bussiness.common.PacketId;
+import com.mmorpg.mbdl.framework.communicate.websocket.model.AbstractPacket;
+import com.mmorpg.mbdl.bussiness.common.PacketIdManager;
 import com.mmorpg.mbdl.bussiness.login.packet.LoginAuthReq;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.WsPacket;
 import io.netty.channel.ChannelHandler;
@@ -17,22 +17,23 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 
 /**
+ * 将WsPacket字节包转化为AbstractPacket
  * @author sando
  */
 @ChannelHandler.Sharable
 @Component
-public class WebSocketServerHandler extends SimpleChannelInboundHandler<WsPacket> {
-    private static final Logger logger= LoggerFactory.getLogger(WebSocketServerHandler.class);
+public class WsPacketInboundHandler extends SimpleChannelInboundHandler<WsPacket> {
+    private static final Logger logger= LoggerFactory.getLogger(WsPacketInboundHandler.class);
 
     @Autowired
-    private PacketId packetId;
+    private PacketIdManager packetId;
 
-    private static WebSocketServerHandler instance;
-    public static WebSocketServerHandler getInstance(){return instance;}
+    private static WsPacketInboundHandler instance;
+    public static WsPacketInboundHandler getInstance(){return instance;}
 
     @PostConstruct
     private void init(){
-        WebSocketServerHandler.instance=this;
+        WsPacketInboundHandler.instance=this;
     }
 
     @Override

@@ -1,8 +1,8 @@
 package com.mmorpg.mbdl.bussiness.login.packet;
 
 import com.baidu.bjf.remoting.protobuf.annotation.ProtobufClass;
-import com.mmorpg.mbdl.bussiness.common.AbstractPacket;
-import com.mmorpg.mbdl.bussiness.common.PacketId;
+import com.mmorpg.mbdl.framework.communicate.websocket.model.AbstractPacket;
+import com.mmorpg.mbdl.bussiness.common.PacketIdManager;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -29,6 +29,6 @@ public class LoginAuthReq extends AbstractPacket {
 
     @Override
     public short getPacketId() {
-        return PacketId.LOGIN_AUTH_REQ;
+        return PacketIdManager.LOGIN_AUTH_REQ;
     }
 }

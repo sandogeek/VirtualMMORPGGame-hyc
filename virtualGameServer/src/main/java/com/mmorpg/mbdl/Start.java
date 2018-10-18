@@ -1,6 +1,6 @@
 package com.mmorpg.mbdl;
 
-import com.mmorpg.mbdl.bussiness.common.AbstractPacket;
+import com.mmorpg.mbdl.framework.communicate.websocket.model.AbstractPacket;
 import com.mmorpg.mbdl.framework.communicate.websocket.server.WebSocketServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +21,7 @@ public class Start {
 
     /**
      * 在Spring IOC启动后去除容器中AbstractPacket的单例
-     * @param ctx
+     * @param ctx spring上下文
      */
     static void removeAbstractPacketBean(ClassPathXmlApplicationContext ctx){
         for (String beanName :

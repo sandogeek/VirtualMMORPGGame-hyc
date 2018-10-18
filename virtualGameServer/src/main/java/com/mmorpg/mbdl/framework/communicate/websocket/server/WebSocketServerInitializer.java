@@ -1,6 +1,7 @@
 package com.mmorpg.mbdl.framework.communicate.websocket.server;
 
 import com.mmorpg.mbdl.framework.communicate.websocket.codec.WebSocketFrameToWsPacketCodec;
+import com.mmorpg.mbdl.framework.communicate.websocket.handler.WsPacketInboundHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
@@ -19,7 +20,7 @@ import org.springframework.stereotype.Component;
 public class WebSocketServerInitializer extends ChannelInitializer<SocketChannel> {
 
     @Autowired
-    private WebSocketServerHandler webSocketServerHandler;
+    private WsPacketInboundHandler webSocketServerHandler;
 
     // 在 "ws://localhost:netPort"+WEBSOCKET_PATH 提供websocket服务
     private static final String WEBSOCKET_PATH = "/";
@@ -39,7 +40,7 @@ public class WebSocketServerInitializer extends ChannelInitializer<SocketChannel
          * 文本和二进制WebSocketFrame将会交给下一个你自己实现的handler处理
          */
         pipeline.addLast(new WebSocketServerProtocolHandler(WEBSOCKET_PATH));
-        // 接收WebSocketServerProtocolHandler传来的WebSocketFrame，转化为WRequest后继续往后传
+        // 接收WebSocketServerProtocolHandler传来的WebSocketFrame，转化为WsPacket后继续往后传
         pipeline.addLast(new WebSocketFrameToWsPacketCodec());
 
         // 用sessionHandler sessionManager专门记录不同的用户
