@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 public class LoginFacade {
     private static final Logger logger = LoggerFactory.getLogger(LoginFacade.class);
     public void loginAuth(WSession session, LoginAuthReq req){
-        String message = String.format("协议[%s-%s]分发成功：帐号：%s,密码：%s",req.getPacketId(),req.getClass(),req.getAccount(),req.getPassword());
+        String message = String.format("协议[%s-%s]分发成功：帐号：%s,密码：%s",req.getPacketId(),req.getClass().getSimpleName(),req.getAccount(),req.getPassword());
         logger.debug(message);
     }
     // public void handleChatReq(WSession session, ChatReq chatReq){

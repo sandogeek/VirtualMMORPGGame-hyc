@@ -44,10 +44,6 @@ public class WsPacketInboundHandler extends SimpleChannelInboundHandler<WsPacket
         // 一个<packetId->protobuf编解码代理对象>的map
         Codec codec = this.packetId.getCodec(packetId);
         Object abstractPacket = codec.decode(wsPacket.getData());
-        if (abstractPacket instanceof LoginAuthReq) {
-            logger.debug("账号："+((LoginAuthReq)abstractPacket).getAccount());
-            logger.debug("密码："+((LoginAuthReq)abstractPacket).getPassword());
-        }
         if (abstractPacket instanceof AbstractPacket){
             // 把AbstractPacket对象往pineline后面传递
             ctx.fireChannelRead(abstractPacket);
