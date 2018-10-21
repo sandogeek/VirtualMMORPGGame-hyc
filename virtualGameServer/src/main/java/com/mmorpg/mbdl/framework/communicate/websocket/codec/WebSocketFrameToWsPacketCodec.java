@@ -1,26 +1,45 @@
 package com.mmorpg.mbdl.framework.communicate.websocket.codec;
 
+import com.google.common.collect.Lists;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.WsPacket;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageCodec;
 import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketFrame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
+import java.nio.ByteBuffer;
+import java.util.Collections;
 import java.util.List;
+
+import static io.netty.buffer.Unpooled.buffer;
 
 /**
  * WebsocketFrame编解码器
  * @author sando
  */
+@ChannelHandler.Sharable
+@Component
 public class WebSocketFrameToWsPacketCodec extends MessageToMessageCodec<WebSocketFrame, WsPacket> {
     private static final Logger logger= LoggerFactory.getLogger(WebSocketFrameToWsPacketCodec.class);
 
     @Override
-    protected void encode(ChannelHandlerContext ctx, WsPacket msg, List<Object> out) throws Exception {
-
+    protected void encode(ChannelHandlerContext ctx, WsPacket wsPacket, List<Object> out) throws Exception {
+        short packetId = wsPacket.getPacketId();
+        byte[] wsPacketData = wsPacket.getData();
+        int packetLength = 4 + 2 + wsPacketData.length;
+        ByteBuf byteBuf = buffer(packetLength);
+        byteBuf.writeInt(packetLength);
+        byteBuf.writeShort(packetId);
+        byteBuf.writeBytes(wsPacketData);
+        WebSocketFrame webSocketFrame = new BinaryWebSocketFrame(byteBuf);
+        logger.info(""+webSocketFrame);
+        out.add((WebSocketFrame)webSocketFrame);
     }
 
     @Override

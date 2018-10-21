@@ -1,6 +1,7 @@
 package com.mmorpg.mbdl.framework.communicate.websocket.handler;
 
 import com.google.common.base.Predicate;
+import com.mmorpg.mbdl.bussiness.login.packet.LoginResultResp;
 import com.mmorpg.mbdl.framework.communicate.websocket.annotation.PacketHandler;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.AbstractPacket;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.WSession;
@@ -41,6 +42,10 @@ public class AbstractPacketDispacherHandler extends SimpleChannelInboundHandler<
     protected void channelRead0(ChannelHandlerContext ctx, AbstractPacket abstractPacket) throws Exception {
         ReflectionUtils.invokeMethod(class2Method.get(abstractPacket.getClass()),class2Object.get(abstractPacket.getClass())
                 ,new WSession(),abstractPacket);
+        // 发送响应包 LoginResultResp
+        LoginResultResp loginResultResp = new LoginResultResp();
+        loginResultResp.setResultType("成功");
+        ctx.channel().writeAndFlush(loginResultResp);
     }
 
     @Override

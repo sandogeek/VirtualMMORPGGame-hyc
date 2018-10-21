@@ -23,6 +23,8 @@ public class PacketIdManager {
     private Map<Short, Codec> packetId2Codec = new HashMap<>();
 
     public static final short LOGIN_AUTH_REQ = 10001;
+    public static final short LOGIN_RESULT_RESP = 10002;
+
     public static final short CHATREQ = 10101;
 
     private static PacketIdManager self;
@@ -46,6 +48,10 @@ public class PacketIdManager {
 
     public Codec getCodec(short packetId){
         return this.packetId2Codec.get(packetId);
+    }
+
+    public BiMap<Short, Class<? extends AbstractPacket>> getPacketId2AbstractPacket() {
+        return packetId2AbstractPacket;
     }
 
     public Set<Class<? extends AbstractPacket>> getAbstractPackets(){
