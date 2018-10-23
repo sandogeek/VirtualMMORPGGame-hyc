@@ -1,14 +1,17 @@
 package com.mmorpg.mbdl.bussiness.login.packet;
 
-import com.baidu.bjf.remoting.protobuf.annotation.ProtobufClass;
-import com.mmorpg.mbdl.framework.communicate.websocket.model.AbstractPacket;
+import com.baidu.bjf.remoting.protobuf.annotation.Protobuf;
 import com.mmorpg.mbdl.bussiness.common.PacketIdManager;
+import com.mmorpg.mbdl.framework.communicate.websocket.annotation.ProtoDesc;
+import com.mmorpg.mbdl.framework.communicate.websocket.model.AbstractPacket;
 import org.springframework.stereotype.Component;
 
 @Component
-@ProtobufClass
+@ProtoDesc(description = "登录认证")
 public class LoginAuthReq extends AbstractPacket {
+    @Protobuf(description = "账号",required = true)
     private  String account;
+    @Protobuf(description = "密码",required = true)
     private String password;
 
     public String getAccount() {

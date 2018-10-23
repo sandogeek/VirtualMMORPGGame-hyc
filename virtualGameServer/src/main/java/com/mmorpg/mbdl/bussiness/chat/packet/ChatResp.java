@@ -7,20 +7,10 @@ import com.mmorpg.mbdl.framework.communicate.websocket.model.AbstractPacket;
 import org.springframework.stereotype.Component;
 
 @Component
-@ProtoDesc(description = "聊天请求")
-public class ChatReq extends AbstractPacket {
-    @Protobuf(description = "聊天频道id")
-    private int id;
-    @Protobuf(description = "发言内容")
+@ProtoDesc(description = "聊天响应")
+public class ChatResp extends AbstractPacket {
+    @Protobuf(description = "聊天内容")
     private String content;
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
 
     public String getContent() {
         return content;
@@ -32,6 +22,6 @@ public class ChatReq extends AbstractPacket {
 
     @Override
     public short getPacketId() {
-        return PacketIdManager.CHAT_REQ;
+        return PacketIdManager.CHAT_RESP;
     }
 }

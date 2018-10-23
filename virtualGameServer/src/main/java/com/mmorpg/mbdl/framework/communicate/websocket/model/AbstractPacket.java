@@ -1,6 +1,9 @@
 package com.mmorpg.mbdl.framework.communicate.websocket.model;
 
 import com.mmorpg.mbdl.bussiness.common.PacketIdManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
 
@@ -12,7 +15,9 @@ import javax.annotation.PostConstruct;
  * @author sando
  */
 public abstract class AbstractPacket {
-
+    private static final Logger logger= LoggerFactory.getLogger(AbstractPacket.class);
+    @Autowired
+    private PacketIdManager packetIdManager;
     /**
      * 获取包id
      * @return PacketId
@@ -21,7 +26,8 @@ public abstract class AbstractPacket {
 
     @PostConstruct
     private void init(){
-        PacketIdManager.getIntance().registerAbstractPacket(this);
-        PacketIdManager.getIntance().registerCodec(this);
+        ProtoGenerator.generateProto(this);
+        packetIdManager.registerAbstractPacket(this);
+        packetIdManager.registerCodec(this);
     }
 }

@@ -6,7 +6,7 @@ import com.mmorpg.mbdl.framework.communicate.websocket.model.WSession;
 
 @PacketHandler
 public class ChatFacade {
-    public void handleChatReq(WSession session, ChatReq chatReq){
-
+    public ChatReq handleChatReq(WSession session, ChatReq chatReq){
+        return new ChatReq();
     }
 }
