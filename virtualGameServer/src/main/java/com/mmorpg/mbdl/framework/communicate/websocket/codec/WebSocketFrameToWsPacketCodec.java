@@ -1,9 +1,7 @@
 package com.mmorpg.mbdl.framework.communicate.websocket.codec;
 
-import com.google.common.collect.Lists;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.WsPacket;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageCodec;
@@ -13,8 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import java.nio.ByteBuffer;
-import java.util.Collections;
 import java.util.List;
 
 import static io.netty.buffer.Unpooled.buffer;
@@ -27,6 +23,10 @@ import static io.netty.buffer.Unpooled.buffer;
 @Component
 public class WebSocketFrameToWsPacketCodec extends MessageToMessageCodec<WebSocketFrame, WsPacket> {
     private static final Logger logger= LoggerFactory.getLogger(WebSocketFrameToWsPacketCodec.class);
+    // 最小可读字节长度
+    private static final int MIN_READABLE = 4 + 2;
+    // 最小包长
+    private static final int MIN_PACKET_LENGTH = 4 + 2;
 
     @Override
     protected void encode(ChannelHandlerContext ctx, WsPacket wsPacket, List<Object> out) throws Exception {
@@ -38,20 +38,25 @@ public class WebSocketFrameToWsPacketCodec extends MessageToMessageCodec<WebSock
         byteBuf.writeShort(packetId);
         byteBuf.writeBytes(wsPacketData);
         WebSocketFrame webSocketFrame = new BinaryWebSocketFrame(byteBuf);
-        logger.info(""+webSocketFrame);
+        // logger.info(""+webSocketFrame);
         out.add((WebSocketFrame)webSocketFrame);
     }
 
     @Override
     protected void decode(ChannelHandlerContext ctx, WebSocketFrame msg, List<Object> out) throws Exception {
         if(!(msg instanceof BinaryWebSocketFrame)){
-            throw new RuntimeException(String.format("不支持的WebSocketFrame类型[%s]",msg.getClass()));
+            logger.warn(String.format("不支持的WebSocketFrame类型[%s]",msg.getClass()));
+            ctx.close();
         }
         ByteBuf byteBuf=((BinaryWebSocketFrame)msg).content();
+        int readableLength = byteBuf.readableBytes();
+        if (readableLength < MIN_READABLE){
+            return;
+        }
         int packetLength = byteBuf.readInt();
         // 检查数据包长度是否与发送时一致，不一致的包直接丢弃
         if ((packetLength-4)!=byteBuf.readableBytes()) {
-            logger.error("数据包不完整");
+            logger.warn("数据包不完整");
             return;
         }
         logger.debug(String.format("包总字节数=%s", packetLength));

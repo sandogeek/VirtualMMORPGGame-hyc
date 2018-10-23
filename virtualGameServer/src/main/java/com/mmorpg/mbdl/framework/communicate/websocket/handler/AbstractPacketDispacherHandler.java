@@ -1,7 +1,7 @@
 package com.mmorpg.mbdl.framework.communicate.websocket.handler;
 
 import com.google.common.base.Predicate;
-import com.mmorpg.mbdl.bussiness.login.packet.LoginResultResp;
+import com.mmorpg.mbdl.bussiness.chat.packet.ChatResp;
 import com.mmorpg.mbdl.framework.communicate.websocket.annotation.PacketHandler;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.AbstractPacket;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.WSession;
@@ -40,22 +40,26 @@ public class AbstractPacketDispacherHandler extends SimpleChannelInboundHandler<
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, AbstractPacket abstractPacket) throws Exception {
-        ReflectionUtils.invokeMethod(class2Method.get(abstractPacket.getClass()),class2Object.get(abstractPacket.getClass())
+        // TODO 不能在netty线程池作业务处理
+        Object obj=ReflectionUtils.invokeMethod(class2Method.get(abstractPacket.getClass()),class2Object.get(abstractPacket.getClass())
                 ,new WSession(),abstractPacket);
+        if (obj != null){
+            // 把返回的响应包对象发给相应的客户端
+        }
         // 发送响应包 LoginResultResp
-        LoginResultResp loginResultResp = new LoginResultResp();
-        loginResultResp.setResultType("成功");
-        ctx.channel().writeAndFlush(loginResultResp);
+        ChatResp chatResp = new ChatResp();
+        chatResp.setContent("聊天响应接收成功");
+        ctx.channel().writeAndFlush(chatResp);
     }
 
     @Override
-    public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+    public Object postProcessAfterInitialization(Object bean, java.lang.String beanName) throws BeansException {
         Class<?> clazz = bean.getClass();
         if (clazz.isAnnotationPresent(PacketHandler.class)){
             // 获取clazz中其中一个参数的父类或本身是AbstractPacket的所有方法
             Set<Method> methods=getAllMethods(clazz, withAnyParametersAssignableFrom(AbstractPacket.class));
             if (methods.size()==0){
-                String message = String.format("类[%s]带@PacketHandler但却没有任何带AbstractPacket参数的方法",clazz.toString());
+                java.lang.String message = java.lang.String.format("类[%s]带@PacketHandler但却没有任何带AbstractPacket参数的方法",clazz.toString());
                 logger.error(message);
                 throw new  RuntimeException(message);
             }
@@ -64,21 +68,28 @@ public class AbstractPacketDispacherHandler extends SimpleChannelInboundHandler<
             // TODO 返回值校验并把返回值作为响应包发回去
             for (Method method : methods) {
                 if (method.getParameterTypes().length!=2){
-                    String message =String.format("方法[%s]必须为两个参数",
+                    java.lang.String message = java.lang.String.format("方法[%s]必须为两个参数",
                             method.getDeclaringClass().getSimpleName()+"::"+method.getName());
                     throw new IllegalArgumentException(message);
                 }
-                if (method.getParameterTypes()[0] != WSession.class){
-                    String message =String.format("方法[%s]第一个参数的类型必须为WSession",
+                if ( !WSession.class.isAssignableFrom(method.getParameterTypes()[0])){
+                    java.lang.String message = java.lang.String.format("方法[%s]第一个参数的类型必须为WSession或其子类",
                             method.getDeclaringClass().getSimpleName()+"::"+method.getName());
+                    throw new IllegalArgumentException(message);
                 }
                 Class<?> clazz2 = method.getParameterTypes()[1];
                 if (class2Method.keySet().contains(clazz2)) {
                     Method methodOld = class2Method.get(clazz2);
-                    String message =
-                            String.format("类型为[%s]的请求包同时被方法[%s]和方法[%s]处理", clazz2.getSimpleName(),
+                    java.lang.String message =
+                            java.lang.String.format("类型为[%s]的请求包同时被方法[%s]和方法[%s]处理", clazz2.getSimpleName(),
                                     methodOld.getDeclaringClass().getSimpleName()+"::"+methodOld.getName(),
                                     method.getDeclaringClass().getSimpleName()+"::"+method.getName());
+                    throw new IllegalArgumentException(message);
+                }
+                Class<?> returnType=method.getReturnType();
+                if ( returnType!= void.class && !AbstractPacket.class.isAssignableFrom(returnType)){
+                    java.lang.String message = java.lang.String.format("方法[%s]返回值只能是void或者AbstractPacket或其子类",
+                            method.getDeclaringClass().getSimpleName()+"::"+method.getName());
                     throw new IllegalArgumentException(message);
                 }
                 class2Object.put(clazz2,bean);
@@ -112,7 +123,7 @@ public class AbstractPacketDispacherHandler extends SimpleChannelInboundHandler<
     }
 
     @Override
-    public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+    public Object postProcessBeforeInitialization(Object bean, java.lang.String beanName) throws BeansException {
         return bean;
     }
 }
