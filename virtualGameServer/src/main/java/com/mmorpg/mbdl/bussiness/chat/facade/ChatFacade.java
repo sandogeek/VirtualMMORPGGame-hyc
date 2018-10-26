@@ -2,11 +2,11 @@ package com.mmorpg.mbdl.bussiness.chat.facade;
 
 import com.mmorpg.mbdl.bussiness.chat.packet.ChatReq;
 import com.mmorpg.mbdl.framework.communicate.websocket.annotation.PacketHandler;
-import com.mmorpg.mbdl.framework.communicate.websocket.model.WSession;
+import com.mmorpg.mbdl.framework.communicate.websocket.model.WsSession;
 
 @PacketHandler
 public class ChatFacade {
-    public ChatReq handleChatReq(WSession session, ChatReq chatReq){
+    public ChatReq handleChatReq(WsSession session, ChatReq chatReq){
         return new ChatReq();
     }
 }

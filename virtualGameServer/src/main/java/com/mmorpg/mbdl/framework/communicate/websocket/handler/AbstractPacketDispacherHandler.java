@@ -4,7 +4,8 @@ import com.google.common.base.Predicate;
 import com.mmorpg.mbdl.bussiness.chat.packet.ChatResp;
 import com.mmorpg.mbdl.framework.communicate.websocket.annotation.PacketHandler;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.AbstractPacket;
-import com.mmorpg.mbdl.framework.communicate.websocket.model.WSession;
+import com.mmorpg.mbdl.framework.communicate.websocket.model.WsSession;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -37,14 +38,26 @@ public class AbstractPacketDispacherHandler extends SimpleChannelInboundHandler<
     // private Table<Class<?>, Object, Method> abstractPacket2Method2Object= HashBasedTable.create();
     private Map<Class<?>,Object> class2Object = new HashMap<>();
     private Map<Class<?>,Method> class2Method = new HashMap<>();
+    Channel firstChannel ;
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, AbstractPacket abstractPacket) throws Exception {
-        // TODO 不能在netty线程池作业务处理
-        Object obj=ReflectionUtils.invokeMethod(class2Method.get(abstractPacket.getClass()),class2Object.get(abstractPacket.getClass())
-                ,new WSession(),abstractPacket);
+        // TODO 不能在netty worker线程池作业务处理,如果当前请求处理发生阻塞，那么这条（4条之一）worker线程就会被阻塞
+        // 另外由于同一个channel的消息可能会被分到不同的worker线程，这样就可能导致后到的请求先被处理，从而导致严重的问题
+        // 以下用于验证是否同一个channel的请求走到不同的worker线程，确认成功，后续删除这些注释
+        // if (firstChannel==null){
+        //     firstChannel=ctx.channel();
+        // }
+        // if (ctx.channel()==firstChannel) {
+        //     logger.info(ctx.channel().remoteAddress()+"");
+        //     Object obj=ReflectionUtils.invokeMethod(class2Method.get(abstractPacket.getClass()),class2Object.get(abstractPacket.getClass())
+        //             ,new WsSession(),abstractPacket);
+        // }
+
+        Object obj= ReflectionUtils.invokeMethod(class2Method.get(abstractPacket.getClass()),class2Object.get(abstractPacket.getClass())
+                ,new WsSession(),abstractPacket);
         if (obj != null){
-            // 把返回的响应包对象发给相应的客户端
+
         }
         // 发送响应包 LoginResultResp
         ChatResp chatResp = new ChatResp();
@@ -55,6 +68,7 @@ public class AbstractPacketDispacherHandler extends SimpleChannelInboundHandler<
     @Override
     public Object postProcessAfterInitialization(Object bean, java.lang.String beanName) throws BeansException {
         Class<?> clazz = bean.getClass();
+        // TODO 如果PacketHandler类的请求处理方法很长，需要切分时可能会产生问题，到时候增加个可选注解即可，切分时用注解标明哪个是入口
         if (clazz.isAnnotationPresent(PacketHandler.class)){
             // 获取clazz中其中一个参数的父类或本身是AbstractPacket的所有方法
             Set<Method> methods=getAllMethods(clazz, withAnyParametersAssignableFrom(AbstractPacket.class));
@@ -72,7 +86,7 @@ public class AbstractPacketDispacherHandler extends SimpleChannelInboundHandler<
                             method.getDeclaringClass().getSimpleName()+"::"+method.getName());
                     throw new IllegalArgumentException(message);
                 }
-                if ( !WSession.class.isAssignableFrom(method.getParameterTypes()[0])){
+                if ( !WsSession.class.isAssignableFrom(method.getParameterTypes()[0])){
                     java.lang.String message = java.lang.String.format("方法[%s]第一个参数的类型必须为WSession或其子类",
                             method.getDeclaringClass().getSimpleName()+"::"+method.getName());
                     throw new IllegalArgumentException(message);

@@ -4,6 +4,7 @@ import com.mmorpg.mbdl.framework.communicate.websocket.model.AbstractPacket;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.PacketIdTsGenerator;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.ProtoGenerator;
 import com.mmorpg.mbdl.framework.communicate.websocket.server.WebSocketServer;
+import com.mmorpg.mbdl.framework.task.TaskExecutorGroup;
 import com.mmorpg.mbdl.framework.utils.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +16,8 @@ public class Start {
     private static Logger logger= LoggerFactory.getLogger(Start.class);
     public static void  main(String[] args) throws Exception {
         clearProto(ProtoGenerator.PROTO_PATH);
+        // 初始化业务线程池
+        TaskExecutorGroup.init();
         // 启动spring容器
         ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("applicationContext.xml");
         PacketIdTsGenerator.generatePacketIdTs();

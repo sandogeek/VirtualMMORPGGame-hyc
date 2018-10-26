@@ -44,9 +44,9 @@ public class WebSocketServer {
 
     public void  bind(int netPort) throws Exception {
         try {
-            // bossGroup 用来处理连接
+            // bossGroup 用来处理连接，事件生产者
             this.bossGroup = new NioEventLoopGroup(THREADSIZEGROUPFORBUSSINESS);
-            // wokerGroup用来处理后续事件
+            // wokerGroup 用来处理后续事件，事件消费者
             this.workerGroup = new NioEventLoopGroup(THREAD_SIZE_EACH_GROUP);
             ServerBootstrap bootstrap = new ServerBootstrap();
             bootstrap.group(bossGroup, workerGroup);

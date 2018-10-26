@@ -44,6 +44,7 @@ public class WebSocketFrameToWsPacketCodec extends MessageToMessageCodec<WebSock
 
     @Override
     protected void decode(ChannelHandlerContext ctx, WebSocketFrame msg, List<Object> out) throws Exception {
+        // TODO 考虑是否会出现粘包半包问题
         if(!(msg instanceof BinaryWebSocketFrame)){
             logger.warn(String.format("不支持的WebSocketFrame类型[%s]",msg.getClass()));
             ctx.close();
