@@ -6,7 +6,7 @@
 <!-- scanPeriod 设置监测配置文件是否有修改的时间间隔，如果没有给出时间单位，默认单位是毫秒。当scan为true时，此属性生效。默认的时间间隔为1分钟。 -->
 <!-- debug 当此属性设置为true时，将打印出logback内部日志信息，实时查看logback运行状态。默认值为false。 -->
 <configuration>
-    <contextName>客户端</contextName>
+    <contextName>服务端</contextName>
     <!-- 定义日志文件 输出位置 -->
     <property name="log_dir" value="./logs" />
     <!-- 最大日志数量 -->
@@ -14,7 +14,8 @@
     <!--输出到控制台 -->
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%cn %d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+            <!--%M和%line内部是通过打印堆栈信息获取，会增加打日志的性能消耗，生产环境需要注意去除-->
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36}.%M:%line - %msg%n</pattern>
         </encoder>
     </appender>
 
