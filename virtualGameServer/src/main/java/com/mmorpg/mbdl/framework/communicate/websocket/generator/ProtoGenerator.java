@@ -1,7 +1,8 @@
-package com.mmorpg.mbdl.framework.communicate.websocket.model;
+package com.mmorpg.mbdl.framework.communicate.websocket.generator;
 
 import com.baidu.bjf.remoting.protobuf.ProtobufIDLGenerator;
 import com.mmorpg.mbdl.framework.communicate.websocket.annotation.ProtoDesc;
+import com.mmorpg.mbdl.framework.communicate.websocket.model.AbstractPacket;
 
 import java.io.File;
 import java.io.FileWriter;

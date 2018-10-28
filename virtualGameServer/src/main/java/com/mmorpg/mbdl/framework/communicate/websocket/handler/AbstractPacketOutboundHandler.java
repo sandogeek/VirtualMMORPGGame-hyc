@@ -19,7 +19,6 @@ public class AbstractPacketOutboundHandler extends ChannelOutboundHandlerAdapter
     @Override
     public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
         if (msg instanceof AbstractPacket) {
-            // logger.info("成功抵达此处"+msg);
             PacketIdManager packetIdManager = PacketIdManager.getIntance();
             short packetId = packetIdManager.getPacketId(msg.getClass());
             super.write(ctx, WsPacket.valueOf(packetId,packetIdManager.getCodec(packetId).encode(msg)), promise);

@@ -53,9 +53,8 @@ public class AbstractPacketDispacherHandler extends SimpleChannelInboundHandler<
         //     Object obj=ReflectionUtils.invokeMethod(class2Method.get(abstractPacket.getClass()),class2Object.get(abstractPacket.getClass())
         //             ,new WsSession(),abstractPacket);
         // }
-
         Object obj= ReflectionUtils.invokeMethod(class2Method.get(abstractPacket.getClass()),class2Object.get(abstractPacket.getClass())
-                ,new WsSession(),abstractPacket);
+                ,new WsSession(ctx.channel()),abstractPacket);
         if (obj != null){
 
         }

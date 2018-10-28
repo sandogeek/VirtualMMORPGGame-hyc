@@ -1,8 +1,8 @@
 package com.mmorpg.mbdl;
 
 import com.mmorpg.mbdl.framework.communicate.websocket.model.AbstractPacket;
-import com.mmorpg.mbdl.framework.communicate.websocket.model.PacketIdTsGenerator;
-import com.mmorpg.mbdl.framework.communicate.websocket.model.ProtoGenerator;
+import com.mmorpg.mbdl.framework.communicate.websocket.generator.PacketIdTsGenerator;
+import com.mmorpg.mbdl.framework.communicate.websocket.generator.ProtoGenerator;
 import com.mmorpg.mbdl.framework.communicate.websocket.server.WebSocketServer;
 import com.mmorpg.mbdl.framework.task.TaskExecutorGroup;
 import com.mmorpg.mbdl.framework.utils.FileUtils;
