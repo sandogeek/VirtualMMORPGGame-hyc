@@ -3,6 +3,7 @@ package com.mmorpg.mbdl.framework.communicate.websocket.handler;
 import com.google.common.base.Predicate;
 import com.mmorpg.mbdl.bussiness.chat.packet.ChatResp;
 import com.mmorpg.mbdl.framework.communicate.websocket.annotation.PacketHandler;
+import com.mmorpg.mbdl.framework.communicate.websocket.annotation.PacketMethod;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.AbstractPacket;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.WsSession;
 import io.netty.channel.Channel;
@@ -38,6 +39,7 @@ public class AbstractPacketDispacherHandler extends SimpleChannelInboundHandler<
     // private Table<Class<?>, Object, Method> abstractPacket2Method2Object= HashBasedTable.create();
     private Map<Class<?>,Object> class2Object = new HashMap<>();
     private Map<Class<?>,Method> class2Method = new HashMap<>();
+    private Map<Method, PacketMethod> method2PacketMethod = new HashMap<>();
     Channel firstChannel ;
 
     @Override
@@ -105,6 +107,7 @@ public class AbstractPacketDispacherHandler extends SimpleChannelInboundHandler<
                             method.getDeclaringClass().getSimpleName()+"::"+method.getName());
                     throw new IllegalArgumentException(message);
                 }
+                // method. TODO bean method annotation存放在统一的类中，方便管理
                 class2Object.put(clazz2,bean);
                 class2Method.put(clazz2,method);
             }
