@@ -37,19 +37,34 @@ public class WebSocketServer {
     @Autowired
     private WebSocketServerInitializer webSocketServerInitializer;
 
-    protected static final int THREADSIZEGROUPFORBUSSINESS = Runtime.getRuntime().availableProcessors()*2;
-    protected static final int THREAD_SIZE_EACH_GROUP = 4;
+    protected static final int BOSS_GROUP_SIZE = 1;
+    protected static final int WORKER_GROUP_SIZE = selectWorkerGroupSize();
+
+    /**
+     * 选择工作线程池核心池大小，cpu核心数<=8：核心数+6,其余14
+     * @return WORKER_GROUP_SIZE
+     */
+    private static int selectWorkerGroupSize() {
+        int cpuCoreSize = Runtime.getRuntime().availableProcessors();
+        if (cpuCoreSize <= 8) {
+            return cpuCoreSize + 6;
+        } else {
+            return 14;
+        }
+    }
     private EventLoopGroup bossGroup;
     private EventLoopGroup workerGroup;
 
     public void  bind(int netPort) throws Exception {
         try {
             // bossGroup 用来处理连接，事件生产者
-            this.bossGroup = new NioEventLoopGroup(THREADSIZEGROUPFORBUSSINESS);
+            this.bossGroup = new NioEventLoopGroup(BOSS_GROUP_SIZE);
             // wokerGroup 用来处理后续事件，事件消费者
-            this.workerGroup = new NioEventLoopGroup(THREAD_SIZE_EACH_GROUP);
+            this.workerGroup = new NioEventLoopGroup(WORKER_GROUP_SIZE);
             ServerBootstrap bootstrap = new ServerBootstrap();
             bootstrap.group(bossGroup, workerGroup);
+            // Socket参数，服务端接受连接的队列长度，如果队列已满，客户端连接将被拒绝。默认值，Windows为200，其他为128。
+            bootstrap.option(ChannelOption.SO_BACKLOG, 65535);
             bootstrap.channel(NioServerSocketChannel.class)
                     /**
                      * 禁用nagle算法
