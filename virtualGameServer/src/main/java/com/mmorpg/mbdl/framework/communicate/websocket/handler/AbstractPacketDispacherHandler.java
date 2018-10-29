@@ -5,6 +5,7 @@ import com.mmorpg.mbdl.bussiness.chat.packet.ChatResp;
 import com.mmorpg.mbdl.framework.communicate.websocket.annotation.PacketHandler;
 import com.mmorpg.mbdl.framework.communicate.websocket.annotation.PacketMethod;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.AbstractPacket;
+import com.mmorpg.mbdl.framework.communicate.websocket.model.PacketMethodDifinition;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.WsSession;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
@@ -15,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.stereotype.Component;
-import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -37,29 +37,19 @@ public class AbstractPacketDispacherHandler extends SimpleChannelInboundHandler<
                                             implements BeanPostProcessor {
     private static final Logger logger= LoggerFactory.getLogger(AbstractPacketDispacherHandler.class);
     // private Table<Class<?>, Object, Method> abstractPacket2Method2Object= HashBasedTable.create();
-    private Map<Class<?>,Object> class2Object = new HashMap<>();
-    private Map<Class<?>,Method> class2Method = new HashMap<>();
-    private Map<Method, PacketMethod> method2PacketMethod = new HashMap<>();
+    private Map<Class<?>, com.mmorpg.mbdl.framework.communicate.websocket.model.PacketMethodDifinition> class2PacketMethodDifinition = new HashMap<>();
+    private Map<Class<?>, Method> class2Method = new HashMap<>();
+
     Channel firstChannel ;
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, AbstractPacket abstractPacket) throws Exception {
         // TODO 不能在netty worker线程池作业务处理,如果当前请求处理发生阻塞，那么这条（4条之一）worker线程就会被阻塞
-        // 另外由于同一个channel的消息可能会被分到不同的worker线程，这样就可能导致后到的请求先被处理，从而导致严重的问题
-        // 以下用于验证是否同一个channel的请求走到不同的worker线程，确认成功，后续删除这些注释
-        // if (firstChannel==null){
-        //     firstChannel=ctx.channel();
-        // }
-        // if (ctx.channel()==firstChannel) {
-        //     logger.info(ctx.channel().remoteAddress()+"");
-        //     Object obj=ReflectionUtils.invokeMethod(class2Method.get(abstractPacket.getClass()),class2Object.get(abstractPacket.getClass())
-        //             ,new WsSession(),abstractPacket);
-        // }
-        Object obj= ReflectionUtils.invokeMethod(class2Method.get(abstractPacket.getClass()),class2Object.get(abstractPacket.getClass())
-                ,new WsSession(ctx.channel()),abstractPacket);
-        if (obj != null){
 
-        }
+
+        // if (obj != null){
+        //
+        // }
         // 发送响应包 LoginResultResp
         ChatResp chatResp = new ChatResp();
         chatResp.setContent("聊天响应接收成功");
@@ -92,11 +82,11 @@ public class AbstractPacketDispacherHandler extends SimpleChannelInboundHandler<
                             method.getDeclaringClass().getSimpleName()+"::"+method.getName());
                     throw new IllegalArgumentException(message);
                 }
-                Class<?> clazz2 = method.getParameterTypes()[1];
-                if (class2Method.keySet().contains(clazz2)) {
-                    Method methodOld = class2Method.get(clazz2);
+                Class<?> abstractPacketClazz = method.getParameterTypes()[1];
+                if (class2Method.keySet().contains(abstractPacketClazz)) {
+                    Method methodOld = class2Method.get(abstractPacketClazz);
                     java.lang.String message =
-                            java.lang.String.format("类型为[%s]的请求包同时被方法[%s]和方法[%s]处理", clazz2.getSimpleName(),
+                            java.lang.String.format("类型为[%s]的请求包同时被方法[%s]和方法[%s]处理", abstractPacketClazz.getSimpleName(),
                                     methodOld.getDeclaringClass().getSimpleName()+"::"+methodOld.getName(),
                                     method.getDeclaringClass().getSimpleName()+"::"+method.getName());
                     throw new IllegalArgumentException(message);
@@ -108,8 +98,9 @@ public class AbstractPacketDispacherHandler extends SimpleChannelInboundHandler<
                     throw new IllegalArgumentException(message);
                 }
                 // method. TODO bean method annotation存放在统一的类中，方便管理
-                class2Object.put(clazz2,bean);
-                class2Method.put(clazz2,method);
+                class2Method.put(abstractPacketClazz,method);
+                class2PacketMethodDifinition.put(abstractPacketClazz,PacketMethodDifinition.valueOf(bean,method,method.getAnnotation(PacketMethod.class)));
+                logger.info("{}",class2PacketMethodDifinition.get(abstractPacketClazz).getPacketMethodAnno());
             }
         }
         return bean;
