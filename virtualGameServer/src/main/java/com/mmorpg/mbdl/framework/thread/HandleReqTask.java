@@ -2,6 +2,7 @@ package com.mmorpg.mbdl.framework.thread;
 
 import com.mmorpg.mbdl.framework.communicate.websocket.model.AbstractPacket;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.PacketMethodDifinition;
+import com.mmorpg.mbdl.framework.communicate.websocket.model.SessionState;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.WsSession;
 
 /**
@@ -40,6 +41,14 @@ public class HandleReqTask extends AbstractTask {
 
     @Override
     public void execute() {
+        SessionState expectedState = packetMethodDifinition.getPacketMethodAnno().state();
+        if (expectedState!=SessionState.ANY){
+            if (wsSession.getState() != expectedState){
+                // TODO 把大量的可覆写方法变为属性,关闭常规日志打印
+                this.logger().warn("当前wsSession的状态[{}]与方法期待的状态[{}]不符",wsSession.getState(),expectedState);
+                return;
+            }
+        }
         Object obj = packetMethodDifinition.invoke(wsSession,abstractPacket);
         if (obj != null){
             wsSession.sendPacket((AbstractPacket) obj);
