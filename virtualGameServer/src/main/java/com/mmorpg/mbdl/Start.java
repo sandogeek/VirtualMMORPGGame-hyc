@@ -4,23 +4,33 @@ import com.mmorpg.mbdl.framework.communicate.websocket.model.AbstractPacket;
 import com.mmorpg.mbdl.framework.communicate.websocket.generator.PacketIdTsGenerator;
 import com.mmorpg.mbdl.framework.communicate.websocket.generator.ProtoGenerator;
 import com.mmorpg.mbdl.framework.communicate.websocket.server.WebSocketServer;
-import com.mmorpg.mbdl.framework.task.TaskExecutorGroup;
+import com.mmorpg.mbdl.framework.thread.TaskExecutorGroup;
 import com.mmorpg.mbdl.framework.utils.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PropertiesLoaderUtils;
+import org.springframework.stereotype.Component;
+
+import java.util.Properties;
 
 public class Start {
     private static Logger logger= LoggerFactory.getLogger(Start.class);
+
     public static void  main(String[] args) throws Exception {
-        clearProto(ProtoGenerator.PROTO_PATH);
+        Resource resource = new ClassPathResource("/dev.properties");
+        Properties props = PropertiesLoaderUtils.loadProperties(resource);
+        clearProto(props.getProperty("dev.PROTO_PATH"));
         // 初始化业务线程池
         TaskExecutorGroup.init();
         // 启动spring容器
         ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("applicationContext.xml");
-        PacketIdTsGenerator.generatePacketIdTs();
+        PacketIdTsGenerator.getInstance().generatePacketIdTs();
         removeAbstractPacketBean(ctx);
         logger.info("开始启动WebSocket服务器...");
         WebSocketServer webSocketServer = WebSocketServer.getInstance();

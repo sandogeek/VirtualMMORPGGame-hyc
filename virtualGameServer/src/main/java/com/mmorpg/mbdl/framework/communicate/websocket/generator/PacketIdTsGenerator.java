@@ -6,15 +6,22 @@ import com.mmorpg.mbdl.framework.communicate.websocket.annotation.ProtoDesc;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.AbstractPacket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.io.*;
 import java.lang.annotation.Annotation;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Component
 public class PacketIdTsGenerator {
     private static final Logger logger= LoggerFactory.getLogger(PacketIdTsGenerator.class);
-    private static final String PACKET_ID_TS_PATH = "C:\\假桌面天下第一\\VirtualGame\\browser-client\\src\\app\\shared\\model\\packet\\PacketId.ts";
+
+
+    @Value("${dev.PACKET_ID_TS_PATH}")
+    private String PACKET_ID_TS_PATH = "C:\\假桌面天下第一\\VirtualGame\\browser-client\\src\\app\\shared\\model\\packet\\PacketId.ts";
     // 客户端boot.sh pbts命令自动生成的.d.ts名称
     private static final String DTS_NAME = "bundle";
     private static final Pattern PATTERN = Pattern.compile(
@@ -22,14 +29,23 @@ public class PacketIdTsGenerator {
                     +".*?//\\s*start(?<IdAssign>.*?)//\\s*end.*"
                     +"constructor.*//\\s*start(?<mapInput>.*?)//\\s*end",Pattern.DOTALL);
 
+    private static PacketIdTsGenerator self;
+    @PostConstruct
+    private void init(){
+        self = this;
+    }
+    public static PacketIdTsGenerator getInstance(){
+        return self;
+    }
+
     /**
      * 自动生成浏览器端的PacketId.ts
      */
-    public static void generatePacketIdTs(){
-        File packetIdTs = new File(PACKET_ID_TS_PATH);
+    public void generatePacketIdTs(){
+        File packetIdTs = new File(this.PACKET_ID_TS_PATH);
         StringBuilder packetIdTsSB = new StringBuilder();
         if (!packetIdTs.exists()){
-            throw new RuntimeException(PACKET_ID_TS_PATH+"文件不存在");
+            throw new RuntimeException(this.PACKET_ID_TS_PATH+"文件不存在");
         }
         try (BufferedReader packetIdTsBR=new BufferedReader(new FileReader(packetIdTs))) {
             String line = packetIdTsBR.readLine();

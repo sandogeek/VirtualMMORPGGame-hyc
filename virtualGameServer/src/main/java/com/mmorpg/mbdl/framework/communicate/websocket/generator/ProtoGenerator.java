@@ -3,7 +3,10 @@ package com.mmorpg.mbdl.framework.communicate.websocket.generator;
 import com.baidu.bjf.remoting.protobuf.ProtobufIDLGenerator;
 import com.mmorpg.mbdl.framework.communicate.websocket.annotation.ProtoDesc;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.AbstractPacket;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -13,12 +16,21 @@ import java.util.Set;
 
 import static com.mmorpg.mbdl.framework.utils.FileUtils.createFile;
 
+@Component
 public class ProtoGenerator {
-    // TODO 把路径配置放到dev.properties中
+    private static ProtoGenerator self;
+    @PostConstruct
+    private void init(){
+        self = this;
+    }
+    public static ProtoGenerator getInstance(){
+        return self;
+    }
     /**
      * proto文件存放位置
      */
-    public static final String PROTO_PATH = "C:\\假桌面天下第一\\VirtualGame\\browser-client\\src\\assets\\proto";
+    @Value("${dev.PROTO_PATH}")
+    public String PROTO_PATH = "C:\\假桌面天下第一\\VirtualGame\\browser-client\\src\\assets\\proto";
     private static Set<Class<?>> typesCache = new HashSet<>();
     private static Set<Class<?>> enumCache = new HashSet<>();
 
@@ -26,7 +38,7 @@ public class ProtoGenerator {
     /**
      * 生成abstractPacket对应的.proto文件
      */
-    public static void generateProto(AbstractPacket abstractPacket){
+    public void generateProto(AbstractPacket abstractPacket){
         StringBuilder result = new StringBuilder();
         String code = ProtobufIDLGenerator.getIDL(abstractPacket.getClass(),typesCache,enumCache,true);
         Annotation protoDesc = abstractPacket.getClass().getAnnotation(ProtoDesc.class);
