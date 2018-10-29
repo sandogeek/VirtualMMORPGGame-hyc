@@ -2,6 +2,7 @@ package com.mmorpg.mbdl.framework.communicate.websocket.model;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,7 +15,7 @@ import java.net.InetSocketAddress;
 public class WsSession extends AbstractSession {
     private Logger logger = LoggerFactory.getLogger(WsSession.class);
     private Channel channel;
-    private long playerId;
+    private Long playerId;
 
     public WsSession(Channel channel) {
         super(channel.id(), ((InetSocketAddress) channel.remoteAddress()).getAddress().getHostAddress());
@@ -31,7 +32,7 @@ public class WsSession extends AbstractSession {
     }
 
     @Override
-    public long getPlayerId() {
+    public Long getPlayerId() {
         return playerId;
     }
 
@@ -39,7 +40,7 @@ public class WsSession extends AbstractSession {
      * 设置玩家playerId
      * @param playerId 玩家id
      */
-    public void setPlayerId(long playerId){
+    public void setPlayerId(Long playerId){
         this.playerId = playerId;
     }
 }

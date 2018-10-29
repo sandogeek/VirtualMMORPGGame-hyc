@@ -39,5 +39,5 @@ public interface ISession {
      * 获取玩家id
      * @return 玩家id
      */
-    long getPlayerId();
+    Long getPlayerId();
 }
