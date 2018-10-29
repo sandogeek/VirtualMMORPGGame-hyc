@@ -15,19 +15,22 @@ public class PacketMethodDifinition {
     private static final Logger logger = LoggerFactory.getLogger(PacketMethodDifinition.class);
     private Object bean;
     private Method method;
+    // 日志打印用
+    private Class<?> aClazz;
     private PacketMethod packetMethodAnno;
     // 如果没有@PacketMethod那么此方法上的注解作为默认注解
     @PacketMethod
     private void temp(){
     }
-    public static PacketMethodDifinition valueOf(Object object,Method method,PacketMethod packetMethodAnno){
+    public static PacketMethodDifinition valueOf(Object object,Method method,Class<?> aClazz,PacketMethod packetMethodAnno){
         PacketMethodDifinition packetMethodDifinition = new PacketMethodDifinition();
         packetMethodDifinition.setBean(object);
         packetMethodDifinition.setMethod(method);
         packetMethodDifinition.setPacketMethodAnno(packetMethodAnno);
+        packetMethodDifinition.setaClazz(aClazz);
         return packetMethodDifinition;
     }
-    private Object invoke(WsSession wsSession,AbstractPacket abstractPacket){
+    public Object invoke(WsSession wsSession,AbstractPacket abstractPacket){
         Object obj= org.springframework.util.ReflectionUtils.invokeMethod(method,bean,wsSession,abstractPacket);
         return obj;
     }
@@ -64,5 +67,13 @@ public class PacketMethodDifinition {
             return;
         }
         this.packetMethodAnno = packetMethodAnno;
+    }
+
+    public Class<?> getaClazz() {
+        return aClazz;
+    }
+
+    public void setaClazz(Class<?> aClazz) {
+        this.aClazz = aClazz;
     }
 }

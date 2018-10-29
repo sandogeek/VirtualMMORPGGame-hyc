@@ -1,5 +1,7 @@
-package com.mmorpg.mbdl.framework.task;
+package com.mmorpg.mbdl.framework.thread;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
 import org.springframework.stereotype.Component;
 
@@ -10,8 +12,8 @@ import java.util.concurrent.TimeUnit;
 /**
  * 任务线程池组
  */
-@Component
 public class TaskExecutorGroup {
+    private static final Logger logger = LoggerFactory.getLogger(TaskExecutorGroup.class);
     /**
      * 线程池数量，默认是cup内核数+4
      * TODO 放到配置文件中，支持注解方式写到此变量中
@@ -25,7 +27,7 @@ public class TaskExecutorGroup {
         init(EXECUTOR_SIZE);
     }
     public static void init(int executorSize){
-        init(executorSize,"bussiness");
+        init(executorSize,"-");
     }
     public static void init(int executorSize,String threadNamePrefix){
         EXECUTOR_SIZE = executorSize;
@@ -33,7 +35,7 @@ public class TaskExecutorGroup {
             executorGroup = new ScheduledThreadPoolExecutor[executorSize];
             for (int i = 0; i < executorGroup.length; i++) {
                 // TODO 由于ScheduledThreadPoolExecutor内部使用无界队列，因为可能导致OOM，因而需要定制
-                executorGroup[i] = new ScheduledThreadPoolExecutor(1,new CustomizableThreadFactory(threadNamePrefix));
+                executorGroup[i] = new ScheduledThreadPoolExecutor(1,new CustomizableThreadFactory("池-"+i+threadNamePrefix));
             }
         }
     }
@@ -44,7 +46,7 @@ public class TaskExecutorGroup {
      * @return 线程池
      */
     private static ScheduledThreadPoolExecutor getExecutor(int dispatcherId) {
-        return executorGroup[dispatcherId%EXECUTOR_SIZE];
+        return executorGroup[Math.abs(dispatcherId)%EXECUTOR_SIZE];
     }
 
     /**

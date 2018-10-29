@@ -18,7 +18,7 @@ public @interface PacketMethod {
      * 是否打印这种包的日志
      * @return
      */
-    boolean log() default true;
+    boolean logOrNot() default true;
     /**
      * Session处于什么状态时才处理这种包
      */

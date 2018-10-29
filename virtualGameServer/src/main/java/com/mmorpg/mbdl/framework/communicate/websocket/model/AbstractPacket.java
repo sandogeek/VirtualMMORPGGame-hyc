@@ -19,6 +19,8 @@ public abstract class AbstractPacket {
     private static final Logger logger= LoggerFactory.getLogger(AbstractPacket.class);
     @Autowired
     private PacketIdManager packetIdManager;
+    @Autowired
+    private  ProtoGenerator protoGenerator;
     /**
      * 获取包id
      * @return PacketId
@@ -27,7 +29,7 @@ public abstract class AbstractPacket {
 
     @PostConstruct
     private void init(){
-        ProtoGenerator.generateProto(this);
+        protoGenerator.generateProto(this);
         packetIdManager.registerAbstractPacket(this);
         packetIdManager.registerCodec(this);
     }

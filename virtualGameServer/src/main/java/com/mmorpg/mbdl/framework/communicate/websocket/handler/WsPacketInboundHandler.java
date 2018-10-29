@@ -38,7 +38,7 @@ public class WsPacketInboundHandler extends SimpleChannelInboundHandler<WsPacket
     @Override
     public void channelRead0(ChannelHandlerContext ctx, WsPacket wsPacket) throws Exception {
         short packetId = wsPacket.getPacketId();
-        logger.debug(String.format("packetIdManager=%s", packetId));
+        // logger.debug(String.format("packetId=%s", packetId));
         // 接下来将WsPacket里面的byte[] data转化为AbstractPacket对象，因而
         // 一个<packetIdManager->protobuf编解码代理对象>的map
         Codec codec = this.packetIdManager.getCodec(packetId);
