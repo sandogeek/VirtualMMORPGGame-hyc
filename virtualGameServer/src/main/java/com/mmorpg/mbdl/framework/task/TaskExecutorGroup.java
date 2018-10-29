@@ -32,6 +32,7 @@ public class TaskExecutorGroup {
         if (executorGroup == null){
             executorGroup = new ScheduledThreadPoolExecutor[executorSize];
             for (int i = 0; i < executorGroup.length; i++) {
+                // TODO 由于ScheduledThreadPoolExecutor内部使用无界队列，因为可能导致OOM，因而需要定制
                 executorGroup[i] = new ScheduledThreadPoolExecutor(1,new CustomizableThreadFactory(threadNamePrefix));
             }
         }
@@ -39,7 +40,7 @@ public class TaskExecutorGroup {
 
     /**
      * 根据dispatcherId获取线程池
-     * @param dispatcherId 分配器id，通常定义在{@link AbstractDispatcherRunnable#getDispatcherId()}
+     * @param dispatcherId 分配器id，通常定义在{@link AbstractTask#getDispatcherId()}
      * @return 线程池
      */
     private static ScheduledThreadPoolExecutor getExecutor(int dispatcherId) {
@@ -51,14 +52,14 @@ public class TaskExecutorGroup {
      * @param runnable 任务
      * @return ScheduledFuture可用于控制任务以及检查状态
      */
-    public static ScheduledFuture<?> addTask(AbstractDispatcherRunnable runnable) {
+    public static ScheduledFuture<?> addTask(AbstractTask runnable) {
         return addDelayedTask(runnable,0);
     }
 
     /**
-     * {@link TaskExecutorGroup#addDelayedTask(AbstractDispatcherRunnable, long, TimeUnit)}设置延时任务默认时间单位为毫秒
+     * {@link TaskExecutorGroup#addDelayedTask(AbstractTask, long, TimeUnit)}设置延时任务默认时间单位为毫秒
      */
-    public static ScheduledFuture<?> addDelayedTask(AbstractDispatcherRunnable runnable, long delay){
+    public static ScheduledFuture<?> addDelayedTask(AbstractTask runnable, long delay){
         return addDelayedTask(runnable,delay,TimeUnit.MILLISECONDS);
     }
     /**
@@ -68,14 +69,14 @@ public class TaskExecutorGroup {
      * @param timeUnit 使用的时间单位
      * @return ScheduledFuture可用于控制任务以及检查状态
      */
-    public static ScheduledFuture<?> addDelayedTask(AbstractDispatcherRunnable runnable, long delay, TimeUnit timeUnit) {
+    public static ScheduledFuture<?> addDelayedTask(AbstractTask runnable, long delay, TimeUnit timeUnit) {
         return getExecutor(runnable.getDispatcherId()).schedule(runnable,delay,timeUnit);
     }
 
     /**
-     * {@link TaskExecutorGroup#addFixedRateTask(AbstractDispatcherRunnable, long, long)}设置延时任务默认时间单位为毫秒
+     * {@link TaskExecutorGroup#addFixedRateTask(AbstractTask, long, long)}设置延时任务默认时间单位为毫秒
      */
-    public static ScheduledFuture<?> addFixedRateTask(AbstractDispatcherRunnable runnable, long initalDelay, long period){
+    public static ScheduledFuture<?> addFixedRateTask(AbstractTask runnable, long initalDelay, long period){
         return addFixedRateTask(runnable,initalDelay,period,TimeUnit.MILLISECONDS);
     }
     /**
@@ -86,7 +87,7 @@ public class TaskExecutorGroup {
      * @param timeUnit 时间单位
      * @return ScheduledFuture可用于控制任务以及检查状态
      */
-    public static ScheduledFuture<?> addFixedRateTask(AbstractDispatcherRunnable runnable, long initalDelay, long period, TimeUnit timeUnit) {
+    public static ScheduledFuture<?> addFixedRateTask(AbstractTask runnable, long initalDelay, long period, TimeUnit timeUnit) {
         return getExecutor(runnable.getDispatcherId()).scheduleAtFixedRate(runnable,initalDelay,period,timeUnit);
     }
 

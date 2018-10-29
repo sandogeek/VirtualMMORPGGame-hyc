@@ -9,8 +9,11 @@ import java.util.concurrent.TimeUnit;
  * 抽象的的分发器runnable
  * @author sando
  */
-public abstract class AbstractDispatcherRunnable implements Runnable {
-    private static final Logger logger = LoggerFactory.getLogger(AbstractDispatcherRunnable.class);
+public abstract class AbstractTask implements Runnable {
+    private static final Logger logger = LoggerFactory.getLogger(AbstractTask.class);
+
+    private final long createTime = System.nanoTime();
+
     /**
      * 获取分发id，通常是hashcode
      * @return
@@ -24,7 +27,7 @@ public abstract class AbstractDispatcherRunnable implements Runnable {
     public abstract String taskName();
 
     /**
-     * 任务过期时间（默认一毫秒）
+     * 任务过期时间（默认一毫秒),可在具体任务中覆盖修改
      * @return
      */
     protected long timeOver(){

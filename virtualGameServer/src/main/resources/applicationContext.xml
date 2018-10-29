@@ -18,5 +18,7 @@
         <context:include-filter type="annotation"
                                 expression="com.mmorpg.mbdl.framework.communicate.websocket.annotation.PacketHandler"/>
     </context:component-scan>
+    <!--加载全局配置-->
+    <context:property-placeholder location="classpath*:server.properties" />
 
 </beans>
