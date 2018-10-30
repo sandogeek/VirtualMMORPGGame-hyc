@@ -1,7 +1,9 @@
 package com.mmorpg.mbdl.framework.communicate.websocket.generator;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import io.netty.util.internal.ConcurrentSet;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -9,12 +11,11 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.security.SecureRandom;
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.*;
 
 /**
  * 经过定制的Twitter_Snowflake算法<br>
@@ -33,31 +34,31 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class PlayerIdGenerator implements IIdGenerator {
     private static final Logger logger = LoggerFactory.getLogger(PlayerIdGenerator.class);
 
-    // /** 线程id所占的位数 */
-    // private final long threadIdBits = 6L;
-    // /** 最大线程id量结果是64,因为用来求余，所以加1 */
-    // private final long maxThreadId = ~(-1L << threadIdBits)+1;
+    /** 线程id所占的位数,目前留空 */
+    private static final long threadIdBits = 4L;
+    /** 最大线程id量结果是64,因为用来求余，所以加1 */
+    private static final long maxThreadId = ~(-1L << threadIdBits);
     /** 数据标识id所占的位数 */
-    private final long datacenterIdBits = 5L;
+    private static final long datacenterIdBits = 5L;
     /** 支持的最大数据标识id，结果是31 */
-    private final long maxDatacenterId = ~(-1L << datacenterIdBits);
+    private static final long maxDatacenterId = ~(-1L << datacenterIdBits);
     /** 机器id所占的位数 */
-    private final long serverIdBits = 6L;
+    private static final long serverIdBits = 6L;
     /** 支持的最大机器id，结果是63 (这个移位算法可以很快的计算出几位二进制数所能表示的最大十进制数) */
-    private final long maxServerId = ~(-1L << serverIdBits);
+    private static final long maxServerId = ~(-1L << serverIdBits);
 
     /** 序列在id中占的位数 */
-    private final long sequenceBits = 9L;
+    private static final long sequenceBits = 9L;
     /** 机器ID向左移8位 */
-    private final long serverIdShift = sequenceBits;
+    private static final long serverIdShift = sequenceBits;
     /** 数据中心标识id向左移15位(6+9) */
-    private final long datacenterIdShift= serverIdShift + serverIdBits;
-    // /** 线程Id左移5+14=19位 */
-    // private final long threadIdShift=
+    private static final long datacenterIdShift= serverIdShift + serverIdBits;
+    /** 线程Id左移5+15=20位 */
+    private static final long threadIdShift = datacenterIdShift + datacenterIdBits;
     /** 时间截向左移24位(5+15) + 4 4位预留位，用于存放其他信息*/
-    private final long timestampLeftShift = datacenterIdBits + datacenterIdShift + 4;
+    private static final long timestampLeftShift = threadIdShift + threadIdBits;
     /** 生成序列的掩码，512-1 */
-    private final long sequenceMask = ~(-1L << sequenceBits);
+    private static final long sequenceMask = ~(-1L << sequenceBits);
 
     /** 开始时间截 */
     @Value("${server.config.beginOn}")
@@ -75,8 +76,6 @@ public class PlayerIdGenerator implements IIdGenerator {
 
     /** 上次生成ID的时间截 */
     private long lastTimestamp = -1L;
-    /** 随机数生成器 */
-    SecureRandom secureRandom = new SecureRandom();
 
     @PostConstruct
     private void init(){
@@ -94,39 +93,49 @@ public class PlayerIdGenerator implements IIdGenerator {
         }
     }
 
+    /**
+     * 生成id，如果时钟发生回拨，那么会尝试生成10（默认）次id,超出次数会抛出RuntimeException
+     * @return id
+     */
     @Override
-    public long generate() {
-        return nextId();
+    public Long generate() {
+        return nextId(10);
     }
-    // TODO 待优化，也许可以用串行方式避免加锁
-    private synchronized long nextId() {
+
+    /**
+     * 发生时钟回拨时尝试生成Id的次数，到达上限后悔抛出异常
+     * @param tryTimes 尝试次数
+     * @return id
+     */
+    public Long generate(int tryTimes) {
+        return nextId(tryTimes);
+    }
+    /** 由于加锁也能每秒生成30w个以上的id，因此可以考虑不做优化 */
+    private synchronized long nextId(int tryTimes) {
         long timestamp = timeGen();
         if (timestamp < lastTimestamp) {
-            try {
-                throw new Exception("时钟发生回移. 拒绝生成id");
-            } catch (Exception e) {
-                e.printStackTrace();
+            if (tryTimes==0) {
+                throw new RuntimeException("时钟发生回移，本次生成id失败");
             }
-            return nextId();
+            return nextId(--tryTimes);
         }
 
         //如果上次生成时间和当前时间相同,在同一毫秒内
         if (lastTimestamp == timestamp) {
             //sequence自增，因为sequence只有7bit，所以和sequenceMask相与一下，去掉高位
-            sequence = (sequence + 1) & sequenceMask;
+            sequence = (sequence+1) & sequenceMask;
             //判断是否溢出,也就是每毫秒内超过512，当为512时，与sequenceMask相与，sequence就等于0
             if (sequence == 0) {
                 //自旋等待到下一毫秒
                 timestamp = tailNextMillis(lastTimestamp);
             }
         } else {
-            // 如果和上次生成时间不同,重置sequence，就是下一毫秒开始，sequence计数重新从0开始累加,
-            // 为了保证尾数随机性更大一些,最后一位设置一个随机数
-            sequence = secureRandom.nextInt(10);
+            // 如果和上次生成时间不同,重置sequence，就是下一毫秒开始，sequence计数重新从0开始累加
+            sequence=0;
         }
-
         lastTimestamp = timestamp;
         return ((timestamp - this.beginOn) << timestampLeftShift)
+                // | (Thread.currentThread().getId()%16 << threadIdShift)
                 | (datacenterId << datacenterIdShift)
                 | (serverId << serverIdShift)
                 | sequence;
@@ -150,34 +159,47 @@ public class PlayerIdGenerator implements IIdGenerator {
     public static void main(String[] args) {
         ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("applicationContext.xml");
         PlayerIdGenerator playerIdGenerator = ctx.getBean(PlayerIdGenerator.class);
-        AtomicInteger count = new AtomicInteger(0);
         Set<Long> longsConcurrent = new ConcurrentSet<>();
-        int threadSize = 2;
+        ThreadFactory namedThreadFactory = new ThreadFactoryBuilder()
+                .setNameFormat("test-pool-%d").build();
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
+        for (int j = 0; j < 30_0000; j++) {
+            playerIdGenerator.generate();
+        }
+        stopWatch.stop();
+        logger.info("耗时{}ms",stopWatch.getTime());
+
+        int threadSize = 6;
+        ExecutorService threadPool = new ThreadPoolExecutor(threadSize, threadSize,
+                0L, TimeUnit.MILLISECONDS,
+                new LinkedBlockingQueue<Runnable>(1024), namedThreadFactory, new ThreadPoolExecutor.AbortPolicy());
         for (int i = 0; i < threadSize; i++) {
-            new Thread(()->{
+            threadPool.execute(()->{
+                // logger.info("{}",Thread.currentThread().getId()%16);
                 long start = System.currentTimeMillis();
-                // StopWatch stopWatch = new StopWatch();
-                // stopwatch.start();
-                for (int j = 0; j < 300000/threadSize; j++) {
+                for (int j = 0; j < 30_0000/threadSize; j++) {
                     long id = playerIdGenerator.generate();
                     // logger.info("{}",id);
-                    // logger.info("{}",Long.toBinaryString(id));
-                    longsConcurrent.add(id);
+                    if (longsConcurrent.contains(id)){
+                        logger.info("{}",Long.toBinaryString(id).substring(0,Math.toIntExact(64-timestampLeftShift)));
+                    }else {
+                        longsConcurrent.add(id);
+                    }
                 }
                 // stopwatch.stop();
                 // 注意，因为是并发，所以时长以最后完成的时间为准
                 logger.info(Thread.currentThread().getName()+"完成,"+"生成{}个id耗时：{}ms",300000,System.currentTimeMillis()- start);
-                count.incrementAndGet();
-            }).start();
+            });
         }
+        threadPool.shutdown();
         try {
-            while (count.get() != threadSize){
-                Thread.sleep(100);
+            if (threadPool.awaitTermination(5,TimeUnit.SECONDS)){
+                logger.info(longsConcurrent.size()+"");
             }
-
         }catch (Exception e){
-
+            e.printStackTrace();
         }
-        logger.info(longsConcurrent.size()+"");
+
     }
 }

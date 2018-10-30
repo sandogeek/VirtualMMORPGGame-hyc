@@ -3,8 +3,8 @@ package com.mmorpg.mbdl.framework.thread;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
-import org.springframework.stereotype.Component;
 
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -54,8 +54,8 @@ public class TaskExecutorGroup {
      * @param runnable 任务
      * @return ScheduledFuture可用于控制任务以及检查状态
      */
-    public static ScheduledFuture<?> addTask(AbstractTask runnable) {
-        return addDelayedTask(runnable,0);
+    public static Future<?> addTask(AbstractTask runnable) {
+        return getExecutor(runnable.getDispatcherId()).submit(runnable);
     }
 
     /**

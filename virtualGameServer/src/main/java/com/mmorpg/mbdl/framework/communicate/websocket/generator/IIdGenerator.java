@@ -9,5 +9,5 @@ public interface IIdGenerator {
      * 生成一个id
      * @return
      */
-    long generate();
+    Long generate();
 }
