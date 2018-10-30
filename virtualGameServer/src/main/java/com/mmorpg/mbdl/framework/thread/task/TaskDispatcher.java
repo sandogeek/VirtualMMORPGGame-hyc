@@ -40,7 +40,7 @@ public class TaskDispatcher {
     private void init(){
         self = this;
         ThreadFactory namedThreadFactory = new ThreadFactoryBuilder()
-                .setNameFormat(threadNameFommat+"%d").build();
+                .setNameFormat(threadNameFommat+"%2d").build();
         this.businessThreadPool = new ScheduledThreadPoolExecutor(poolSize,namedThreadFactory);
         this.businessThreadPoolTaskQueue = new TimeOutCaffeineMap<>(timeout, TimeUnit.MINUTES,()->
             new TaskQueue(businessThreadPool)
