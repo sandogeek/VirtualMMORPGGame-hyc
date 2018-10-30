@@ -8,6 +8,7 @@ import com.mmorpg.mbdl.framework.communicate.websocket.model.PacketMethodDifinit
 import com.mmorpg.mbdl.framework.communicate.websocket.model.WsSession;
 import com.mmorpg.mbdl.framework.thread.task.HandleReqTask;
 import com.mmorpg.mbdl.framework.thread.TaskExecutorGroup;
+import com.mmorpg.mbdl.framework.thread.task.TaskDispatcher;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -37,18 +38,15 @@ import static org.reflections.ReflectionUtils.getAllMethods;
 public class AbstractPacketDispacherHandler extends SimpleChannelInboundHandler<AbstractPacket>
                                             implements BeanPostProcessor {
     private static final Logger logger= LoggerFactory.getLogger(AbstractPacketDispacherHandler.class);
-    // private Table<Class<?>, Object, Method> abstractPacket2Method2Object= HashBasedTable.create();
     private Map<Class<?>, PacketMethodDifinition> class2PacketMethodDifinition = new HashMap<>();
     private Map<Class<?>, Method> class2Method = new HashMap<>();
-
-    Channel firstChannel ;
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, AbstractPacket abstractPacket) throws Exception {
         // 不能在netty worker线程池作业务处理,如果当前请求处理发生阻塞，那么这条（4条之一）worker线程就会被阻塞
         // TODO 在channel连接并收到第一个AbstractPacket时构造WsSession并保存起来
-        TaskExecutorGroup.addTask(
-                new HandleReqTask(class2PacketMethodDifinition.get(abstractPacket.getClass()),new WsSession(ctx.channel()),abstractPacket));
+        // TaskExecutorGroup.addTask(new HandleReqTask(class2PacketMethodDifinition.get(abstractPacket.getClass()),new WsSession(ctx.channel()),abstractPacket));
+        TaskDispatcher.getIntance().dispatch(new HandleReqTask(class2PacketMethodDifinition.get(abstractPacket.getClass()),new WsSession(ctx.channel()),abstractPacket));
     }
 
     @Override

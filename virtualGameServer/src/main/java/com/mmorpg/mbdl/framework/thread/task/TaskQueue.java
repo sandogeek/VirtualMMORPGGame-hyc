@@ -25,10 +25,15 @@ public class TaskQueue {
     }
 
     /**
-     * 往任务队列提交一个任务
+     * 往任务队列提交一个任务,统一业务线程池操作的入口
      * @return
      */
     public ScheduledFuture<?> submit(AbstractTask abstractTask){
+        // 固定频率执行的任务直接加到线程池中
+        if (abstractTask.taskType()==TaskType.FIXED_RATE_TASK) {
+            FixedRateTask fixedRateTask = (FixedRateTask)abstractTask;
+            return addFixedRateTask(abstractTask,fixedRateTask.getInitalDelay(),fixedRateTask.getPeriod(),fixedRateTask.getTimeUnit());
+        }
         synchronized (this){
             this.queue.add(abstractTask);
             if (queue.size()==1){
@@ -54,17 +59,14 @@ public class TaskQueue {
         }
         return null;
     }
-    private synchronized ScheduledFuture<?> executeTask(AbstractTask abstractTask){
+    private ScheduledFuture<?> executeTask(AbstractTask abstractTask){
         switch (abstractTask.taskType()) {
             case TASK:{
                 return addTask(abstractTask);
             }
             case DELAYED_TASK:{
-                return addDelayedTask(abstractTask,((DelayedTask)abstractTask).getDelay(),((DelayedTask)abstractTask).getTimeUnit());
-            }
-            case FIXED_RATE_TASK:{
-
-                break;
+                DelayedTask delayedTask = (DelayedTask)abstractTask;
+                return addDelayedTask(abstractTask,delayedTask.getDelay(),delayedTask.getTimeUnit());
             }
             default:
         }
@@ -75,14 +77,14 @@ public class TaskQueue {
      * @param runnable 任务
      * @return ScheduledFuture可用于控制任务以及检查状态
      */
-    public ScheduledFuture<?> addTask(AbstractTask runnable) {
+    private ScheduledFuture<?> addTask(AbstractTask runnable) {
         return this.scheduledThreadPoolExecutor.schedule(runnable,0,TimeUnit.NANOSECONDS);
     }
 
     /**
      * {@link TaskExecutorGroup#addDelayedTask(AbstractTask, long, TimeUnit)}设置延时任务默认时间单位为毫秒
      */
-    public ScheduledFuture<?> addDelayedTask(AbstractTask runnable, long delay){
+    private ScheduledFuture<?> addDelayedTask(AbstractTask runnable, long delay){
         return addDelayedTask(runnable,delay,TimeUnit.MILLISECONDS);
     }
     /**
@@ -92,14 +94,14 @@ public class TaskQueue {
      * @param timeUnit 使用的时间单位
      * @return ScheduledFuture可用于控制任务以及检查状态
      */
-    public ScheduledFuture<?> addDelayedTask(AbstractTask runnable, long delay, TimeUnit timeUnit) {
+    private ScheduledFuture<?> addDelayedTask(AbstractTask runnable, long delay, TimeUnit timeUnit) {
         return this.scheduledThreadPoolExecutor.schedule(runnable,delay,timeUnit);
     }
 
     /**
      * {@link TaskExecutorGroup#addFixedRateTask(AbstractTask, long, long)}设置延时任务默认时间单位为毫秒
      */
-    public ScheduledFuture<?> addFixedRateTask(AbstractTask runnable, long initalDelay, long period){
+    private ScheduledFuture<?> addFixedRateTask(AbstractTask runnable, long initalDelay, long period){
         return addFixedRateTask(runnable,initalDelay,period,TimeUnit.MILLISECONDS);
     }
     /**
@@ -110,7 +112,7 @@ public class TaskQueue {
      * @param timeUnit 时间单位
      * @return ScheduledFuture可用于控制任务以及检查状态
      */
-    public ScheduledFuture<?> addFixedRateTask(AbstractTask runnable, long initalDelay, long period, TimeUnit timeUnit) {
+    private ScheduledFuture<?> addFixedRateTask(AbstractTask runnable, long initalDelay, long period, TimeUnit timeUnit) {
         return this.scheduledThreadPoolExecutor.scheduleAtFixedRate(runnable,initalDelay,period,timeUnit);
     }
 }

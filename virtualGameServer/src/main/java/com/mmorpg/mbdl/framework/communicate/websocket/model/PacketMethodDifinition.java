@@ -15,8 +15,8 @@ public class PacketMethodDifinition {
     private static final Logger logger = LoggerFactory.getLogger(PacketMethodDifinition.class);
     private Object bean;
     private Method method;
-    // 日志打印用
-    private Class<?> aClazz;
+    // 日志打印用，AbstractPacket的类对象
+    private Class<?> abstractPacketClazz;
     private PacketMethod packetMethodAnno;
     // 如果没有@PacketMethod那么此方法上的注解作为默认注解
     @PacketMethod
@@ -27,7 +27,7 @@ public class PacketMethodDifinition {
         packetMethodDifinition.setBean(object);
         packetMethodDifinition.setMethod(method);
         packetMethodDifinition.setPacketMethodAnno(packetMethodAnno);
-        packetMethodDifinition.setaClazz(aClazz);
+        packetMethodDifinition.setAbstractPacketClazz(aClazz);
         return packetMethodDifinition;
     }
     public Object invoke(WsSession wsSession,AbstractPacket abstractPacket){
@@ -69,11 +69,11 @@ public class PacketMethodDifinition {
         this.packetMethodAnno = packetMethodAnno;
     }
 
-    public Class<?> getaClazz() {
-        return aClazz;
+    public Class<?> getAbstractPacketClazz() {
+        return abstractPacketClazz;
     }
 
-    public void setaClazz(Class<?> aClazz) {
-        this.aClazz = aClazz;
+    public void setAbstractPacketClazz(Class<?> abstractPacketClazz) {
+        this.abstractPacketClazz = abstractPacketClazz;
     }
 }

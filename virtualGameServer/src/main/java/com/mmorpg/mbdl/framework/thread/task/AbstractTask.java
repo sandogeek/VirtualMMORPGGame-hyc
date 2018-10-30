@@ -1,5 +1,6 @@
 package com.mmorpg.mbdl.framework.thread.task;
 
+import com.mmorpg.mbdl.framework.communicate.websocket.generator.PacketIdTsGenerator;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,11 +16,8 @@ public abstract class AbstractTask implements Runnable {
     private long maxDelay = TimeUnit.NANOSECONDS.convert(1,TimeUnit.MILLISECONDS);
     private long maxExecute = TimeUnit.NANOSECONDS.convert(1,TimeUnit.MILLISECONDS);
     private Logger targetLogger = logger;
-    private TaskQueue taskQueue;
+    // private TaskQueue taskQueue = TaskDispatcher.getIntance().getOrCreateTaskQueue(getDispatcherId());
 
-    public AbstractTask(TaskQueue taskQueue) {
-        this.taskQueue = taskQueue;
-    }
 
     /**
      * 是否打印日志
@@ -35,7 +33,7 @@ public abstract class AbstractTask implements Runnable {
      * 获取分发id，通常是hashcode
      * @return
      */
-    public abstract int getDispatcherId();
+    public abstract Long getDispatcherId();
 
     public abstract TaskType taskType();
 
@@ -98,7 +96,7 @@ public abstract class AbstractTask implements Runnable {
             if (this.isLogOrNot()){
                 log(delayTime,executeTime);
             }
-            taskQueue.andThen();
+            getTaskQueue().andThen();
         }
     }
     public static Logger getLogger() {
@@ -140,5 +138,9 @@ public abstract class AbstractTask implements Runnable {
 
     public void setLogOrNot(boolean logOrNot) {
         this.logOrNot = logOrNot;
+    }
+
+    public TaskQueue getTaskQueue() {
+        return TaskDispatcher.getIntance().getOrCreateTaskQueue(getDispatcherId());
     }
 }

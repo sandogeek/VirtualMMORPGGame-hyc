@@ -19,7 +19,7 @@ public class TaskExecutorGroup {
      * 线程池数量，默认是cup内核数+4
      * TODO 放到配置文件中，支持注解方式写到此变量中
      */
-    private static int EXECUTOR_SIZE = Runtime.getRuntime().availableProcessors()+4;
+    private static long EXECUTOR_SIZE = Runtime.getRuntime().availableProcessors()+4;
 
     // 线程池组
     private static ScheduledThreadPoolExecutor[] executorGroup;
@@ -27,13 +27,13 @@ public class TaskExecutorGroup {
     public static void init(){
         init(EXECUTOR_SIZE);
     }
-    public static void init(int executorSize){
+    public static void init(long executorSize){
         init(executorSize,"-");
     }
-    public static void init(int executorSize,String threadNamePrefix){
+    public static void init(long executorSize,String threadNamePrefix){
         EXECUTOR_SIZE = executorSize;
         if (executorGroup == null){
-            executorGroup = new ScheduledThreadPoolExecutor[executorSize];
+            executorGroup = new ScheduledThreadPoolExecutor[new Long(executorSize).intValue()];
             for (int i = 0; i < executorGroup.length; i++) {
                 // TODO 由于ScheduledThreadPoolExecutor内部使用无界队列，因为可能导致OOM，因而需要定制
                 executorGroup[i] = new ScheduledThreadPoolExecutor(1,new CustomizableThreadFactory("池-"+i+threadNamePrefix));
@@ -46,8 +46,8 @@ public class TaskExecutorGroup {
      * @param dispatcherId 分配器id，通常定义在{@link AbstractTask#getDispatcherId()}
      * @return 线程池
      */
-    private static ScheduledThreadPoolExecutor getExecutor(int dispatcherId) {
-        return executorGroup[Math.abs(dispatcherId)%EXECUTOR_SIZE];
+    private static ScheduledThreadPoolExecutor getExecutor(Long dispatcherId) {
+        return executorGroup[new Long(Math.abs(dispatcherId%EXECUTOR_SIZE)).intValue()];
     }
 
     /**

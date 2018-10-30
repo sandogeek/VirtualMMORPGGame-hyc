@@ -21,16 +21,16 @@ public class HandleReqTask extends Task {
     }
 
     @Override
-    public int getDispatcherId() {
+    public Long getDispatcherId() {
         if (wsSession.getPlayerId() == null){
-            return wsSession.hashCode();
+            return (long)wsSession.hashCode();
         }
-        return wsSession.getPlayerId().intValue();
+        return wsSession.getPlayerId();
     }
 
     @Override
     public String taskName() {
-        String name = String.format("处理请求包[class=%s]",packetMethodDifinition.getaClazz().getSimpleName());
+        String name = String.format("处理请求包[class=%s]",packetMethodDifinition.getAbstractPacketClazz().getSimpleName());
         return name;
     }
 

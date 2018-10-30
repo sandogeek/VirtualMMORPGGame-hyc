@@ -57,6 +57,7 @@ public class WebSocketServer {
 
     public void  bind(int netPort) throws Exception {
         try {
+            logger.info("当前机器启用的工作线程数量：{}",selectWorkerGroupSize());
             // bossGroup 用来处理连接，事件生产者
             this.bossGroup = new NioEventLoopGroup(BOSS_GROUP_SIZE);
             // wokerGroup 用来处理后续事件，事件消费者
