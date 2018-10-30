@@ -1,4 +1,4 @@
-package com.mmorpg.mbdl.framework.thread;
+package com.mmorpg.mbdl.framework.thread.task;
 
 import com.mmorpg.mbdl.framework.communicate.websocket.model.AbstractPacket;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.PacketMethodDifinition;
@@ -9,7 +9,7 @@ import com.mmorpg.mbdl.framework.communicate.websocket.model.WsSession;
  * 处理请求包任务
  * @author sando
  */
-public class HandleReqTask extends AbstractTask {
+public class HandleReqTask extends Task {
     private PacketMethodDifinition packetMethodDifinition;
     private WsSession wsSession;
     private AbstractPacket abstractPacket;
@@ -18,11 +18,6 @@ public class HandleReqTask extends AbstractTask {
         this.setWsSession(wsSession);
         this.setPacketMethodDifinition(packetMethodDifinition);
         this.setAbstractPacket(abstractPacket);
-    }
-
-    @Override
-    protected boolean logOrNot() {
-        return packetMethodDifinition.getPacketMethodAnno().logOrNot();
     }
 
     @Override
@@ -44,8 +39,8 @@ public class HandleReqTask extends AbstractTask {
         SessionState expectedState = packetMethodDifinition.getPacketMethodAnno().state();
         if (expectedState!=SessionState.ANY){
             if (wsSession.getState() != expectedState){
-                // TODO 把大量的可覆写方法变为属性,关闭常规日志打印
-                this.logger().warn("当前wsSession的状态[{}]与方法期待的状态[{}]不符",wsSession.getState(),expectedState);
+                this.setLogOrNot(false);
+                this.getTargetLogger().warn("当前wsSession的状态[{}]与方法期待的状态[{}]不符",wsSession.getState(),expectedState);
                 return;
             }
         }

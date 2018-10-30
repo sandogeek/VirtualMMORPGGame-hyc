@@ -1,5 +1,6 @@
 package com.mmorpg.mbdl.framework.thread;
 
+import com.mmorpg.mbdl.framework.thread.task.AbstractTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.concurrent.CustomizableThreadFactory;

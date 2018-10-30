@@ -1,4 +1,4 @@
-package com.mmorpg.mbdl.framework.thread;
+package com.mmorpg.mbdl.framework.thread.task;
 
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
@@ -12,6 +12,19 @@ import java.util.concurrent.TimeUnit;
  */
 public abstract class AbstractTask implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(AbstractTask.class);
+    private long maxDelay = TimeUnit.NANOSECONDS.convert(1,TimeUnit.MILLISECONDS);
+    private long maxExecute = TimeUnit.NANOSECONDS.convert(1,TimeUnit.MILLISECONDS);
+    private Logger targetLogger = logger;
+    private TaskQueue taskQueue;
+
+    public AbstractTask(TaskQueue taskQueue) {
+        this.taskQueue = taskQueue;
+    }
+
+    /**
+     * 是否打印日志
+     */
+    private boolean logOrNot = true;
     private StopWatch stopWatch = new StopWatch();
     {
         // 创建时开始计时
@@ -24,40 +37,13 @@ public abstract class AbstractTask implements Runnable {
      */
     public abstract int getDispatcherId();
 
+    public abstract TaskType taskType();
+
     /**
-     * 任务名称,统计分类用
+     * 设置任务名称
      * @return taskName
      */
     public abstract String taskName();
-
-    /**
-     * 最大延迟时间,默认1毫秒
-     */
-    protected long maxDelay(){
-        return TimeUnit.NANOSECONDS.convert(1,TimeUnit.MILLISECONDS);
-    }
-    /**
-     * 执行任务最大耗时(时间单位TimeUnit.NANOSECONDS)(默认一毫秒),可在具体任务中覆盖修改
-     * @return
-     */
-    protected long maxExecute(){
-        return TimeUnit.NANOSECONDS.convert(1,TimeUnit.MILLISECONDS);
-    }
-
-    /**
-     * 使用的logger,可以为不同的任务定制不同的logger
-     * @return
-     */
-    protected Logger logger(){
-        return AbstractTask.logger;
-    }
-
-    /**
-     * 是否打印日志
-     */
-    protected boolean logOrNot(){
-        return true;
-    }
 
     /**
      * 任务延迟过长打印
@@ -72,15 +58,15 @@ public abstract class AbstractTask implements Runnable {
         targetLogger.warn("任务:{}执行时间超出预期，delay={}ms,execute={}ms",this.taskName(),delayTime/1000000F,executeTime/1000000F);
     }
     protected void logIfNormal(long delayTime,long executeTime,Logger targetLogger){
-        targetLogger.info("任务:{},delay={}ms,execute={}ms",this.taskName(),delayTime/1000000F,executeTime/1000000F);
+        targetLogger.info("任务:{},delay={}ms,execute={}ms",this.taskName(),delayTime/100_0000F,executeTime/100_0000F);
     }
     /**
      * 打印日志
      */
     private void log(long delayTime,long executeTime){
-        long maxDelayTime = this.maxDelay();
-        long maxExecuteTime = this.maxExecute();
-        Logger targetLogger = this.logger();
+        long maxDelayTime = this.getMaxDelay();
+        long maxExecuteTime = this.getMaxExecute();
+        Logger targetLogger = this.getTargetLogger();
         if (delayTime > maxDelayTime){
             this.logIfOverDelay(delayTime,executeTime,targetLogger);
         }else if (executeTime > maxExecuteTime){
@@ -109,9 +95,50 @@ public abstract class AbstractTask implements Runnable {
         }finally {
             stopWatch.stop();
             long executeTime = stopWatch.getNanoTime();
-            if (this.logOrNot()){
+            if (this.isLogOrNot()){
                 log(delayTime,executeTime);
             }
+            taskQueue.andThen();
         }
+    }
+    public static Logger getLogger() {
+        return logger;
+    }
+    /**
+     * 最大延迟时间,默认1毫秒
+     */
+    public long getMaxDelay() {
+        return maxDelay;
+    }
+
+    public void setMaxDelay(long maxDelay) {
+        this.maxDelay = maxDelay;
+    }
+
+    public long getMaxExecute() {
+        return maxExecute;
+    }
+
+    public void setMaxExecute(long maxExecute) {
+        this.maxExecute = maxExecute;
+    }
+    /**
+     * 使用的logger,可以为不同的任务定制不同的logger
+     * @return
+     */
+    public Logger getTargetLogger() {
+        return targetLogger;
+    }
+
+    public void setTargetLogger(Logger targetLogger) {
+        this.targetLogger = targetLogger;
+    }
+
+    public boolean isLogOrNot() {
+        return logOrNot;
+    }
+
+    public void setLogOrNot(boolean logOrNot) {
+        this.logOrNot = logOrNot;
     }
 }

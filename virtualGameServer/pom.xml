@@ -69,6 +69,14 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/com.github.ben-manes.caffeine/caffeine 缓存 -->
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+            <version>2.6.2</version>
+        </dependency>
+
+
         <!--支持protobuf jprotobuf-->
         <dependency>
             <groupId>com.google.protobuf</groupId>

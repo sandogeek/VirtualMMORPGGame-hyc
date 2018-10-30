@@ -1,13 +1,12 @@
 package com.mmorpg.mbdl.framework.communicate.websocket.handler;
 
 import com.google.common.base.Predicate;
-import com.mmorpg.mbdl.bussiness.chat.packet.ChatResp;
 import com.mmorpg.mbdl.framework.communicate.websocket.annotation.PacketHandler;
 import com.mmorpg.mbdl.framework.communicate.websocket.annotation.PacketMethod;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.AbstractPacket;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.PacketMethodDifinition;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.WsSession;
-import com.mmorpg.mbdl.framework.thread.HandleReqTask;
+import com.mmorpg.mbdl.framework.thread.task.HandleReqTask;
 import com.mmorpg.mbdl.framework.thread.TaskExecutorGroup;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
