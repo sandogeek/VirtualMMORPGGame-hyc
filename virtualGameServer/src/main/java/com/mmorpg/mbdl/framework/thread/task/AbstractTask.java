@@ -47,13 +47,13 @@ public abstract class AbstractTask implements Runnable {
      * 任务延迟过长打印
      */
     protected void logIfOverDelay(long delayTime,long executeTime,Logger targetLogger){
-        targetLogger.warn("任务:{}执行延时超出预期{}ms，delay={}ms,execute={}ms",getMaxDelay(),this.taskName(),delayTime/1000000F,executeTime/1000000F);
+        targetLogger.warn("任务:{}执行延时超出预期({}ms)，delay={}ms,execute={}ms",this.taskName(),getMaxDelay()/100_0000F,delayTime/1000000F,executeTime/1000000F);
     }
     /**
      * 任务执行时间过长打印
      */
     protected void logIfOverExecute(long delayTime,long executeTime,Logger targetLogger){
-        targetLogger.warn("任务:{}执行时间超出预期{}ms，delay={}ms,execute={}ms",getMaxExecute(),this.taskName(),delayTime/1000000F,executeTime/1000000F);
+        targetLogger.warn("任务:{}执行时间超出预期({}ms)，delay={}ms,execute={}ms",this.taskName(),getMaxExecute()/100_0000F,delayTime/1000000F,executeTime/1000000F);
     }
     protected void logIfNormal(long delayTime,long executeTime,Logger targetLogger){
         targetLogger.info("任务:{},delay={}ms,execute={}ms",this.taskName(),delayTime/100_0000F,executeTime/100_0000F);

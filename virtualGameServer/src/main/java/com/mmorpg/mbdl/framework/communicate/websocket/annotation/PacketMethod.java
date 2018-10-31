@@ -24,7 +24,7 @@ public @interface PacketMethod {
      */
     SessionState state() default SessionState.GAMEING;
     /**
-     * 是否并行执行,默认串行，例如聊天请求可以与玩家的其它请求并行执行
+     * 是否并行执行,默认串行，聊天请求也不可以并行，因为会导致后发的消息可能先出现在其他玩家的消息列表上
      */
     boolean executeParallel() default false;
 }
