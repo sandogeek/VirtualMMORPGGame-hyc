@@ -1,6 +1,5 @@
 package com.mmorpg.mbdl.framework.thread.task;
 
-import com.mmorpg.mbdl.framework.communicate.websocket.generator.PacketIdTsGenerator;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,7 +7,7 @@ import org.slf4j.LoggerFactory;
 import java.util.concurrent.TimeUnit;
 
 /**
- * 抽象的的分发器runnable
+ * 抽象的任务runnable
  * @author sando
  */
 public abstract class AbstractTask implements Runnable {
@@ -24,6 +23,7 @@ public abstract class AbstractTask implements Runnable {
      */
     private boolean logOrNot = true;
     private StopWatch stopWatch = new StopWatch();
+
     {
         // 创建时开始计时
         stopWatch.start();
@@ -47,13 +47,13 @@ public abstract class AbstractTask implements Runnable {
      * 任务延迟过长打印
      */
     protected void logIfOverDelay(long delayTime,long executeTime,Logger targetLogger){
-        targetLogger.warn("任务:{}执行延时超出预期，delay={}ms,execute={}ms",this.taskName(),delayTime/1000000F,executeTime/1000000F);
+        targetLogger.warn("任务:{}执行延时超出预期{}ms，delay={}ms,execute={}ms",getMaxDelay(),this.taskName(),delayTime/1000000F,executeTime/1000000F);
     }
     /**
      * 任务执行时间过长打印
      */
     protected void logIfOverExecute(long delayTime,long executeTime,Logger targetLogger){
-        targetLogger.warn("任务:{}执行时间超出预期，delay={}ms,execute={}ms",this.taskName(),delayTime/1000000F,executeTime/1000000F);
+        targetLogger.warn("任务:{}执行时间超出预期{}ms，delay={}ms,execute={}ms",getMaxExecute(),this.taskName(),delayTime/1000000F,executeTime/1000000F);
     }
     protected void logIfNormal(long delayTime,long executeTime,Logger targetLogger){
         targetLogger.info("任务:{},delay={}ms,execute={}ms",this.taskName(),delayTime/100_0000F,executeTime/100_0000F);

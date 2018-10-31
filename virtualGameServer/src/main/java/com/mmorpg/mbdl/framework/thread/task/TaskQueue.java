@@ -25,15 +25,10 @@ public class TaskQueue {
     }
 
     /**
-     * 往任务队列提交一个任务,统一业务线程池操作的入口
+     * 往任务队列提交一个需要串行执行的任务(加到队尾)
      * @return
      */
     public ScheduledFuture<?> submit(AbstractTask abstractTask){
-        // 固定频率执行的任务直接加到线程池中
-        if (abstractTask.taskType()==TaskType.FIXED_RATE_TASK) {
-            FixedRateTask fixedRateTask = (FixedRateTask)abstractTask;
-            return addFixedRateTask(abstractTask,fixedRateTask.getInitalDelay(),fixedRateTask.getPeriod(),fixedRateTask.getTimeUnit());
-        }
         synchronized (this){
             this.queue.add(abstractTask);
             if (queue.size()==1){
@@ -44,6 +39,13 @@ public class TaskQueue {
         return null;
     }
 
+    /**
+     * 可以并行执行的任务
+     * @return
+     */
+    public ScheduledFuture<?> executeParallel(AbstractTask abstractTask){
+        return executeTask(abstractTask);
+    }
     /**
      * 执行完一个任务后的处理
      * @return
@@ -67,6 +69,10 @@ public class TaskQueue {
             case DELAYED_TASK:{
                 DelayedTask delayedTask = (DelayedTask)abstractTask;
                 return addDelayedTask(abstractTask,delayedTask.getDelay(),delayedTask.getTimeUnit());
+            }
+            case FIXED_RATE_TASK:{
+                FixedRateTask fixedRateTask = (FixedRateTask)abstractTask;
+                return addFixedRateTask(abstractTask,fixedRateTask.getInitalDelay(),fixedRateTask.getPeriod(),fixedRateTask.getTimeUnit());
             }
             default:
         }

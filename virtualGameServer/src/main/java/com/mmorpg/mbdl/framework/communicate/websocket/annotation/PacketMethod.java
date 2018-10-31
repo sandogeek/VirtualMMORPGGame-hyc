@@ -23,4 +23,8 @@ public @interface PacketMethod {
      * Session处于什么状态时才处理这种包
      */
     SessionState state() default SessionState.GAMEING;
+    /**
+     * 是否并行执行,默认串行，例如聊天请求可以与玩家的其它请求并行执行
+     */
+    boolean executeParallel() default false;
 }

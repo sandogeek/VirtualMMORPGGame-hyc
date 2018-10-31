@@ -20,6 +20,7 @@ public class LoginFacade {
         // logger.debug(message);
         LoginResultResp loginResultResp = new LoginResultResp();
         loginResultResp.setResultType(LoninResultType.FAILURE);
+        session.setState(SessionState.LOGINED);
         return loginResultResp;
     }
     // public void handleChatReq(WsSession session, ChatReq chatReq){

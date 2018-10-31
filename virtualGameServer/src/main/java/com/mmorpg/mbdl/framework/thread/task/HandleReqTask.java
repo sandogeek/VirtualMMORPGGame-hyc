@@ -2,7 +2,6 @@ package com.mmorpg.mbdl.framework.thread.task;
 
 import com.mmorpg.mbdl.framework.communicate.websocket.model.AbstractPacket;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.PacketMethodDifinition;
-import com.mmorpg.mbdl.framework.communicate.websocket.model.SessionState;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.WsSession;
 
 /**
@@ -36,14 +35,6 @@ public class HandleReqTask extends Task {
 
     @Override
     public void execute() {
-        SessionState expectedState = packetMethodDifinition.getPacketMethodAnno().state();
-        if (expectedState!=SessionState.ANY){
-            if (wsSession.getState() != expectedState){
-                this.setLogOrNot(false);
-                this.getTargetLogger().warn("当前wsSession的状态[{}]与方法期待的状态[{}]不符",wsSession.getState(),expectedState);
-                return;
-            }
-        }
         Object obj = packetMethodDifinition.invoke(wsSession,abstractPacket);
         if (obj != null){
             wsSession.sendPacket((AbstractPacket) obj);

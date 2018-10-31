@@ -7,9 +7,7 @@ import com.mmorpg.mbdl.framework.communicate.websocket.model.AbstractPacket;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.PacketMethodDifinition;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.WsSession;
 import com.mmorpg.mbdl.framework.thread.task.HandleReqTask;
-import com.mmorpg.mbdl.framework.thread.TaskExecutorGroup;
 import com.mmorpg.mbdl.framework.thread.task.TaskDispatcher;
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -63,7 +61,7 @@ public class AbstractPacketDispacherHandler extends SimpleChannelInboundHandler<
             }
             // 这些方法的参数数量应该为二，第一个参数应为WSession,
             // 第二个为AbstractPacket的子类（确认第一个参数后第二个参数为AbstractPacket的子类必然成立）
-            // TODO 返回值校验并把返回值作为响应包发回去
+            // 返回值校验并把返回值作为响应包发回去
             for (Method method : methods) {
                 if (method.getParameterTypes().length!=2){
                     java.lang.String message = java.lang.String.format("方法[%s]必须为两个参数",
