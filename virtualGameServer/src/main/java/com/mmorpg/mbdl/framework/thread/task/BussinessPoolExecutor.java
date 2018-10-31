@@ -29,8 +29,13 @@ public class BussinessPoolExecutor {
     @Value("${server.config.thread.name}")
     private String threadNameFommat;
 
+    private static BussinessPoolExecutor self;
+    public static BussinessPoolExecutor getIntance(){
+        return self;
+    }
     @PostConstruct
     private void init(){
+        self = this;
         ThreadFactory namedThreadFactory = new ThreadFactoryBuilder()
                 .setNameFormat(threadNameFommat+"%2d").build();
         this.businessThreadPool = new ScheduledThreadPoolExecutor(poolSize,namedThreadFactory);
