@@ -5,6 +5,7 @@ import com.mmorpg.mbdl.framework.communicate.websocket.model.PacketMethodDifinit
 import com.mmorpg.mbdl.framework.communicate.websocket.model.WsSession;
 
 import java.io.Serializable;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 处理请求包任务
@@ -19,6 +20,8 @@ public class HandleReqTask extends Task {
         this.setWsSession(wsSession);
         this.setPacketMethodDifinition(packetMethodDifinition);
         this.setAbstractPacket(abstractPacket);
+        super.setMaxDelay(TimeUnit.NANOSECONDS.convert(2,TimeUnit.MILLISECONDS));
+        super.setMaxExecute(TimeUnit.NANOSECONDS.convert(3,TimeUnit.MILLISECONDS));
     }
 
     @Override
@@ -28,7 +31,7 @@ public class HandleReqTask extends Task {
 
     @Override
     public String taskName() {
-        String name = String.format("处理请求包[class=%s]",packetMethodDifinition.getAbstractPacketClazz().getSimpleName());
+        String name = String.format("处理请求包[%s]",packetMethodDifinition.getAbstractPacketClazz().getSimpleName());
         return name;
     }
 
