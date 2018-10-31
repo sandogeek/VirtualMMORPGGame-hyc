@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.io.Serializable;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
@@ -19,7 +20,7 @@ public class BussinessPoolExecutor {
     /** 业务线程池 */
     private ScheduledThreadPoolExecutor businessThreadPool;
     /** 业务任务队列 */
-    private TimeOutCaffeineMap<Long, TaskQueue> businessThreadPoolTaskQueues;
+    private TimeOutCaffeineMap<Serializable, TaskQueue> businessThreadPoolTaskQueues;
 
     private int processors = Runtime.getRuntime().availableProcessors();
     // @Value("${server.config.thread.poolSize}")
@@ -44,7 +45,7 @@ public class BussinessPoolExecutor {
         );
     }
 
-    public TaskQueue getOrCreateTaskQueue(Long dispatcherId){
+    public TaskQueue getOrCreateTaskQueue(Serializable dispatcherId){
         return businessThreadPoolTaskQueues.getOrCreate(dispatcherId);
     }
 
@@ -52,7 +53,7 @@ public class BussinessPoolExecutor {
         return businessThreadPool;
     }
 
-    public TimeOutCaffeineMap<Long, TaskQueue> getBusinessThreadPoolTaskQueues() {
+    public TimeOutCaffeineMap<Serializable, TaskQueue> getBusinessThreadPoolTaskQueues() {
         return businessThreadPoolTaskQueues;
     }
 }

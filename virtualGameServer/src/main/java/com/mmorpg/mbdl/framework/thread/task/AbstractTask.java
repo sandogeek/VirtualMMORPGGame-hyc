@@ -4,6 +4,7 @@ import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Serializable;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -15,7 +16,7 @@ public abstract class AbstractTask implements Runnable {
     private long maxDelay = TimeUnit.NANOSECONDS.convert(1,TimeUnit.MILLISECONDS);
     private long maxExecute = TimeUnit.NANOSECONDS.convert(1,TimeUnit.MILLISECONDS);
     private Logger targetLogger = logger;
-    // private TaskQueue taskQueue = TaskDispatcher.getIntance().getOrCreateTaskQueue(getDispatcherId());
+    // private TaskQueue taskQueue = TaskDispatcher.getIntance().getOrCreateTaskQueue(getDispatcher());
 
 
     /**
@@ -30,10 +31,11 @@ public abstract class AbstractTask implements Runnable {
     }
 
     /**
-     * 获取分发id，通常是hashcode
+     * 获取分发id
+     * 必须保证唯一性，不能是hashcode因为有可能有hash冲突，导致不同的玩家或者Channel使用同一TaskQueue
      * @return
      */
-    public abstract Long getDispatcherId();
+    public abstract Serializable getDispatcher();
 
     public abstract TaskType taskType();
 
@@ -141,6 +143,6 @@ public abstract class AbstractTask implements Runnable {
     }
 
     public TaskQueue getTaskQueue() {
-        return BussinessPoolExecutor.getIntance().getOrCreateTaskQueue(getDispatcherId());
+        return BussinessPoolExecutor.getIntance().getOrCreateTaskQueue(getDispatcher());
     }
 }

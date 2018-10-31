@@ -29,7 +29,7 @@ public class TaskDispatcher {
     private BussinessPoolExecutor bussinessPoolExecutor;
 
     public void dispatch(AbstractTask abstractTask){
-       TaskQueue taskQueue = bussinessPoolExecutor.getBusinessThreadPoolTaskQueues().getOrCreate(abstractTask.getDispatcherId());
+       TaskQueue taskQueue = bussinessPoolExecutor.getBusinessThreadPoolTaskQueues().getOrCreate(abstractTask.getDispatcher());
         /**
          * 状态校验,是否并行处理
          */

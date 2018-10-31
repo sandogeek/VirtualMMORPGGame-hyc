@@ -4,6 +4,8 @@ import com.mmorpg.mbdl.framework.communicate.websocket.model.AbstractPacket;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.PacketMethodDifinition;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.WsSession;
 
+import java.io.Serializable;
+
 /**
  * 处理请求包任务
  * @author sando
@@ -20,11 +22,8 @@ public class HandleReqTask extends Task {
     }
 
     @Override
-    public Long getDispatcherId() {
-        if (wsSession.getPlayerId() == null){
-            return (long)wsSession.hashCode();
-        }
-        return wsSession.getPlayerId();
+    public Serializable getDispatcher() {
+        return wsSession.getId();
     }
 
     @Override

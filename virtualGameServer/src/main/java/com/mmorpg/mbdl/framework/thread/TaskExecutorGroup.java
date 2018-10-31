@@ -19,7 +19,7 @@ public class TaskExecutorGroup {
      * 线程池数量，默认是cup内核数+4
      * TODO 放到配置文件中，支持注解方式写到此变量中
      */
-    private static long EXECUTOR_SIZE = Runtime.getRuntime().availableProcessors()+4;
+    private static int EXECUTOR_SIZE = Runtime.getRuntime().availableProcessors()+4;
 
     // 线程池组
     private static ScheduledThreadPoolExecutor[] executorGroup;
@@ -27,10 +27,10 @@ public class TaskExecutorGroup {
     public static void init(){
         init(EXECUTOR_SIZE);
     }
-    public static void init(long executorSize){
+    public static void init(int executorSize){
         init(executorSize,"-");
     }
-    public static void init(long executorSize,String threadNamePrefix){
+    public static void init(int executorSize,String threadNamePrefix){
         EXECUTOR_SIZE = executorSize;
         if (executorGroup == null){
             executorGroup = new ScheduledThreadPoolExecutor[new Long(executorSize).intValue()];
@@ -43,11 +43,11 @@ public class TaskExecutorGroup {
 
     /**
      * 根据dispatcherId获取线程池
-     * @param dispatcherId 分配器id，通常定义在{@link AbstractTask#getDispatcherId()}
+     * @param dispatcherId 分配器id，通常定义在{@link AbstractTask#getDispatcher()}
      * @return 线程池
      */
-    private static ScheduledThreadPoolExecutor getExecutor(Long dispatcherId) {
-        return executorGroup[new Long(Math.abs(dispatcherId%EXECUTOR_SIZE)).intValue()];
+    private static ScheduledThreadPoolExecutor getExecutor(int dispatcherId) {
+        return executorGroup[Math.abs(dispatcherId%EXECUTOR_SIZE)];
     }
 
     /**
@@ -56,7 +56,7 @@ public class TaskExecutorGroup {
      * @return ScheduledFuture可用于控制任务以及检查状态
      */
     public static Future<?> addTask(AbstractTask runnable) {
-        return getExecutor(runnable.getDispatcherId()).submit(runnable);
+        return getExecutor(runnable.getDispatcher().hashCode()).submit(runnable);
     }
 
     /**
@@ -73,7 +73,7 @@ public class TaskExecutorGroup {
      * @return ScheduledFuture可用于控制任务以及检查状态
      */
     public static ScheduledFuture<?> addDelayedTask(AbstractTask runnable, long delay, TimeUnit timeUnit) {
-        return getExecutor(runnable.getDispatcherId()).schedule(runnable,delay,timeUnit);
+        return getExecutor(runnable.getDispatcher().hashCode()).schedule(runnable,delay,timeUnit);
     }
 
     /**
@@ -91,7 +91,7 @@ public class TaskExecutorGroup {
      * @return ScheduledFuture可用于控制任务以及检查状态
      */
     public static ScheduledFuture<?> addFixedRateTask(AbstractTask runnable, long initalDelay, long period, TimeUnit timeUnit) {
-        return getExecutor(runnable.getDispatcherId()).scheduleAtFixedRate(runnable,initalDelay,period,timeUnit);
+        return getExecutor(runnable.getDispatcher().hashCode()).scheduleAtFixedRate(runnable,initalDelay,period,timeUnit);
     }
 
     /**
