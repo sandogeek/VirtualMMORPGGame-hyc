@@ -32,7 +32,7 @@ public abstract class AbstractTask implements Runnable {
     }
 
     /**
-     * 获取分发id
+     * 获取分发id（用于submit前获取队列）
      * 必须保证唯一性，不能是hashcode因为有可能有hash冲突，导致不同的玩家或者Channel使用同一TaskQueue
      * @return
      */
