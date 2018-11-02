@@ -28,11 +28,17 @@ public interface ISession {
     void setState(SessionState state);
 
     /**
-     * 发送一个响应包
+     * 发送一个响应包（带缓冲处理）
      * @param abstractPacket 抽象包
      * @return ChannelFuture
      */
     ChannelFuture sendPacket(AbstractPacket abstractPacket);
+    /**
+     * 立刻发送一个响应包（无缓冲处理）
+     * @param abstractPacket 抽象包
+     * @return ChannelFuture
+     */
+    ChannelFuture sendPacket(AbstractPacket abstractPacket,boolean flushNow);
 
     // String getUid(); java.rmi.server.UID
     /**
