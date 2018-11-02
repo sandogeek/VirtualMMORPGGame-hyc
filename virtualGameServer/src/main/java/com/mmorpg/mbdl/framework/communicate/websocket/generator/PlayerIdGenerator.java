@@ -135,7 +135,7 @@ public class PlayerIdGenerator implements IIdGenerator {
         }
         lastTimestamp = timestamp;
         return ((timestamp - this.beginOn) << timestampLeftShift)
-                // | (Thread.currentThread().getId()%16 << threadIdShift)
+                // | (Thread.currentThread().getChatChannelId()%16 << threadIdShift)
                 | (datacenterId << datacenterIdShift)
                 | (serverId << serverIdShift)
                 | sequence;
@@ -176,7 +176,7 @@ public class PlayerIdGenerator implements IIdGenerator {
                 new LinkedBlockingQueue<Runnable>(1024), namedThreadFactory, new ThreadPoolExecutor.AbortPolicy());
         for (int i = 0; i < threadSize; i++) {
             threadPool.execute(()->{
-                // logger.info("{}",Thread.currentThread().getId()%16);
+                // logger.info("{}",Thread.currentThread().getChatChannelId()%16);
                 long start = System.currentTimeMillis();
                 for (int j = 0; j < 30_0000/threadSize; j++) {
                     long id = playerIdGenerator.generate();

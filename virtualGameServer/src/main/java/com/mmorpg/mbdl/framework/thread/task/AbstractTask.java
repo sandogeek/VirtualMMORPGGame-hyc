@@ -1,5 +1,6 @@
 package com.mmorpg.mbdl.framework.thread.task;
 
+import com.mmorpg.mbdl.framework.thread.BussinessPoolExecutor;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +17,7 @@ public abstract class AbstractTask implements Runnable {
     private long maxDelay = TimeUnit.NANOSECONDS.convert(1,TimeUnit.MILLISECONDS);
     private long maxExecute = TimeUnit.NANOSECONDS.convert(1,TimeUnit.MILLISECONDS);
     private Logger targetLogger = logger;
-    // private TaskQueue taskQueue = TaskDispatcher.getIntance().getOrCreateTaskQueue(getDispatcher());
+    // private TaskQueue taskQueue = TaskDispatcher.getIntance().getOrCreateTaskQueue(getDispatcherId());
 
 
     /**
@@ -35,7 +36,7 @@ public abstract class AbstractTask implements Runnable {
      * 必须保证唯一性，不能是hashcode因为有可能有hash冲突，导致不同的玩家或者Channel使用同一TaskQueue
      * @return
      */
-    public abstract Serializable getDispatcher();
+    public abstract Serializable getDispatcherId();
 
     public abstract TaskType taskType();
 
@@ -143,6 +144,6 @@ public abstract class AbstractTask implements Runnable {
     }
 
     public TaskQueue getTaskQueue() {
-        return BussinessPoolExecutor.getIntance().getOrCreateTaskQueue(getDispatcher());
+        return BussinessPoolExecutor.getIntance().getOrCreateTaskQueue(getDispatcherId());
     }
 }

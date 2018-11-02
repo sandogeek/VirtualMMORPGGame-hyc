@@ -1,7 +1,11 @@
-package com.mmorpg.mbdl.framework.thread.task;
+package com.mmorpg.mbdl.framework.thread;
 
+import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import com.mmorpg.mbdl.framework.thread.TimeOutCaffeineMap;
+import com.mmorpg.mbdl.framework.thread.task.AbstractTask;
+import com.mmorpg.mbdl.framework.thread.task.DelayedTask;
+import com.mmorpg.mbdl.framework.thread.task.FixedRateTask;
+import com.mmorpg.mbdl.framework.thread.task.TaskQueue;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -21,13 +25,14 @@ public class BussinessPoolExecutor {
     /** 业务线程池 */
     private ScheduledThreadPoolExecutor businessThreadPool;
     /** 业务所有的任务队列 */
-    private TimeOutCaffeineMap<Serializable, TaskQueue> businessThreadPoolTaskQueues;
+    private ITimeOutHashMap<Serializable, TaskQueue> businessThreadPoolTaskQueues;
 
     private int processors = Runtime.getRuntime().availableProcessors();
     // @Value("${server.config.thread.poolSize}")
     private int poolSize= (processors<=4)?processors*2:processors+8;
+    // 当任务队列timeout分钟没有写入后缓存失效
     // @Value("${server.config.taskQueue.timeout}") TODO 自带的不能注入long，自行实现新的注入方式
-    private long timeout;
+    private long timeout = 1;
     @Value("${server.config.thread.name}")
     private String threadNameFommat;
 
@@ -51,6 +56,7 @@ public class BussinessPoolExecutor {
     }
 
     public ScheduledFuture<?> executeTask(AbstractTask abstractTask){
+        Preconditions.checkNotNull(abstractTask);
         switch (abstractTask.taskType()) {
             case TASK:{
                 return addTask(abstractTask);
@@ -64,11 +70,11 @@ public class BussinessPoolExecutor {
                 return addFixedRateTask(abstractTask,fixedRateTask.getInitalDelay(),fixedRateTask.getPeriod(),fixedRateTask.getTimeUnit());
             }
             default:
+                throw new IllegalArgumentException(String.format("此类型[%s]的任务没有合适的处理方法",abstractTask.getClass().getSimpleName()));
         }
-        return null;
     }
 
-    public TimeOutCaffeineMap<Serializable, TaskQueue> getBusinessThreadPoolTaskQueues() {
+    public ITimeOutHashMap<Serializable, TaskQueue> getBusinessThreadPoolTaskQueues() {
         return businessThreadPoolTaskQueues;
     }
     /**

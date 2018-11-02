@@ -27,7 +27,7 @@ public class HandleReqTask extends Task {
     }
 
     @Override
-    public Serializable getDispatcher() {
+    public Serializable getDispatcherId() {
         return wsSession.getId();
     }
 

@@ -10,16 +10,16 @@ import org.springframework.stereotype.Component;
 @ProtoDesc(description = "聊天请求")
 public class ChatReq extends AbstractPacket {
     @Protobuf(description = "聊天频道id")
-    private int id;
+    private int chatChannelId;
     @Protobuf(description = "发言内容")
     private String content;
 
-    public int getId() {
-        return id;
+    public int getChatChannelId() {
+        return chatChannelId;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setChatChannelId(int chatChannelId) {
+        this.chatChannelId = chatChannelId;
     }
 
     public String getContent() {

@@ -3,6 +3,7 @@ package com.mmorpg.mbdl.framework.thread.task;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.PacketMethodDifinition;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.SessionState;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.WsSession;
+import com.mmorpg.mbdl.framework.thread.BussinessPoolExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,7 @@ public class TaskDispatcher {
     private BussinessPoolExecutor bussinessPoolExecutor;
 
     public void dispatch(AbstractTask abstractTask){
-       TaskQueue taskQueue = bussinessPoolExecutor.getBusinessThreadPoolTaskQueues().getOrCreate(abstractTask.getDispatcher());
+       TaskQueue taskQueue = bussinessPoolExecutor.getBusinessThreadPoolTaskQueues().getOrCreate(abstractTask.getDispatcherId());
         /**
          * 状态校验,是否并行处理
          */
@@ -41,7 +42,7 @@ public class TaskDispatcher {
             boolean executeParallel = packetMethodDifinition.getPacketMethodAnno().executeParallel();
             if (expectedState!=SessionState.ANY){
                 if (wsSession.getState() != expectedState){
-                    logger.warn("请求任务{}分发失败，当前wsSession的状态[{}]与方法期待的状态[{}]不符",
+                    logger.warn("HandleReqTask({})分发失败，当前wsSession的状态[{}]与方法期待的状态[{}]不符",
                             packetMethodDifinition.getAbstractPacketClazz().getSimpleName(),wsSession.getState(),expectedState);
                     return;
                 }

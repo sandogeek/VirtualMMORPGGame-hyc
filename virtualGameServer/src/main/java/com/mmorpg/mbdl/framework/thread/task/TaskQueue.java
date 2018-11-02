@@ -1,6 +1,7 @@
 package com.mmorpg.mbdl.framework.thread.task;
 
 import com.google.common.collect.Lists;
+import com.mmorpg.mbdl.framework.thread.BussinessPoolExecutor;
 
 import java.util.Queue;
 import java.util.concurrent.ScheduledFuture;
@@ -38,7 +39,7 @@ public class TaskQueue {
     }
 
     /**
-     * 可以并行执行的任务
+     * 任务队列中可以并行执行的任务，直接交给线程池，而不是加到队尾
      * @return
      */
     public ScheduledFuture<?> executeParallel(AbstractTask abstractTask){
