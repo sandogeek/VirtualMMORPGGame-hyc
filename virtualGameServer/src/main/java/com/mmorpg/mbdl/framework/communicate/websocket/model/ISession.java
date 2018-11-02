@@ -40,6 +40,11 @@ public interface ISession {
      */
     ChannelFuture sendPacket(AbstractPacket abstractPacket,boolean flushNow);
 
+    /**
+     * 关闭session
+     */
+    void close();
+
     // String getUid(); java.rmi.server.UID
     /**
      * 获取玩家id
