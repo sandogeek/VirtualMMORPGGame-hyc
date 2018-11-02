@@ -20,6 +20,8 @@ public class HandleReqTask extends Task {
         this.setWsSession(wsSession);
         this.setPacketMethodDifinition(packetMethodDifinition);
         this.setAbstractPacket(abstractPacket);
+        // 根据方法注解决定是否打印日志
+        this.setLogOrNot(packetMethodDifinition.getPacketMethodAnno().logOrNot());
         super.setMaxDelay(TimeUnit.NANOSECONDS.convert(2,TimeUnit.MILLISECONDS));
         super.setMaxExecute(TimeUnit.NANOSECONDS.convert(3,TimeUnit.MILLISECONDS));
     }

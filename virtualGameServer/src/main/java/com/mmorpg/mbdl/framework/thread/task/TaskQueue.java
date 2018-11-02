@@ -1,12 +1,10 @@
 package com.mmorpg.mbdl.framework.thread.task;
 
 import com.google.common.collect.Lists;
-import com.mmorpg.mbdl.framework.thread.TaskExecutorGroup;
 
 import java.util.Queue;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 /**
  * 任务队列<br>
@@ -33,7 +31,7 @@ public class TaskQueue {
             this.queue.add(abstractTask);
             if (queue.size()==1){
                 // 只有一个任务的话，说明是刚加的，立即送到线程池里的队列执行
-                return executeTask(abstractTask);
+                return BussinessPoolExecutor.getIntance().executeTask(abstractTask);
             }
         }
         return null;
@@ -44,7 +42,7 @@ public class TaskQueue {
      * @return
      */
     public ScheduledFuture<?> executeParallel(AbstractTask abstractTask){
-        return executeTask(abstractTask);
+        return BussinessPoolExecutor.getIntance().executeTask(abstractTask);
     }
     /**
      * 执行完一个任务后的处理
@@ -56,69 +54,9 @@ public class TaskQueue {
             queue.poll();
             if (!queue.isEmpty()) {
                 // 有任务继续执行
-                return executeTask(queue.poll());
+                return BussinessPoolExecutor.getIntance().executeTask(queue.poll());
             }
         }
         return null;
-    }
-    private ScheduledFuture<?> executeTask(AbstractTask abstractTask){
-        switch (abstractTask.taskType()) {
-            case TASK:{
-                return addTask(abstractTask);
-            }
-            case DELAYED_TASK:{
-                DelayedTask delayedTask = (DelayedTask)abstractTask;
-                return addDelayedTask(abstractTask,delayedTask.getDelay(),delayedTask.getTimeUnit());
-            }
-            case FIXED_RATE_TASK:{
-                FixedRateTask fixedRateTask = (FixedRateTask)abstractTask;
-                return addFixedRateTask(abstractTask,fixedRateTask.getInitalDelay(),fixedRateTask.getPeriod(),fixedRateTask.getTimeUnit());
-            }
-            default:
-        }
-        return null;
-    }
-    /**
-     * 添加同步任务
-     * @param runnable 任务
-     * @return ScheduledFuture可用于控制任务以及检查状态
-     */
-    private ScheduledFuture<?> addTask(AbstractTask runnable) {
-        return this.scheduledThreadPoolExecutor.schedule(runnable,0,TimeUnit.NANOSECONDS);
-    }
-
-    /**
-     * {@link TaskExecutorGroup#addDelayedTask(AbstractTask, long, TimeUnit)}设置延时任务默认时间单位为毫秒
-     */
-    private ScheduledFuture<?> addDelayedTask(AbstractTask runnable, long delay){
-        return addDelayedTask(runnable,delay,TimeUnit.MILLISECONDS);
-    }
-    /**
-     * 添加延时执行任务
-     * @param runnable 任务
-     * @param delay 延迟时间
-     * @param timeUnit 使用的时间单位
-     * @return ScheduledFuture可用于控制任务以及检查状态
-     */
-    private ScheduledFuture<?> addDelayedTask(AbstractTask runnable, long delay, TimeUnit timeUnit) {
-        return this.scheduledThreadPoolExecutor.schedule(runnable,delay,timeUnit);
-    }
-
-    /**
-     * {@link TaskExecutorGroup#addFixedRateTask(AbstractTask, long, long)}设置延时任务默认时间单位为毫秒
-     */
-    private ScheduledFuture<?> addFixedRateTask(AbstractTask runnable, long initalDelay, long period){
-        return addFixedRateTask(runnable,initalDelay,period,TimeUnit.MILLISECONDS);
-    }
-    /**
-     * 添加固定时间周期执行的任务
-     * @param runnable AbstractDispatcherRunnable类型的任务
-     * @param initalDelay 初始化延迟
-     * @param period 周期时间
-     * @param timeUnit 时间单位
-     * @return ScheduledFuture可用于控制任务以及检查状态
-     */
-    private ScheduledFuture<?> addFixedRateTask(AbstractTask runnable, long initalDelay, long period, TimeUnit timeUnit) {
-        return this.scheduledThreadPoolExecutor.scheduleAtFixedRate(runnable,initalDelay,period,timeUnit);
     }
 }

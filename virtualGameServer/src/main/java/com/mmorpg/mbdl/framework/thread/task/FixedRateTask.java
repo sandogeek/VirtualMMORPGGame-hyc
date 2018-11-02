@@ -7,7 +7,7 @@ public abstract class FixedRateTask extends AbstractTask {
     private long period;
     private TimeUnit timeUnit;
 
-    public FixedRateTask(TaskQueue taskQueue, long initalDelay, long period, TimeUnit timeUnit) {
+    public FixedRateTask(long initalDelay, long period, TimeUnit timeUnit) {
         this.initalDelay = initalDelay;
         this.period = period;
         this.timeUnit = timeUnit;

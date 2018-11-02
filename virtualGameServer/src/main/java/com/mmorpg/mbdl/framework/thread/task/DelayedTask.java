@@ -9,7 +9,7 @@ public abstract class DelayedTask extends AbstractTask {
     private long delay;
     private TimeUnit timeUnit;
 
-    public DelayedTask(TaskQueue taskQueue,long delay, TimeUnit timeUnit) {
+    public DelayedTask(long delay, TimeUnit timeUnit) {
         this.delay = delay;
         this.timeUnit = timeUnit;
     }
