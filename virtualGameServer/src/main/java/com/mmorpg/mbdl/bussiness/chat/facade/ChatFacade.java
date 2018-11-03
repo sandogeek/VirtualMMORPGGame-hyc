@@ -5,8 +5,8 @@ import com.mmorpg.mbdl.bussiness.chat.packet.ChatResp;
 import com.mmorpg.mbdl.framework.communicate.websocket.annotation.PacketHandler;
 import com.mmorpg.mbdl.framework.communicate.websocket.annotation.PacketMethod;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.WsSession;
-import com.mmorpg.mbdl.framework.thread.BussinessPoolExecutor;
 import com.mmorpg.mbdl.framework.thread.task.Task;
+import com.mmorpg.mbdl.framework.thread.task.TaskDispatcher;
 
 import java.io.Serializable;
 
@@ -49,6 +49,6 @@ public class ChatFacade {
             }
         };
         // 把消息提交到任务队列串行发出，以保证所有玩家看到的消息顺序一致
-        BussinessPoolExecutor.getIntance().getOrCreateTaskQueue(task.getDispatcherId()).submit(task);
+        TaskDispatcher.getIntance().dispatch(task);
     }
 }

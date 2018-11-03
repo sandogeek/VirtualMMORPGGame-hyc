@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.util.concurrent.ScheduledFuture;
 
 /**
  * 任务分发器
@@ -29,8 +30,17 @@ public class TaskDispatcher {
     @Autowired
     private BussinessPoolExecutor bussinessPoolExecutor;
 
-    public void dispatch(AbstractTask abstractTask){
-       TaskQueue taskQueue = bussinessPoolExecutor.getBusinessThreadPoolTaskQueues().getOrCreate(abstractTask.getDispatcherId());
+    /**
+     * 分发任务
+     * @param abstractTask 抽象任务
+     * @param intoThreadPoolDirectly 是否直接分发到线程池，而不是加到队列
+     * @return 如果任务分发成功并被提交到线程池，返回ScheduledFuture，否则返回null
+     */
+    public ScheduledFuture<?> dispatch(AbstractTask abstractTask, boolean intoThreadPoolDirectly){
+        if (intoThreadPoolDirectly){
+            return BussinessPoolExecutor.getIntance().executeTask(abstractTask);
+        }
+        TaskQueue taskQueue = bussinessPoolExecutor.getBusinessThreadPoolTaskQueues().getOrCreate(abstractTask.getDispatcherId());
         /**
          * 状态校验,是否并行处理
          */
@@ -44,14 +54,23 @@ public class TaskDispatcher {
                 if (wsSession.getState() != expectedState){
                     logger.warn("HandleReqTask({})分发失败，当前wsSession的状态[{}]与方法期待的状态[{}]不符",
                             packetMethodDifinition.getAbstractPacketClazz().getSimpleName(),wsSession.getState(),expectedState);
-                    return;
+                    return null;
                 }
             }
             if (executeParallel){
-                taskQueue.executeParallel(abstractTask);
-                return;
+                return BussinessPoolExecutor.getIntance().executeTask(abstractTask);
             }
         }
-        taskQueue.submit(abstractTask);
+        return taskQueue.submit(abstractTask);
+    }
+
+    /**
+     * 分发任务，但不是直接分发到线程池
+     * 如果是HandleReqTask，根据@PacketMethod决定分发到队列还是分发到线程池
+     * 如果是其它任务，则
+     * @param abstractTask
+     */
+    public ScheduledFuture<?> dispatch(AbstractTask abstractTask){
+       return dispatch(abstractTask,false);
     }
 }

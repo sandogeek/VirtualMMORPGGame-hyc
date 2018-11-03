@@ -57,9 +57,6 @@ public class BussinessPoolExecutor {
      * @return 相应的任务队列，如果dispatcherId为null，则返回null
      */
     public TaskQueue getOrCreateTaskQueue(Serializable dispatcherId){
-        if (dispatcherId==null){
-            return null;
-        }
         return businessThreadPoolTaskQueues.getOrCreate(dispatcherId);
     }
 
