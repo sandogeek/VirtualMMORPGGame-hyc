@@ -14,8 +14,8 @@ import java.util.concurrent.TimeUnit;
  */
 public abstract class AbstractTask implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(AbstractTask.class);
-    private long maxDelay = TimeUnit.NANOSECONDS.convert(1,TimeUnit.MILLISECONDS);
-    private long maxExecute = TimeUnit.NANOSECONDS.convert(1,TimeUnit.MILLISECONDS);
+    private long maxDelay = TimeUnit.NANOSECONDS.convert(2,TimeUnit.MILLISECONDS);
+    private long maxExecute = TimeUnit.NANOSECONDS.convert(3,TimeUnit.MILLISECONDS);
     private Logger targetLogger = logger;
     // private TaskQueue taskQueue = TaskDispatcher.getIntance().getOrCreateTaskQueue(getDispatcherId());
 
@@ -106,7 +106,7 @@ public abstract class AbstractTask implements Runnable {
         return logger;
     }
     /**
-     * 最大延迟时间,默认1毫秒
+     * 最大延迟时间,默认2毫秒
      */
     public long getMaxDelay() {
         return maxDelay;
@@ -115,7 +115,9 @@ public abstract class AbstractTask implements Runnable {
     public void setMaxDelay(long maxDelay) {
         this.maxDelay = maxDelay;
     }
-
+    /**
+     * 最大延迟时间,默认3毫秒
+     */
     public long getMaxExecute() {
         return maxExecute;
     }

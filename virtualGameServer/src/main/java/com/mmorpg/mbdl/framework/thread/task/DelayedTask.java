@@ -14,20 +14,17 @@ public abstract class DelayedTask extends AbstractTask {
         this.timeUnit = timeUnit;
     }
 
+    @Override
+    public long getMaxDelay() {
+        return super.getMaxDelay()+TimeUnit.NANOSECONDS.convert(delay,timeUnit);
+    }
+
     public long getDelay() {
         return delay;
     }
 
-    public void setDelay(long delay) {
-        this.delay = delay;
-    }
-
     public TimeUnit getTimeUnit() {
         return timeUnit;
-    }
-
-    public void setTimeUnit(TimeUnit timeUnit) {
-        this.timeUnit = timeUnit;
     }
 
     @Override

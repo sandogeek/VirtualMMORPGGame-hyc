@@ -12,7 +12,9 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * 任务线程池组
+ * 更换线程模型后已无用，保留用来以后测试不同的线程模型的性能差别。
  */
+@Deprecated
 public class TaskExecutorGroup {
     private static final Logger logger = LoggerFactory.getLogger(TaskExecutorGroup.class);
     /**

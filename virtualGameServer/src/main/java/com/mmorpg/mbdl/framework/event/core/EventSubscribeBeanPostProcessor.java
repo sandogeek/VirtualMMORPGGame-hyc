@@ -3,16 +3,15 @@ package com.mmorpg.mbdl.framework.event.core;
 import com.google.common.eventbus.Subscribe;
 import org.reflections.ReflectionUtils;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
 @Component
-public class EventSubscribeBeanPostProcessor implements BeanPostProcessor {
+public class EventSubscribeBeanPostProcessor implements BeanPostProcessor, ApplicationContextAware {
 
-    /** 事件总线bean由Spring IoC容器负责创建，这里只需要通过@Autowired注解注入该bean即可使用事件总线 */
-    @Autowired
-    SyncEventBus syncEventBus;
+    private ApplicationContext applicationContext;
 
     @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName)
@@ -26,9 +25,14 @@ public class EventSubscribeBeanPostProcessor implements BeanPostProcessor {
             throws BeansException {
         int size = ReflectionUtils.getAllMethods(bean.getClass(),ReflectionUtils.withAnnotation(Subscribe.class)).size();
         if (size>0){
-            syncEventBus.register(bean);
+            applicationContext.getBean(SyncEventBus.class).register(bean);
         }
         return bean;
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
     }
 }
 

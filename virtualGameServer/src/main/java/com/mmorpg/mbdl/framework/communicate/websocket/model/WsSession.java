@@ -24,7 +24,7 @@ public class WsSession extends AbstractSession {
     private Channel channel;
     private Long playerId;
     // 是否生成新的DelayedTask
-    private AtomicBoolean genereteDelayedTask = new AtomicBoolean(true);
+    private static AtomicBoolean genereteDelayedTask = new AtomicBoolean(true);
 
     public WsSession(Channel channel) {
         super(channel.id(), ((InetSocketAddress) channel.remoteAddress()).getAddress().getHostAddress());
@@ -48,7 +48,7 @@ public class WsSession extends AbstractSession {
         ChannelFuture future = channel.write(abstractPacket);
         if (genereteDelayedTask.compareAndSet(true,false)){
             // 缓冲25毫秒
-            TaskDispatcher.getIntance().dispatch(new DelayedTask(5000, TimeUnit.MILLISECONDS) {
+            TaskDispatcher.getIntance().dispatch(new DelayedTask(25, TimeUnit.MILLISECONDS) {
                 // 因为直接丢到线程池，没有放入队列，所以不需要dispatcherId
                 @Override
                 public Serializable getDispatcherId() {
