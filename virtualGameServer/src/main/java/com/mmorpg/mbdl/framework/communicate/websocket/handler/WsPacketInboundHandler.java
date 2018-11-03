@@ -3,7 +3,9 @@ package com.mmorpg.mbdl.framework.communicate.websocket.handler;
 import com.baidu.bjf.remoting.protobuf.Codec;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.AbstractPacket;
 import com.mmorpg.mbdl.bussiness.common.PacketIdManager;
+import com.mmorpg.mbdl.framework.communicate.websocket.model.SessionManager;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.WsPacket;
+import com.mmorpg.mbdl.framework.communicate.websocket.model.WsSession;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -26,6 +28,8 @@ public class WsPacketInboundHandler extends SimpleChannelInboundHandler<WsPacket
 
     @Autowired
     private PacketIdManager packetIdManager;
+    @Autowired
+    private SessionManager sessionManager;
 
     private static WsPacketInboundHandler instance;
     public static WsPacketInboundHandler getInstance(){return instance;}
@@ -55,24 +59,20 @@ public class WsPacketInboundHandler extends SimpleChannelInboundHandler<WsPacket
     }
 
     @Override
-    public void channelReadComplete(ChannelHandlerContext ctx) {
-        ctx.flush();
-    }
-    @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
             throws Exception {
         logger.error("捕获到异常：",cause);
-        ctx.close();
+        sessionManager.getSession(ctx.channel().id()).close();
     }
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
-        // TODO 如果有多浏览器的需求可以考虑在此处将channel添加到某个数据结构中
-        logger.debug("channel成功注册到EventLoop");
+        sessionManager.add(new WsSession(ctx.channel()));
+        logger.debug("会话[channelId={}]创建成功",ctx.channel().id());
     }
     @Override
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
-        // TODO 如果有多浏览器的需求可以考虑在此处将channel从某个数据结构中删除
-        logger.debug("channel从EventLoop中移除注册");
+        sessionManager.getSession(ctx.channel().id()).close();
+        logger.debug("会话[channelId={}]关闭",ctx.channel().id());
     }
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception{

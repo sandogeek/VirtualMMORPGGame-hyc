@@ -60,7 +60,7 @@ public class WebSocketFrameToWsPacketCodec extends MessageToMessageCodec<WebSock
             logger.warn("数据包不完整");
             return;
         }
-        logger.debug(String.format("包总字节数=%s", packetLength));
+        // logger.debug(String.format("包总字节数=%s", packetLength));
         short packetId = byteBuf.readShort();
         byte[] data = new byte[byteBuf.readableBytes()];
         byteBuf.readBytes(data);

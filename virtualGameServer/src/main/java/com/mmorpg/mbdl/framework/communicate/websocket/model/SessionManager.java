@@ -1,5 +1,8 @@
 package com.mmorpg.mbdl.framework.communicate.websocket.model;
 
+import com.google.common.eventbus.AllowConcurrentEvents;
+import com.google.common.eventbus.Subscribe;
+import com.mmorpg.mbdl.framework.event.preset.SessionCloseEvent;
 import io.netty.channel.ChannelId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,11 +33,12 @@ public class SessionManager {
 
     /**
      * 根据channelId移除相应的ISession
-     * @param channelId
      */
-    public void remove(ChannelId channelId){
-        ISession session = channelId2WsSessions.get(channelId);
-        session.close();
+    @Subscribe
+    @AllowConcurrentEvents
+    public void remove(SessionCloseEvent sessionCloseEvent){
+        // logger.info("会话关闭事件触发成功！！！");
+        channelId2WsSessions.remove(sessionCloseEvent.getChannelId());
     }
 
     /**

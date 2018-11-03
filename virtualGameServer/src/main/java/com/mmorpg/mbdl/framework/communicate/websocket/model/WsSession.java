@@ -1,9 +1,12 @@
 package com.mmorpg.mbdl.framework.communicate.websocket.model;
 
-import com.mmorpg.mbdl.framework.thread.BussinessPoolExecutor;
+import com.mmorpg.mbdl.framework.event.core.SyncEventBus;
+import com.mmorpg.mbdl.framework.event.preset.SessionCloseEvent;
 import com.mmorpg.mbdl.framework.thread.task.DelayedTask;
+import com.mmorpg.mbdl.framework.thread.task.TaskDispatcher;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +48,7 @@ public class WsSession extends AbstractSession {
         ChannelFuture future = channel.write(abstractPacket);
         if (genereteDelayedTask.compareAndSet(true,false)){
             // 缓冲25毫秒
-            BussinessPoolExecutor.getIntance().executeTask(new DelayedTask(25, TimeUnit.MILLISECONDS) {
+            TaskDispatcher.getIntance().dispatch(new DelayedTask(5000, TimeUnit.MILLISECONDS) {
                 // 因为直接丢到线程池，没有放入队列，所以不需要dispatcherId
                 @Override
                 public Serializable getDispatcherId() {
@@ -62,9 +65,15 @@ public class WsSession extends AbstractSession {
                     genereteDelayedTask.compareAndSet(false,true);
                     channel.flush();
                 }
-            });
+            },true);
         }
         return future;
+    }
+
+    @Override
+    public void close() {
+        ChannelId channelId = channel.id();
+        channel.close().addListener( future -> SyncEventBus.getInstance().post(new SessionCloseEvent(channelId)) );
     }
 
     @Override
