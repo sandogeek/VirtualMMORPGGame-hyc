@@ -65,6 +65,11 @@ public class WsSession extends AbstractSession {
                     genereteDelayedTask.compareAndSet(false,true);
                     channel.flush();
                 }
+
+                @Override
+                public boolean isLogOrNot() {
+                    return false;
+                }
             },true);
         }
         return future;
@@ -73,7 +78,11 @@ public class WsSession extends AbstractSession {
     @Override
     public void close() {
         ChannelId channelId = channel.id();
-        channel.close().addListener( future -> SyncEventBus.getInstance().post(new SessionCloseEvent(channelId)) );
+        SyncEventBus.getInstance().post(new WsSession(channel));
+        channel.close().addListener( future -> {
+            SyncEventBus.getInstance().post(new SessionCloseEvent(channelId));
+            // logger.info("SessionCloseEvent post成功");
+        } );
     }
 
     @Override

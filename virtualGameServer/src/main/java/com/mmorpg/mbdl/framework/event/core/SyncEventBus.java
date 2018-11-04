@@ -18,6 +18,10 @@ import javax.annotation.PostConstruct;
  */
 @Component
 public class SyncEventBus extends EventBus {
+    public SyncEventBus() {
+        super("同步事件总线");
+    }
+
     private static SyncEventBus self;
     @PostConstruct
     private void init(){
