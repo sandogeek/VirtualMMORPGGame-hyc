@@ -40,9 +40,25 @@ public class AbstractPacketDispacherHandler extends SimpleChannelInboundHandler<
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, AbstractPacket abstractPacket) throws Exception {
         // 不能在netty worker线程池作业务处理,如果当前请求处理发生阻塞，那么这条（4条之一）worker线程就会被阻塞
-        // TODO 在channel连接并收到第一个AbstractPacket时构造WsSession并保存起来
-        // TaskExecutorGroup.addTask(new HandleReqTask(class2PacketMethodDifinition.get(abstractPacket.getClass()),new WsSession(ctx.channel()),abstractPacket));
-        TaskDispatcher.getIntance().dispatch(new HandleReqTask(class2PacketMethodDifinition.get(abstractPacket.getClass()), SessionManager.getIntance().getSession(ctx.channel().id()),abstractPacket));
+        PacketMethodDifinition packetMethodDifinition = class2PacketMethodDifinition.get(abstractPacket.getClass());
+        if (packetMethodDifinition==null) {
+            logger.error("请求包[{}]没有对应的@PacketMethod方法处理",abstractPacket.getClass().getSimpleName());
+            return;
+        }
+        SessionState expectedState = packetMethodDifinition.getPacketMethodAnno().state();
+        ISession session = SessionManager.getIntance().getSession(ctx.channel().id());
+        boolean executeParallel = packetMethodDifinition.getPacketMethodAnno().executeParallel();
+        if (expectedState!=SessionState.ANY){
+            if (session.getState() != expectedState){
+                logger.warn("HandleReqTask({})分发失败，当前wsSession的状态[{}]与方法{}期待的状态[{}]不符",
+                        packetMethodDifinition.getAbstractPacketClazz().getSimpleName(),
+                        session.getState(),packetMethodDifinition.getBean().getClass().getSimpleName()+"."
+                                +packetMethodDifinition.getMethod().getName()+"(...)",expectedState);
+                return;
+            }
+        }
+        TaskDispatcher.getIntance().dispatch(new HandleReqTask(packetMethodDifinition, session,abstractPacket),executeParallel);
+        // TaskExecutorGroup.addTask(new HandleReqTask(packetMethodDifinition,session,abstractPacket));
     }
 
     @Override

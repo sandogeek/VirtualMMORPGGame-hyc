@@ -1,8 +1,5 @@
 package com.mmorpg.mbdl.framework.thread.task;
 
-import com.mmorpg.mbdl.framework.communicate.websocket.model.ISession;
-import com.mmorpg.mbdl.framework.communicate.websocket.model.PacketMethodDifinition;
-import com.mmorpg.mbdl.framework.communicate.websocket.model.SessionState;
 import com.mmorpg.mbdl.framework.thread.BussinessPoolExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,35 +38,12 @@ public class TaskDispatcher {
             return BussinessPoolExecutor.getIntance().executeTask(abstractTask);
         }
         TaskQueue taskQueue = bussinessPoolExecutor.getBusinessThreadPoolTaskQueues().getOrCreate(abstractTask.getDispatcherId());
-        /**
-         * 状态校验,是否并行处理
-         */
-        if (abstractTask instanceof HandleReqTask){
-            HandleReqTask handleReqTask = (HandleReqTask)abstractTask;
-            PacketMethodDifinition packetMethodDifinition = handleReqTask.getPacketMethodDifinition();
-            ISession session = handleReqTask.getISession();
-            SessionState expectedState = packetMethodDifinition.getPacketMethodAnno().state();
-            boolean executeParallel = packetMethodDifinition.getPacketMethodAnno().executeParallel();
-            if (expectedState!=SessionState.ANY){
-                if (session.getState() != expectedState){
-                    logger.warn("HandleReqTask({})分发失败，当前wsSession的状态[{}]与方法{}期待的状态[{}]不符",
-                            packetMethodDifinition.getAbstractPacketClazz().getSimpleName(),
-                            session.getState(),packetMethodDifinition.getBean().getClass().getSimpleName()+"."
-                                    +packetMethodDifinition.getMethod().getName()+"(...)",expectedState);
-                    return null;
-                }
-            }
-            if (executeParallel){
-                return BussinessPoolExecutor.getIntance().executeTask(abstractTask);
-            }
-        }
         return taskQueue.submit(abstractTask);
     }
 
     /**
      * 分发任务，但不是直接分发到线程池
      * 如果是HandleReqTask，根据@PacketMethod决定分发到队列还是分发到线程池
-     * 如果是其它任务，则
      * @param abstractTask
      */
     public ScheduledFuture<?> dispatch(AbstractTask abstractTask){
