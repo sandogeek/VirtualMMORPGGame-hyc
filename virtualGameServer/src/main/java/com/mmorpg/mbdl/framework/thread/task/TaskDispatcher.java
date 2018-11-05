@@ -52,8 +52,10 @@ public class TaskDispatcher {
             boolean executeParallel = packetMethodDifinition.getPacketMethodAnno().executeParallel();
             if (expectedState!=SessionState.ANY){
                 if (session.getState() != expectedState){
-                    logger.warn("HandleReqTask({})分发失败，当前wsSession的状态[{}]与方法期待的状态[{}]不符",
-                            packetMethodDifinition.getAbstractPacketClazz().getSimpleName(),session.getState(),expectedState);
+                    logger.warn("HandleReqTask({})分发失败，当前wsSession的状态[{}]与方法{}期待的状态[{}]不符",
+                            packetMethodDifinition.getAbstractPacketClazz().getSimpleName(),
+                            session.getState(),packetMethodDifinition.getBean().getClass().getSimpleName()+"."
+                                    +packetMethodDifinition.getMethod().getName()+"(...)",expectedState);
                     return null;
                 }
             }

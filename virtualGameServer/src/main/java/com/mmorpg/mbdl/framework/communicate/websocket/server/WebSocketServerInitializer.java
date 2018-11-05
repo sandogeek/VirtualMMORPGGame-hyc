@@ -1,10 +1,7 @@
 package com.mmorpg.mbdl.framework.communicate.websocket.server;
 
 import com.mmorpg.mbdl.framework.communicate.websocket.codec.WebSocketFrameToWsPacketCodec;
-import com.mmorpg.mbdl.framework.communicate.websocket.handler.AbstractPacketDispacherHandler;
-import com.mmorpg.mbdl.framework.communicate.websocket.handler.AbstractPacketOutboundHandler;
-import com.mmorpg.mbdl.framework.communicate.websocket.handler.SessionHandler;
-import com.mmorpg.mbdl.framework.communicate.websocket.handler.WsPacketInboundHandler;
+import com.mmorpg.mbdl.framework.communicate.websocket.handler.*;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
@@ -12,8 +9,11 @@ import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
 import io.netty.handler.stream.ChunkedWriteHandler;
+import io.netty.handler.timeout.IdleStateHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * ChannelInitializer
@@ -32,9 +32,13 @@ public class WebSocketServerInitializer extends ChannelInitializer<SocketChannel
     private AbstractPacketDispacherHandler abstractPacketDispacherHandler;
     @Autowired
     private AbstractPacketOutboundHandler abstractPacketOutboundHandler;
+    @Autowired
+    private HeartBeatHandler heartBeatHandler;
 
     // 在 "ws://localhost:netPort"+WEBSOCKET_PATH 提供websocket服务
     private static final String WEBSOCKET_PATH = "/";
+
+    private int READER_IDLE_TIME = 30;
 
     @Override
     public void initChannel(SocketChannel ch) throws Exception {
@@ -52,6 +56,7 @@ public class WebSocketServerInitializer extends ChannelInitializer<SocketChannel
          * 文本和二进制WebSocketFrame将会交给下一个你自己实现的handler处理
          */
         pipeline.addLast("Inbound:WebSocketFrame2WebSocketFrame",new WebSocketServerProtocolHandler(WEBSOCKET_PATH));
+        pipeline.addLast("Duplex:IdleStateHandler",new IdleStateHandler(READER_IDLE_TIME,0,0, TimeUnit.SECONDS));
         // inbound:接收WebSocketServerProtocolHandler传来的WebSocketFrame，转化为WsPacket后继续往后传
         pipeline.addLast("Inbound:WebSocketFrame2WsPacket和Outbound:WsPacket2WebSocketFrame",webSocketFrameToWsPacketCodec);
 
@@ -59,6 +64,7 @@ public class WebSocketServerInitializer extends ChannelInitializer<SocketChannel
         pipeline.addLast("Inbound:WsPacket2WsPacket",sessionHandler);
 
         pipeline.addLast("Inbound:WsPacket2AbstractPacket",wsPacketInboundHandler);
+        pipeline.addLast("heartBeatHandler",heartBeatHandler);
         pipeline.addLast("Inbound:AbstractPacket2End",abstractPacketDispacherHandler);
         pipeline.addLast("Outbound:AbstractPacket2WsPacket",abstractPacketOutboundHandler);
     }

@@ -25,7 +25,8 @@ public class PacketIdManager {
     // <packetId->protobuf编解码代理对象>
     private Map<Short, Codec> packetId2Codec = new HashMap<>();
 
-
+    public static final short PING_HEART_BEAT = 1001;
+    public static final short PONG_HEART_BEAT = 1002;
 
     public static final short LOGIN_AUTH_REQ = 10001;
     public static final short LOGIN_RESULT_RESP = 10002;

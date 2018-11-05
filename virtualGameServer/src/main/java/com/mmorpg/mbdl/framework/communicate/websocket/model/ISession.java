@@ -40,6 +40,18 @@ public interface ISession {
      */
     ChannelFuture sendPacket(AbstractPacket abstractPacket,boolean flushNow);
 
+    // /**
+    //  * 获取上次发送ping包的时间
+    //  * @return nano时间
+    //  */
+    // long getLastSendPing();
+    //
+    // /**
+    //  * 获取上次接收Pong包的时间
+    //  * @return
+    //  */
+    // long getLastRescPong();
+
     /**
      * 关闭session
      */
