@@ -1,11 +1,10 @@
 package com.mmorpg.mbdl.framework.communicate.websocket.handler;
 
 import com.baidu.bjf.remoting.protobuf.Codec;
-import com.mmorpg.mbdl.framework.communicate.websocket.model.AbstractPacket;
 import com.mmorpg.mbdl.bussiness.common.PacketIdManager;
+import com.mmorpg.mbdl.framework.communicate.websocket.model.AbstractPacket;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.SessionManager;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.WsPacket;
-import com.mmorpg.mbdl.framework.communicate.websocket.model.WsSession;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -59,25 +58,11 @@ public class WsPacketInboundHandler extends SimpleChannelInboundHandler<WsPacket
     }
 
     @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
-            throws Exception {
-        logger.error("捕获到异常：",cause);
-        sessionManager.getSession(ctx.channel().id()).close();
-    }
-    @Override
-    public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
-        sessionManager.add(new WsSession(ctx.channel()));
-        logger.debug("会话[channelId={}]创建成功",ctx.channel().id());
-    }
-    @Override
-    public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
-        sessionManager.getSession(ctx.channel().id()).close();
-        logger.debug("会话[channelId={}]关闭",ctx.channel().id());
-    }
-    @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception{
         if (evt instanceof WebSocketServerProtocolHandler.HandshakeComplete){
             logger.debug(String.format("channel[%s]握手成功",ctx.channel().remoteAddress().toString()));
+        }else {
+            super.userEventTriggered(ctx,evt);
         }
     }
 }

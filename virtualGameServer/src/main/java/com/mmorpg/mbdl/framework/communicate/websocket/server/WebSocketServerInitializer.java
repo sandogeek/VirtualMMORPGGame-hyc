@@ -3,6 +3,7 @@ package com.mmorpg.mbdl.framework.communicate.websocket.server;
 import com.mmorpg.mbdl.framework.communicate.websocket.codec.WebSocketFrameToWsPacketCodec;
 import com.mmorpg.mbdl.framework.communicate.websocket.handler.AbstractPacketDispacherHandler;
 import com.mmorpg.mbdl.framework.communicate.websocket.handler.AbstractPacketOutboundHandler;
+import com.mmorpg.mbdl.framework.communicate.websocket.handler.SessionHandler;
 import com.mmorpg.mbdl.framework.communicate.websocket.handler.WsPacketInboundHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
@@ -23,6 +24,8 @@ public class WebSocketServerInitializer extends ChannelInitializer<SocketChannel
 
     @Autowired
     private WebSocketFrameToWsPacketCodec webSocketFrameToWsPacketCodec;
+    @Autowired
+    private SessionHandler sessionHandler;
     @Autowired
     private WsPacketInboundHandler wsPacketInboundHandler;
     @Autowired
@@ -53,7 +56,7 @@ public class WebSocketServerInitializer extends ChannelInitializer<SocketChannel
         pipeline.addLast("Inbound:WebSocketFrame2WsPacket和Outbound:WsPacket2WebSocketFrame",webSocketFrameToWsPacketCodec);
 
         // 用sessionHandler sessionManager专门记录不同的用户
-        // pipeline.addLast("sessionHandler",);
+        pipeline.addLast("Inbound:WsPacket2WsPacket",sessionHandler);
 
         pipeline.addLast("Inbound:WsPacket2AbstractPacket",wsPacketInboundHandler);
         pipeline.addLast("Inbound:AbstractPacket2End",abstractPacketDispacherHandler);

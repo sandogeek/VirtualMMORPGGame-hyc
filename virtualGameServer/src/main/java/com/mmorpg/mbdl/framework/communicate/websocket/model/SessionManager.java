@@ -38,7 +38,7 @@ public class SessionManager {
     @AllowConcurrentEvents
     public void remove(SessionCloseEvent sessionCloseEvent){
         // logger.info("会话关闭事件触发成功！！！");
-        channelId2WsSessions.remove(sessionCloseEvent.getChannelId());
+        channelId2WsSessions.remove(sessionCloseEvent.getSession().getId());
     }
 
     /**

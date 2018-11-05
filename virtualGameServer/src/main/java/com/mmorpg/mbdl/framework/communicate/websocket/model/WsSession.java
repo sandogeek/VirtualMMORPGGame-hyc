@@ -6,7 +6,6 @@ import com.mmorpg.mbdl.framework.thread.task.DelayedTask;
 import com.mmorpg.mbdl.framework.thread.task.TaskDispatcher;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,10 +76,8 @@ public class WsSession extends AbstractSession {
 
     @Override
     public void close() {
-        ChannelId channelId = channel.id();
-        SyncEventBus.getInstance().post(new WsSession(channel));
         channel.close().addListener( future -> {
-            SyncEventBus.getInstance().post(new SessionCloseEvent(channelId));
+            SyncEventBus.getInstance().post(new SessionCloseEvent(this));
             // logger.info("SessionCloseEvent post成功");
         } );
     }

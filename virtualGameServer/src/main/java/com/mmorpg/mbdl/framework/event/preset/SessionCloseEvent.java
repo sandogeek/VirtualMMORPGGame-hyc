@@ -1,15 +1,15 @@
 package com.mmorpg.mbdl.framework.event.preset;
 
-import io.netty.channel.ChannelId;
+import com.mmorpg.mbdl.framework.communicate.websocket.model.ISession;
 
 public class SessionCloseEvent {
-    private ChannelId channelId;
+    private ISession session;
 
-    public SessionCloseEvent(ChannelId channelId) {
-        this.channelId = channelId;
+    public SessionCloseEvent(ISession session) {
+        this.session = session;
     }
 
-    public ChannelId getChannelId() {
-        return channelId;
+    public ISession getSession() {
+        return session;
     }
 }
