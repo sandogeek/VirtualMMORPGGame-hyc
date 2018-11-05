@@ -1,8 +1,8 @@
 package com.mmorpg.mbdl.framework.thread.task;
 
+import com.mmorpg.mbdl.framework.communicate.websocket.model.ISession;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.PacketMethodDifinition;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.SessionState;
-import com.mmorpg.mbdl.framework.communicate.websocket.model.WsSession;
 import com.mmorpg.mbdl.framework.thread.BussinessPoolExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,13 +47,13 @@ public class TaskDispatcher {
         if (abstractTask instanceof HandleReqTask){
             HandleReqTask handleReqTask = (HandleReqTask)abstractTask;
             PacketMethodDifinition packetMethodDifinition = handleReqTask.getPacketMethodDifinition();
-            WsSession wsSession = handleReqTask.getWsSession();
+            ISession session = handleReqTask.getISession();
             SessionState expectedState = packetMethodDifinition.getPacketMethodAnno().state();
             boolean executeParallel = packetMethodDifinition.getPacketMethodAnno().executeParallel();
             if (expectedState!=SessionState.ANY){
-                if (wsSession.getState() != expectedState){
+                if (session.getState() != expectedState){
                     logger.warn("HandleReqTask({})分发失败，当前wsSession的状态[{}]与方法期待的状态[{}]不符",
-                            packetMethodDifinition.getAbstractPacketClazz().getSimpleName(),wsSession.getState(),expectedState);
+                            packetMethodDifinition.getAbstractPacketClazz().getSimpleName(),session.getState(),expectedState);
                     return null;
                 }
             }

@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -17,17 +18,25 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class SessionManager {
     private static final Logger logger = LoggerFactory.getLogger(SessionManager.class);
+    private static SessionManager self;
+    public static SessionManager getIntance(){
+        return self;
+    }
+    @PostConstruct
+    private void init(){
+        self = this;
+    }
 
-    private ConcurrentHashMap<ChannelId,ISession> channelId2WsSessions = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<ChannelId, ISession> channelId2ISessions = new ConcurrentHashMap<>();
 
     /**
      * 添加ISession
      */
     public void add(ISession session){
-        if (channelId2WsSessions.containsKey(session.getId())){
+        if (channelId2ISessions.containsKey(session.getId())){
             logger.error("session[channelId={},IP={}]重复注册",session.getId(),session.getIp());
         } else {
-            channelId2WsSessions.put(session.getId(),session);
+            channelId2ISessions.put(session.getId(),session);
         }
     }
 
@@ -38,7 +47,7 @@ public class SessionManager {
     @AllowConcurrentEvents
     public void remove(SessionCloseEvent sessionCloseEvent){
         // logger.info("会话关闭事件触发成功！！！");
-        channelId2WsSessions.remove(sessionCloseEvent.getSession().getId());
+        channelId2ISessions.remove(sessionCloseEvent.getSession().getId());
     }
 
     /**
@@ -47,6 +56,6 @@ public class SessionManager {
      * @return 对应的ISession
      */
     public ISession getSession(ChannelId channelId){
-        return channelId2WsSessions.get(channelId);
+        return channelId2ISessions.get(channelId);
     }
 }

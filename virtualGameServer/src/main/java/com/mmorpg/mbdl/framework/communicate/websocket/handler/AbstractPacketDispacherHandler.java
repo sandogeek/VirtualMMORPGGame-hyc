@@ -3,9 +3,7 @@ package com.mmorpg.mbdl.framework.communicate.websocket.handler;
 import com.google.common.base.Predicate;
 import com.mmorpg.mbdl.framework.communicate.websocket.annotation.PacketHandler;
 import com.mmorpg.mbdl.framework.communicate.websocket.annotation.PacketMethod;
-import com.mmorpg.mbdl.framework.communicate.websocket.model.AbstractPacket;
-import com.mmorpg.mbdl.framework.communicate.websocket.model.PacketMethodDifinition;
-import com.mmorpg.mbdl.framework.communicate.websocket.model.WsSession;
+import com.mmorpg.mbdl.framework.communicate.websocket.model.*;
 import com.mmorpg.mbdl.framework.thread.task.HandleReqTask;
 import com.mmorpg.mbdl.framework.thread.task.TaskDispatcher;
 import io.netty.channel.ChannelHandler;
@@ -44,7 +42,7 @@ public class AbstractPacketDispacherHandler extends SimpleChannelInboundHandler<
         // 不能在netty worker线程池作业务处理,如果当前请求处理发生阻塞，那么这条（4条之一）worker线程就会被阻塞
         // TODO 在channel连接并收到第一个AbstractPacket时构造WsSession并保存起来
         // TaskExecutorGroup.addTask(new HandleReqTask(class2PacketMethodDifinition.get(abstractPacket.getClass()),new WsSession(ctx.channel()),abstractPacket));
-        TaskDispatcher.getIntance().dispatch(new HandleReqTask(class2PacketMethodDifinition.get(abstractPacket.getClass()),new WsSession(ctx.channel()),abstractPacket));
+        TaskDispatcher.getIntance().dispatch(new HandleReqTask(class2PacketMethodDifinition.get(abstractPacket.getClass()), SessionManager.getIntance().getSession(ctx.channel().id()),abstractPacket));
     }
 
     @Override
@@ -68,8 +66,8 @@ public class AbstractPacketDispacherHandler extends SimpleChannelInboundHandler<
                             method.getDeclaringClass().getSimpleName()+"::"+method.getName());
                     throw new IllegalArgumentException(message);
                 }
-                if ( !WsSession.class.isAssignableFrom(method.getParameterTypes()[0])){
-                    java.lang.String message = java.lang.String.format("方法[%s]第一个参数的类型必须为WSession或其子类",
+                if ( !ISession.class.isAssignableFrom(method.getParameterTypes()[0])){
+                    java.lang.String message = java.lang.String.format("方法[%s]第一个参数的类型必须为ISession或其子类",
                             method.getDeclaringClass().getSimpleName()+"::"+method.getName());
                     throw new IllegalArgumentException(message);
                 }

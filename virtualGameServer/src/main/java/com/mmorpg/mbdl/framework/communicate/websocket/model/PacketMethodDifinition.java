@@ -30,8 +30,8 @@ public class PacketMethodDifinition {
         packetMethodDifinition.setAbstractPacketClazz(aClazz);
         return packetMethodDifinition;
     }
-    public Object invoke(WsSession wsSession,AbstractPacket abstractPacket){
-        Object obj= org.springframework.util.ReflectionUtils.invokeMethod(method,bean,wsSession,abstractPacket);
+    public Object invoke(ISession session,AbstractPacket abstractPacket){
+        Object obj= org.springframework.util.ReflectionUtils.invokeMethod(method,bean,session,abstractPacket);
         return obj;
     }
     public static void main(String[] args){

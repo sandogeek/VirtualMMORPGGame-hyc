@@ -4,7 +4,7 @@ import com.mmorpg.mbdl.bussiness.chat.packet.ChatReq;
 import com.mmorpg.mbdl.bussiness.chat.packet.ChatResp;
 import com.mmorpg.mbdl.framework.communicate.websocket.annotation.PacketHandler;
 import com.mmorpg.mbdl.framework.communicate.websocket.annotation.PacketMethod;
-import com.mmorpg.mbdl.framework.communicate.websocket.model.WsSession;
+import com.mmorpg.mbdl.framework.communicate.websocket.model.ISession;
 import com.mmorpg.mbdl.framework.thread.task.Task;
 import com.mmorpg.mbdl.framework.thread.task.TaskDispatcher;
 
@@ -21,7 +21,7 @@ public class ChatFacade {
      * @return
      */
     @PacketMethod(executeParallel = true)
-    public void handleChatReq(WsSession session, ChatReq chatReq){
+    public void handleChatReq(ISession session, ChatReq chatReq){
         /**
          * 每个聊天请求生成新的任务，根据频道ID拿到对应的队列，然后把任务submit到这个队列中即可保证所有玩家显示的消息的顺序一致
          */

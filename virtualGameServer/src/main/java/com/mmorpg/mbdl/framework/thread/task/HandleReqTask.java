@@ -1,11 +1,10 @@
 package com.mmorpg.mbdl.framework.thread.task;
 
 import com.mmorpg.mbdl.framework.communicate.websocket.model.AbstractPacket;
+import com.mmorpg.mbdl.framework.communicate.websocket.model.ISession;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.PacketMethodDifinition;
-import com.mmorpg.mbdl.framework.communicate.websocket.model.WsSession;
 
 import java.io.Serializable;
-import java.util.concurrent.TimeUnit;
 
 /**
  * 处理请求包任务
@@ -13,11 +12,11 @@ import java.util.concurrent.TimeUnit;
  */
 public class HandleReqTask extends Task {
     private PacketMethodDifinition packetMethodDifinition;
-    private WsSession wsSession;
+    private ISession session;
     private AbstractPacket abstractPacket;
 
-    public HandleReqTask(PacketMethodDifinition packetMethodDifinition,WsSession wsSession,AbstractPacket abstractPacket){
-        this.setWsSession(wsSession);
+    public HandleReqTask(PacketMethodDifinition packetMethodDifinition, ISession session, AbstractPacket abstractPacket){
+        this.setISession(session);
         this.setPacketMethodDifinition(packetMethodDifinition);
         this.setAbstractPacket(abstractPacket);
         // 根据方法注解决定是否打印日志
@@ -26,7 +25,7 @@ public class HandleReqTask extends Task {
 
     @Override
     public Serializable getDispatcherId() {
-        return wsSession.getId();
+        return session.getId();
     }
 
     @Override
@@ -37,9 +36,9 @@ public class HandleReqTask extends Task {
 
     @Override
     public void execute() {
-        Object obj = packetMethodDifinition.invoke(wsSession,abstractPacket);
+        Object obj = packetMethodDifinition.invoke(session,abstractPacket);
         if (obj != null){
-            wsSession.sendPacket((AbstractPacket) obj);
+            session.sendPacket((AbstractPacket) obj);
         }
     }
     public PacketMethodDifinition getPacketMethodDifinition() {
@@ -50,12 +49,12 @@ public class HandleReqTask extends Task {
         this.packetMethodDifinition = packetMethodDifinition;
     }
 
-    public WsSession getWsSession() {
-        return wsSession;
+    public ISession getISession() {
+        return session;
     }
 
-    public void setWsSession(WsSession wsSession) {
-        this.wsSession = wsSession;
+    public void setISession(ISession session) {
+        this.session = session;
     }
 
     public AbstractPacket getAbstractPacket() {
