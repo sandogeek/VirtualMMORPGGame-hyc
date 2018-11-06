@@ -11,6 +11,7 @@ import com.mmorpg.mbdl.framework.communicate.websocket.model.SessionState;
 public class HeartBeatFacade {
     @PacketMethod(logOrNot = false,state = SessionState.ANY)
     public PongHeartBeat handlePing(ISession session, PingHeartBeat pingHeartBeat){
+        // TODO 待优化
         return new PongHeartBeat();
     }
 

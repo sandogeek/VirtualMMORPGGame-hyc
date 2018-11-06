@@ -23,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class BussinessPoolExecutor {
     /** 业务线程池 */
+    // TODO 深入学习netty后对比决定是否换用netty的线程池
     private ScheduledThreadPoolExecutor businessThreadPool;
     /** 业务所有的任务队列 */
     private ITimeOutHashMap<Serializable, TaskQueue> businessThreadPoolTaskQueues;

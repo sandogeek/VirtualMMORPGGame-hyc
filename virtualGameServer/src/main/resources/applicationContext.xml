@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:jpa="http://www.springframework.org/schema/data/jpa"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
-
-	">
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd">
     <!--开启@Autowire @PostConstruct @PreDestroy等注解-->
     <context:annotation-config/>
 
@@ -19,6 +18,37 @@
                                 expression="com.mmorpg.mbdl.framework.communicate.websocket.annotation.PacketHandler"/>
     </context:component-scan>
     <!--加载全局配置-->
-    <context:property-placeholder location="classpath*:server.properties,classpath*:dev.properties" />
+    <context:property-placeholder location="classpath*:server.properties,classpath*:dev.properties,classpath*:jdbc.properties" />
 
+    <!--数据库配置-->
+    <!--创建Spring Data JPA实例对象-->
+    <jpa:repositories base-package="com.mmorpg.**.dao"/>
+    <bean id="dataSource"
+          class="com.alibaba.druid.pool.DruidDataSource" destroy-method="close"
+        p:url="${jdbc.url}"
+        p:username="${jdbc.username}"
+        p:password="${jdbc.password}"
+
+          p:initialSize="${jdbc.datasource.initialSize}"
+          p:minIdle="${jdbc.datasource.minIdle}"
+          p:maxActive="${jdbc.datasource.maxActive}"
+          p:maxWait="${jdbc.datasource.maxWait}"
+          p:timeBetweenEvictionRunsMillis="${jdbc.datasource.timeBetweenEvictionRunsMillis}"
+          p:minEvictableIdleTimeMillis="${jdbc.datasource.minEvictableIdleTimeMillis}"
+          p:validationQuery="${jdbc.datasource.validationQuery}"
+          p:testWhileIdle="${jdbc.datasource.testWhileIdle}"
+          p:testOnBorrow="${jdbc.datasource.testOnBorrow}"
+          p:testOnReturn="${jdbc.datasource.testOnReturn}"
+          p:poolPreparedStatements="${jdbc.datasource.poolPreparedStatements}"
+          p:maxPoolPreparedStatementPerConnectionSize="${jdbc.datasource.maxPoolPreparedStatementPerConnectionSize}"
+    />
+    <bean id = "entityManagerFactory"
+          class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"
+          p:dataSource-ref="dataSource"
+          p:packagesToScan="com.mmorpg.**.entity">
+        <property name="jpaVendorAdapter">
+            <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter"
+                 p:generateDdl="true" p:showSql="true"/>
+        </property>
+    </bean>
 </beans>

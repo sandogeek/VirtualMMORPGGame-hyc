@@ -25,6 +25,7 @@ public class HandleReqTask extends Task {
 
     @Override
     public Serializable getDispatcherId() {
+        // TODO 优化：用户登录前的请求包并不需要串行，使用ChannelId获取队列，玩家频繁上下线的情况下会导致产生大量无用队列，因此应使用PlayerId拿TaskQueue
         return session.getId();
     }
 
