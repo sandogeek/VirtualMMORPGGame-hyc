@@ -34,6 +34,8 @@ public class PacketIdManager {
     public static final short CHAT_REQ = 10101;
     public static final short CHAT_RESP = 10102;
 
+    public static final short REGISTER_REQ = 10201;
+
 
     private static PacketIdManager self;
     public static PacketIdManager getIntance(){
