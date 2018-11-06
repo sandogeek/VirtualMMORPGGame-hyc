@@ -5,7 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 
 @Entity
-public class AccountEntity {
+public class PlayerAccountEntity {
     @Id
     private Long playerId;
     @Column(unique = true)
