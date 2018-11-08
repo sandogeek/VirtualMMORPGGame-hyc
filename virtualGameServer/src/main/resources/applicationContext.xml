@@ -19,6 +19,11 @@
     </context:component-scan>
     <!-- 使用cglib进行动态代理 -->
     <aop:aspectj-autoproxy proxy-target-class="true" />
+    <bean class="com.github.xiaolyuh.manager.LayeringCacheManager">
+        <constructor-arg ref="redisTemplate"/>
+    </bean>
+    <bean class="com.github.xiaolyuh.aspect.LayeringAspect"/>
+    <bean class="org.springframework.aop.aspectj.annotation.AnnotationAwareAspectJAutoProxyCreator"/>
 
     <!--加载全局配置-->
     <context:property-placeholder
@@ -45,16 +50,15 @@
     </bean >
     <!--redis连接工厂 -->
     <bean id="jedisConnectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory" destroy-method="destroy"
-          p:usePool="true"
-    >
+          p:usePool="true">
         <property name="poolConfig" ref="jedisPoolConfig"/>
         <!--IP地址 -->
         <property name="hostName" value="${redis.hostName}"/>
         <!--端口号  -->
         <property name="port" value="${redis.port}"/>
         <!--如果Redis设置有密码  -->
-        <property name="password" value="${redis.password}" />
-        <!--客户端超时时间单位是毫秒  -->
+        <!--<property name="password" value="${redis.password}" />-->
+        <!--客户端超时时间单位是毫秒-->
         <property name="timeout" value="${redis.timeout}"/>
     </bean>
     <!--redis操作模版,使用该对象可以操作redis  -->
@@ -65,13 +69,19 @@
             <bean class="com.github.xiaolyuh.serializer.StringRedisSerializer" />
         </property>
         <property name="valueSerializer" >
-            <bean class="com.github.xiaolyuh.serializer.FastJsonRedisSerializer" />
+            <bean class="com.github.xiaolyuh.serializer.FastJsonRedisSerializer">
+                <constructor-arg value="java.lang.Object"/>
+                <constructor-arg value="com.mmorpg.mbdl.bussiness"/>
+            </bean>
         </property>
         <property name="hashKeySerializer">
             <bean class="com.github.xiaolyuh.serializer.StringRedisSerializer" />
         </property>
         <property name="hashValueSerializer">
-            <bean class="org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer"/>
+            <bean class="com.github.xiaolyuh.serializer.FastJsonRedisSerializer">
+                <constructor-arg value="java.lang.Object"/>
+                <constructor-arg value="com.mmorpg.mbdl.bussiness"/>
+            </bean>
         </property>
         <!--开启事务  -->
         <property name="enableTransactionSupport" value="true"/>

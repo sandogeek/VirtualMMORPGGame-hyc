@@ -1,24 +1,23 @@
 package com.mmorpg.mbdl;
 
-import com.mmorpg.mbdl.framework.communicate.websocket.model.AbstractPacket;
 import com.mmorpg.mbdl.framework.communicate.websocket.generator.PacketIdTsGenerator;
-import com.mmorpg.mbdl.framework.communicate.websocket.generator.ProtoGenerator;
+import com.mmorpg.mbdl.framework.communicate.websocket.model.AbstractPacket;
 import com.mmorpg.mbdl.framework.communicate.websocket.server.WebSocketServer;
 import com.mmorpg.mbdl.framework.thread.TaskExecutorGroup;
 import com.mmorpg.mbdl.framework.utils.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
-import org.springframework.stereotype.Component;
 
 import java.util.Properties;
 
+// @SpringBootApplication
 public class Start {
     private static Logger logger= LoggerFactory.getLogger(Start.class);
 
@@ -30,6 +29,7 @@ public class Start {
         TaskExecutorGroup.init();
         // 启动spring容器
         ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("applicationContext.xml");
+        // ConfigurableApplicationContext ctx = SpringApplication.run(Start.class, args);
         PacketIdTsGenerator.getInstance().generatePacketIdTs();
         removeAbstractPacketBean(ctx);
         logger.info("开始启动WebSocket服务器...");
@@ -41,7 +41,7 @@ public class Start {
      * 在Spring IOC启动后去除容器中AbstractPacket的单例
      * @param ctx spring上下文
      */
-    static void removeAbstractPacketBean(ClassPathXmlApplicationContext ctx){
+    static void removeAbstractPacketBean(ConfigurableApplicationContext ctx){
         for (String beanName :
                 ctx.getBeanNamesForType(AbstractPacket.class)) {
             BeanDefinitionRegistry beanDefReg = (DefaultListableBeanFactory)ctx.getBeanFactory();
