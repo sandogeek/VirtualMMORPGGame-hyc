@@ -1,10 +1,10 @@
 package com.mmorpg.mbdl;
 
-import com.mmorpg.mbdl.framework.communicate.websocket.generator.PacketIdTsGenerator;
+import com.mmorpg.mbdl.framework.common.generator.PacketIdTsGenerator;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.AbstractPacket;
 import com.mmorpg.mbdl.framework.communicate.websocket.server.WebSocketServer;
 import com.mmorpg.mbdl.framework.thread.TaskExecutorGroup;
-import com.mmorpg.mbdl.framework.utils.FileUtils;
+import com.mmorpg.mbdl.framework.common.utils.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;

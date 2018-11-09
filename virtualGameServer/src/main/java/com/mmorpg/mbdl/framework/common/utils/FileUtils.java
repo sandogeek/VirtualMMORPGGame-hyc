@@ -1,4 +1,4 @@
-package com.mmorpg.mbdl.framework.utils;
+package com.mmorpg.mbdl.framework.common.utils;
 
 import com.google.common.collect.Lists;
 import edu.emory.mathcs.backport.java.util.Collections;

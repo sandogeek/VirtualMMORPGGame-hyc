@@ -1,4 +1,4 @@
-package com.mmorpg.mbdl.framework.communicate.websocket.generator;
+package com.mmorpg.mbdl.framework.common.generator;
 
 import com.baidu.bjf.remoting.protobuf.ProtobufIDLGenerator;
 import com.mmorpg.mbdl.framework.communicate.websocket.annotation.ProtoDesc;
@@ -14,7 +14,7 @@ import java.lang.annotation.Annotation;
 import java.util.HashSet;
 import java.util.Set;
 
-import static com.mmorpg.mbdl.framework.utils.FileUtils.createFile;
+import static com.mmorpg.mbdl.framework.common.utils.FileUtils.createFile;
 
 @Component
 public class ProtoGenerator {

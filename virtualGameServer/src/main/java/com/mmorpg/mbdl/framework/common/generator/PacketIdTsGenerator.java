@@ -1,4 +1,4 @@
-package com.mmorpg.mbdl.framework.communicate.websocket.generator;
+package com.mmorpg.mbdl.framework.common.generator;
 
 import com.google.common.base.CaseFormat;
 import com.mmorpg.mbdl.bussiness.common.PacketIdManager;

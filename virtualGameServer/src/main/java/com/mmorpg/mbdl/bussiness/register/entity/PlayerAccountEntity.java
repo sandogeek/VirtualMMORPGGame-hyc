@@ -1,17 +1,24 @@
 package com.mmorpg.mbdl.bussiness.register.entity;
 
+import com.mmorpg.mbdl.framework.storage.core.IEntity;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
 @Entity
-public class PlayerAccountEntity {
+public class PlayerAccountEntity implements IEntity<Long> {
     @Id
     private Long playerId;
     @Column(unique = true)
     private String account;
     @Column
     private String password;
+
+    @Override
+    public Long getId() {
+        return playerId;
+    }
 
     public Long getPlayerId() {
         return playerId;

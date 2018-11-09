@@ -1,4 +1,4 @@
-package com.mmorpg.mbdl.framework.communicate.websocket.generator;
+package com.mmorpg.mbdl.framework.common.generator;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import io.netty.util.internal.ConcurrentSet;

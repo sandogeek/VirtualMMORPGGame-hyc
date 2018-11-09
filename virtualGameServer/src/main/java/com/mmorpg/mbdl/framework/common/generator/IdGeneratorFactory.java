@@ -1,4 +1,4 @@
-package com.mmorpg.mbdl.framework.communicate.websocket.generator;
+package com.mmorpg.mbdl.framework.common.generator;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;

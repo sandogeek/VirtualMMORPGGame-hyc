@@ -1,8 +1,8 @@
 package com.mmorpg.mbdl.bussiness.register.cache;
 
 import com.mmorpg.mbdl.bussiness.register.entity.PlayerAccountEntity;
-import com.mmorpg.mbdl.framework.communicate.websocket.generator.IdGenerator;
-import com.mmorpg.mbdl.framework.communicate.websocket.generator.IdGeneratorFactory;
+import com.mmorpg.mbdl.framework.common.generator.IdGenerator;
+import com.mmorpg.mbdl.framework.common.generator.IdGeneratorFactory;
 import junit.framework.Assert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
