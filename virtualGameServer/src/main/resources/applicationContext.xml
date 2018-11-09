@@ -124,7 +124,7 @@
         </property>
         <property name="jpaVendorAdapter">
             <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter"
-                 p:generateDdl="true" p:showSql="true"
+                 p:generateDdl="true" p:showSql="false"
                   p:database="MYSQL" p:databasePlatform="org.hibernate.dialect.MySQL55Dialect"
             />
         </property>
