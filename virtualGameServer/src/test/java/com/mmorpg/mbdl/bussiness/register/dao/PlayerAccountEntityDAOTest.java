@@ -6,6 +6,7 @@ import com.mmorpg.mbdl.framework.common.generator.IdGeneratorFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -13,7 +14,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ContextConfiguration("classpath:applicationContext.xml")
 class PlayerAccountEntityDAOTest {
     @Autowired
-    private PlayerAccountEntityDAO playerAccountEntityDAO;
+    private JpaRepository<PlayerAccountEntity,Long> playerAccountEntityDAO;
 
     @Test
     void accountEntity() {
