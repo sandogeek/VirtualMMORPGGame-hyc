@@ -19,10 +19,6 @@
     </context:component-scan>
     <!-- 使用cglib进行动态代理 -->
     <aop:aspectj-autoproxy proxy-target-class="true" />
-    <bean class="com.github.xiaolyuh.manager.LayeringCacheManager">
-        <constructor-arg ref="redisTemplate"/>
-    </bean>
-    <bean class="com.github.xiaolyuh.aspect.LayeringAspect"/>
     <bean class="org.springframework.aop.aspectj.annotation.AnnotationAwareAspectJAutoProxyCreator"/>
 
     <!--加载全局配置-->
@@ -88,13 +84,7 @@
     </bean >
 
     <!--数据库配置-->
-    <!-- 事务管理器 -->
-    <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
-        <property name="entityManagerFactory" ref="entityManagerFactory"/>
-    </bean>
-    <!-- dao -->
-    <jpa:repositories base-package="com.mmorpg.**.dao"
-                      repository-impl-postfix="Impl" entity-manager-factory-ref="entityManagerFactory"/>
+    <!--配置位置：com.mmorpg.mbdl.framework.storage.config.JpaConfiguration-->
     <bean id="dataSource"
           class="com.alibaba.druid.pool.DruidDataSource" destroy-method="close"
         p:url="${jdbc.url}"
@@ -114,20 +104,5 @@
           p:poolPreparedStatements="${jdbc.datasource.poolPreparedStatements}"
           p:maxPoolPreparedStatementPerConnectionSize="${jdbc.datasource.maxPoolPreparedStatementPerConnectionSize}"
     />
-    <bean id = "entityManagerFactory"
-          class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"
-          p:dataSource-ref="dataSource"
-          p:packagesToScan="com.mmorpg.**.entity"
-    >
-        <property name="jpaDialect">
-            <bean class="org.springframework.orm.jpa.vendor.HibernateJpaDialect" />
-        </property>
-        <property name="jpaVendorAdapter">
-            <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter"
-                 p:generateDdl="true" p:showSql="false"
-                  p:database="MYSQL" p:databasePlatform="org.hibernate.dialect.MySQL55Dialect"
-            />
-        </property>
-    </bean>
 
 </beans>

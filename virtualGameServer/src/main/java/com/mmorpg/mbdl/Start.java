@@ -22,6 +22,9 @@ public class Start {
     private static Logger logger= LoggerFactory.getLogger(Start.class);
 
     public static void  main(String[] args) throws Exception {
+        // TODO 检查所有@AutoWrie IStorage<...,...>是否有对应的拓展了IStorage<...,...>的子接口，如果没有就使用ByteBuddy生成并保存.class文件
+        // 以便下次启动无需生成
+        // checkAndGenerate()
         Resource resource = new ClassPathResource("/dev.properties");
         Properties props = PropertiesLoaderUtils.loadProperties(resource);
         clearProto(props.getProperty("dev.PROTO_PATH"));

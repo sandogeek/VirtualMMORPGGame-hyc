@@ -1,16 +1,23 @@
 package com.mmorpg.mbdl.framework.storage.core;
 
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.NoRepositoryBean;
+
 import java.io.Serializable;
 
 /**
- * 存储层接口
+ * 存储层（包括缓存）接口
+ * 参考：https://stackoverflow.com/questions/42133023/is-there-a-way-to-register-a-repository-base-class-with-a-spring-boot-auto-confi
+ * https://es.yemengying.com/4/4.6/4.6.2.html
  * <p>带缓存功能的CRUD:</p>
  * @param <PK> 主键类型
  * @param <E> 实体类型
+ * @author sando
  */
-public interface IStorage<PK extends Serializable&Comparable<PK>,E extends IEntity<PK>> {
+@NoRepositoryBean
+public interface IStorage<PK extends Serializable&Comparable<PK>,E extends IEntity<PK>> extends JpaRepository<E, PK> {
     /**
-     * 用entityBuilder创建一个实体，并将实体放入缓存和数据库
+     * 用entityBuilder创建一个实体，并将实体放入缓存(同步)和数据库（异步）
      * @param id 主键
      * @param entityCreator 实体创建器
      * @return 实体
@@ -43,7 +50,7 @@ public interface IStorage<PK extends Serializable&Comparable<PK>,E extends IEnti
     E getOrCreate(PK id, EntityCreator<PK,E> entityCreator);
 
     /**
-     * 更新缓存（同步）和数据库（异步）中的实体，如果不调用，缓存中的实体会根据策略同步到数据中<br>
+     * 更新缓存（同步）和数据库（异步）中的实体，如果不调用，缓存中的实体会根据策略（例如每隔一定的时间）同步到数据库中<br>
      * 调用update是为了尽快保存重要变更，以免服务器故障导致数据丢失
      * @param entity
      * @return
@@ -55,7 +62,7 @@ public interface IStorage<PK extends Serializable&Comparable<PK>,E extends IEnti
      * @param id 主键
      * @return 如果缓存中存在指定指定主键的实体，则返回相应的实体
      */
-    E delete(PK id);
+    E remove(PK id);
 
     /**
      * 使指定主键的缓存失效

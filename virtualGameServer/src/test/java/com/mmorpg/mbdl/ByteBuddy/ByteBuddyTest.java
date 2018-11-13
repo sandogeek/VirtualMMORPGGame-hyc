@@ -2,7 +2,10 @@ package com.mmorpg.mbdl.ByteBuddy;
 
 import com.mmorpg.mbdl.bussiness.register.cache.PlayerAccountEntityService;
 import com.mmorpg.mbdl.bussiness.register.entity.PlayerAccountEntity;
+import com.mmorpg.mbdl.framework.storage.annotation.ByteBuddyGenerated;
+import com.mmorpg.mbdl.framework.storage.core.IStorage;
 import net.bytebuddy.ByteBuddy;
+import net.bytebuddy.description.annotation.AnnotationDescription;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.dynamic.DynamicType;
 import org.junit.jupiter.api.Test;
@@ -29,7 +32,7 @@ public class ByteBuddyTest {
         TypeDescription.Generic genericSuperClass =
                 TypeDescription.Generic.Builder.parameterizedType(JpaRepository.class, PlayerAccountEntity.class,Long.class).build();
         // //new ByteBuddy().subclass(Repository.class) //简单非泛型类可以这么做
-        // DynamicType.Unloaded<?> unloadedType = new ByteBuddy().sub(genericSuperClass)
+        // DynamicType.Unloaded<?> unloadedType = new ByteBuddy().makeInterface(genericSuperClass)
         //         .name(PlayerAccountEntityService.class.getPackage().getName().concat(".dao.").concat(PlayerAccountEntity.class.getSimpleName()+"Repository"))
         //         .method(ElementMatchers.named("findOne"))  //ElementMatchers 提供了多种方式找到方法
         //         //.intercept(FixedValue.value("Yanbin"))   //最简单的方式就是返回一个固定值
@@ -52,10 +55,13 @@ public class ByteBuddyTest {
     @Test
     public void loadClass() throws IOException {
         TypeDescription.Generic genericSuperClass =
-                TypeDescription.Generic.Builder.parameterizedType(JpaRepository.class, PlayerAccountEntity.class,Long.class).build();
+                TypeDescription.Generic.Builder.parameterizedType(IStorage.class, Long.class, PlayerAccountEntity.class).build();
+        String packageName = PlayerAccountEntityService.class.getPackage().getName();
+        String classFullName = packageName.substring(0,packageName.lastIndexOf(".")).concat(".dao.").concat(PlayerAccountEntity.class.getSimpleName() + "Repository");
         DynamicType.Unloaded<?> type = new ByteBuddy()
                 .makeInterface(genericSuperClass)
-                .name(PlayerAccountEntityService.class.getPackage().getName().concat(".dao.").concat(PlayerAccountEntity.class.getSimpleName()+"Repository"))
+                .name(classFullName)
+                .annotateType(AnnotationDescription.Builder.ofType(ByteBuddyGenerated.class).build())
                 .make();
         // 在 Maven 项目中，写类文件在 target/classes/cc/unmi/UserRepository.class 中
         type.saveIn(new File("target/classes"));

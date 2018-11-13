@@ -4,10 +4,10 @@ import com.github.xiaolyuh.annotation.CacheEvict;
 import com.github.xiaolyuh.annotation.CachePut;
 import com.github.xiaolyuh.annotation.Cacheable;
 import com.mmorpg.mbdl.bussiness.register.entity.PlayerAccountEntity;
+import com.mmorpg.mbdl.framework.storage.core.IStorage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
 
 /**
@@ -19,19 +19,21 @@ public class PlayerAccountEntityService {
 
     // @Autowired
     // private PlayerAccountEntityDAO jpaRepository;
+    // @Autowired
+    // private JpaRepository<PlayerAccountEntity, Long> jpaRepository;
     @Autowired
-    private JpaRepository<PlayerAccountEntity, Long> jpaRepository;
+    private IStorage<Long, PlayerAccountEntity> iStorage;
 
     @CachePut(value = "player.account", key = "#playerAccount.playerId", depict = "用户信息缓存")
     public PlayerAccountEntity saveAndFlush(PlayerAccountEntity playerAccount) {
         logger.info("为id、key为:" + playerAccount.getPlayerId() + "数据做了缓存");
-        return jpaRepository.saveAndFlush(playerAccount);
+        return iStorage.saveAndFlush(playerAccount);
     }
 
     @CacheEvict(value = "player.account", key = "#id")
     public void delete(Long id) {
         logger.info("删除了id、key为" + id + "的数据缓存");
-        jpaRepository.delete(id);
+        iStorage.delete(id);
     }
 
     @CacheEvict(value = "player.account", allEntries = true)
@@ -42,6 +44,6 @@ public class PlayerAccountEntityService {
     @Cacheable(value = "player.account", key = "#id", depict = "用户信息缓存")
     public PlayerAccountEntity get(Long id) {
         logger.info("为id、key为:" + id + "数据做了缓存");
-        return jpaRepository.findOne(id);
+        return iStorage.findOne(id);
     }
 }

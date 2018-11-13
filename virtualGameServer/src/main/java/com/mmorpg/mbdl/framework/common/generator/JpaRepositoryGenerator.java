@@ -25,7 +25,7 @@ public class JpaRepositoryGenerator implements BeanFactoryPostProcessor {
     // private static final HashMap
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
-
+        // System.out.println("aaa");
     }
 
     /**

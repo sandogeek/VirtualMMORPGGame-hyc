@@ -132,6 +132,13 @@
             <artifactId>spring-data-jpa</artifactId>
             <version>1.11.12.RELEASE</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.springframework.data/spring-data-jpa -->
+        <!--<dependency>-->
+            <!--<groupId>org.springframework.data</groupId>-->
+            <!--<artifactId>spring-data-jpa</artifactId>-->
+            <!--<version>2.0.8.RELEASE</version>-->
+        <!--</dependency>-->
+
         <!--缓存-->
         <!-- https://mvnrepository.com/artifact/com.github.xiaolyuh/layering-cache -->
         <dependency>
