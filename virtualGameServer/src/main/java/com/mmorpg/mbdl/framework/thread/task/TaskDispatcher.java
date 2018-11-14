@@ -34,7 +34,17 @@ public class TaskDispatcher {
      * @return 如果任务分发成功并被提交到线程池，返回ScheduledFuture，否则返回null
      */
     public ScheduledFuture<?> dispatch(AbstractTask abstractTask, boolean intoThreadPoolDirectly){
-        if (intoThreadPoolDirectly||abstractTask.getDispatcherId()==null){
+        if (intoThreadPoolDirectly){
+            abstractTask.setExecuteParallel(true);
+            // if (abstractTask.getDispatcherId()!=null){
+            //     /** 设置并行任务的dispatcherId为null,否则这个任务执行到最后会执行{@link TaskQueue#andThen()}}方法，导致原队列的后续任务并行 */
+            //     abstractTask.setDispatcherId(null);
+            // }
+            return BussinessPoolExecutor.getIntance().executeTask(abstractTask);
+        }
+        // dispatcherId为null的任务并行执行
+        if (abstractTask.getDispatcherId()==null){
+            abstractTask.setExecuteParallel(true);
             return BussinessPoolExecutor.getIntance().executeTask(abstractTask);
         }
         TaskQueue taskQueue = bussinessPoolExecutor.getBusinessThreadPoolTaskQueues().getOrCreate(abstractTask.getDispatcherId());

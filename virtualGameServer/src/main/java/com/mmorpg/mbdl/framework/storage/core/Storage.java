@@ -8,7 +8,7 @@ import javax.persistence.EntityManager;
 import java.io.Serializable;
 
 /**
- *
+ * IStorage的默认实现类
  * @param <PK> 主键类型
  * @param <E> 实体类型
  * @author sando

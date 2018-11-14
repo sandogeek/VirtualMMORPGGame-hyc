@@ -18,8 +18,7 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 
 @Configuration
 // @ComponentScan(basePackageClasses = {JpaConfiguration.class})
-// 由于basePackages = {"com.mmorpg.mbdl.bussiness.**.dao"}，所以自定义的IStorage子接口必须位于com.mmorpg.mbdl.bussiness.**.dao下
-@EnableJpaRepositories(basePackageClasses = JpaConfiguration.class,basePackages = {"com.mmorpg.mbdl.bussiness.**.dao"},
+@EnableJpaRepositories(basePackageClasses = JpaConfiguration.class,
         repositoryBaseClass = Storage.class)
 @ImportResource(locations = {"classpath*:applicationContext.xml"})
 public class JpaConfiguration {

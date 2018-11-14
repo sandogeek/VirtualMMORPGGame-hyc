@@ -17,8 +17,14 @@ public abstract class AbstractTask implements Runnable {
     private long maxDelay = TimeUnit.NANOSECONDS.convert(2,TimeUnit.MILLISECONDS);
     private long maxExecute = TimeUnit.NANOSECONDS.convert(3,TimeUnit.MILLISECONDS);
     private Logger targetLogger = logger;
+    private Serializable dispatcherId;
+    private boolean executeParallel = false;
     // private TaskQueue taskQueue = TaskDispatcher.getIntance().getOrCreateTaskQueue(getDispatcherId());
 
+
+    public AbstractTask(Serializable dispatcherId) {
+        this.dispatcherId = dispatcherId;
+    }
 
     /**
      * 是否打印日志
@@ -36,7 +42,17 @@ public abstract class AbstractTask implements Runnable {
      * 必须保证唯一性，不能是hashcode因为有可能有hash冲突，导致不同的玩家或者Channel使用同一TaskQueue
      * @return
      */
-    public abstract Serializable getDispatcherId();
+    public Serializable getDispatcherId(){
+        return dispatcherId;
+    }
+
+    public boolean isExecuteParallel() {
+        return executeParallel;
+    }
+
+    public void setExecuteParallel(boolean executeParallel){
+        this.executeParallel = executeParallel;
+    }
 
     public abstract TaskType taskType();
 
@@ -82,6 +98,8 @@ public abstract class AbstractTask implements Runnable {
      */
     public abstract void execute();
 
+
+
     @Override
     public void run() {
         // TODO 统计超时任务
@@ -99,9 +117,9 @@ public abstract class AbstractTask implements Runnable {
             if (this.isLogOrNot()){
                 log(delayTime,executeTime);
             }
-            TaskQueue taskQueue = getTaskQueue();
-            if (taskQueue != null){
-                taskQueue.andThen();
+            // 不是并行执行的情况下才会把队列下一个任务加入线程池
+            if (!isExecuteParallel()){
+                getTaskQueue().andThen();
             }
         }
     }
@@ -149,9 +167,6 @@ public abstract class AbstractTask implements Runnable {
     }
 
     public TaskQueue getTaskQueue() {
-        if (getDispatcherId()==null){
-            return null;
-        }
         return BussinessPoolExecutor.getIntance().getOrCreateTaskQueue(getDispatcherId());
     }
 }

@@ -17,11 +17,14 @@ import java.util.HashMap;
 import java.util.Set;
 
 /**
- * JpaRepository泛型子接口生成器
+ * IStorage泛型子接口生成器
+ * <p>由于生成这种子接口需要先扫描所有@Autowire IStorage的字段，然后再对比所有已有的IStorage泛型子接口，然后据此决定是否生成子接口
+ * 当业务类多起来后可能会导致启动时间很长，没解决这个问题前废弃</p>
  * @author sando
  */
+@Deprecated
 @Component
-public class JpaRepositoryGenerator implements BeanFactoryPostProcessor {
+public class IStorageGenerator implements BeanFactoryPostProcessor {
     // private static final HashMap
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {

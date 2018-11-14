@@ -9,7 +9,6 @@ import io.netty.channel.ChannelFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.Serializable;
 import java.net.InetSocketAddress;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -47,12 +46,7 @@ public class WsSession extends AbstractSession {
         ChannelFuture future = channel.write(abstractPacket);
         if (genereteDelayedTask.compareAndSet(true,false)){
             // 缓冲25毫秒
-            TaskDispatcher.getIntance().dispatch(new DelayedTask(25, TimeUnit.MILLISECONDS) {
-                // 因为直接丢到线程池，没有放入队列，所以不需要dispatcherId
-                @Override
-                public Serializable getDispatcherId() {
-                    return null;
-                }
+            TaskDispatcher.getIntance().dispatch(new DelayedTask(null,25, TimeUnit.MILLISECONDS) {
 
                 @Override
                 public String taskName() {

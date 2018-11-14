@@ -8,8 +8,6 @@ import com.mmorpg.mbdl.framework.communicate.websocket.model.ISession;
 import com.mmorpg.mbdl.framework.thread.task.Task;
 import com.mmorpg.mbdl.framework.thread.task.TaskDispatcher;
 
-import java.io.Serializable;
-
 @PacketHandler
 public class ChatFacade {
     /**
@@ -25,11 +23,7 @@ public class ChatFacade {
         /**
          * 每个聊天请求生成新的任务，根据频道ID拿到对应的队列，然后把任务submit到这个队列中即可保证所有玩家显示的消息的顺序一致
          */
-        Task task = new Task() {
-            @Override
-            public Serializable getDispatcherId() {
-                return chatReq.getChatChannelId();
-            }
+        Task task = new Task(chatReq.getChatChannelId()) {
 
             @Override
             public String taskName() {

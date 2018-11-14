@@ -1,7 +1,7 @@
 package com.mmorpg.mbdl.framework.communicate.websocket.handler;
 
 import com.mmorpg.mbdl.framework.communicate.websocket.model.*;
-import com.mmorpg.mbdl.framework.thread.task.HandleReqTask;
+import com.mmorpg.mbdl.framework.communicate.websocket.model.HandleReqTask;
 import com.mmorpg.mbdl.framework.thread.task.TaskDispatcher;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -43,7 +43,7 @@ public class AbstractPacketDispacherHandler extends SimpleChannelInboundHandler<
                 return;
             }
         }
-        TaskDispatcher.getIntance().dispatch(new HandleReqTask(packetMethodDifinition, session,abstractPacket),executeParallel);
+        TaskDispatcher.getIntance().dispatch(new HandleReqTask(packetMethodDifinition, session,abstractPacket,session.getId()),executeParallel);
         // TaskExecutorGroup.addTask(new HandleReqTask(packetMethodDifinition,session,abstractPacket));
     }
 

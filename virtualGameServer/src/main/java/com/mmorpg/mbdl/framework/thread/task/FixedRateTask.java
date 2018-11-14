@@ -1,5 +1,6 @@
 package com.mmorpg.mbdl.framework.thread.task;
 
+import java.io.Serializable;
 import java.util.concurrent.TimeUnit;
 
 public abstract class FixedRateTask extends AbstractTask {
@@ -7,7 +8,8 @@ public abstract class FixedRateTask extends AbstractTask {
     private long period;
     private TimeUnit timeUnit;
 
-    public FixedRateTask(long initalDelay, long period, TimeUnit timeUnit) {
+    public FixedRateTask(Serializable dispatcherId,long initalDelay, long period, TimeUnit timeUnit) {
+        super(dispatcherId);
         this.initalDelay = initalDelay;
         this.period = period;
         this.timeUnit = timeUnit;

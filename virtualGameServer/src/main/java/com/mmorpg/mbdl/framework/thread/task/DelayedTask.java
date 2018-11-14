@@ -1,5 +1,6 @@
 package com.mmorpg.mbdl.framework.thread.task;
 
+import java.io.Serializable;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -9,7 +10,8 @@ public abstract class DelayedTask extends AbstractTask {
     private long delay;
     private TimeUnit timeUnit;
 
-    public DelayedTask(long delay, TimeUnit timeUnit) {
+    public DelayedTask(Serializable dispatcherId,long delay, TimeUnit timeUnit) {
+        super(dispatcherId);
         this.delay = delay;
         this.timeUnit = timeUnit;
     }

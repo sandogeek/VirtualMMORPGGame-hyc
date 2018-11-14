@@ -1,8 +1,6 @@
-package com.mmorpg.mbdl.framework.thread.task;
+package com.mmorpg.mbdl.framework.communicate.websocket.model;
 
-import com.mmorpg.mbdl.framework.communicate.websocket.model.AbstractPacket;
-import com.mmorpg.mbdl.framework.communicate.websocket.model.ISession;
-import com.mmorpg.mbdl.framework.communicate.websocket.model.PacketMethodDifinition;
+import com.mmorpg.mbdl.framework.thread.task.Task;
 
 import java.io.Serializable;
 
@@ -14,19 +12,14 @@ public class HandleReqTask extends Task {
     private PacketMethodDifinition packetMethodDifinition;
     private ISession session;
     private AbstractPacket abstractPacket;
-
-    public HandleReqTask(PacketMethodDifinition packetMethodDifinition, ISession session, AbstractPacket abstractPacket){
+    // TODO 优化：用户登录前的请求包并不需要串行，使用ChannelId获取队列，玩家频繁上下线的情况下会导致产生大量无用队列，因此应使用PlayerId拿TaskQueue
+    public HandleReqTask(PacketMethodDifinition packetMethodDifinition, ISession session, AbstractPacket abstractPacket,Serializable dispatcherId){
+        super(dispatcherId);
         this.setISession(session);
         this.setPacketMethodDifinition(packetMethodDifinition);
         this.setAbstractPacket(abstractPacket);
         // 根据方法注解决定是否打印日志
         this.setLogOrNot(packetMethodDifinition.getPacketMethodAnno().logOrNot());
-    }
-
-    @Override
-    public Serializable getDispatcherId() {
-        // TODO 优化：用户登录前的请求包并不需要串行，使用ChannelId获取队列，玩家频繁上下线的情况下会导致产生大量无用队列，因此应使用PlayerId拿TaskQueue
-        return session.getId();
     }
 
     @Override
