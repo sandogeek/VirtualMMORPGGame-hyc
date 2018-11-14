@@ -47,7 +47,7 @@ public class BussinessPoolExecutor {
         ThreadFactory namedThreadFactory = new ThreadFactoryBuilder()
                 .setNameFormat(threadNameFommat+"%2d").build();
         this.businessThreadPool = new ScheduledThreadPoolExecutor(poolSize,namedThreadFactory);
-        this.businessThreadPoolTaskQueues = new TimeOutCaffeineMap<>(timeout, TimeUnit.MINUTES,()->
+        this.businessThreadPoolTaskQueues = new TimeOutCaffeineMap<>(timeout, TimeUnit.MINUTES,(key) ->
                 new TaskQueue(businessThreadPool)
         );
     }
