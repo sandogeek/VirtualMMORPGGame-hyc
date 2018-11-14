@@ -34,7 +34,7 @@ public class TaskDispatcher {
      * @return 如果任务分发成功并被提交到线程池，返回ScheduledFuture，否则返回null
      */
     public ScheduledFuture<?> dispatch(AbstractTask abstractTask, boolean intoThreadPoolDirectly){
-        if (intoThreadPoolDirectly){
+        if (intoThreadPoolDirectly||abstractTask.getDispatcherId()==null){
             return BussinessPoolExecutor.getIntance().executeTask(abstractTask);
         }
         TaskQueue taskQueue = bussinessPoolExecutor.getBusinessThreadPoolTaskQueues().getOrCreate(abstractTask.getDispatcherId());
