@@ -149,6 +149,9 @@ public abstract class AbstractTask implements Runnable {
     }
 
     public TaskQueue getTaskQueue() {
+        if (getDispatcherId()==null){
+            return null;
+        }
         return BussinessPoolExecutor.getIntance().getOrCreateTaskQueue(getDispatcherId());
     }
 }
