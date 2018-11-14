@@ -99,7 +99,10 @@ public abstract class AbstractTask implements Runnable {
             if (this.isLogOrNot()){
                 log(delayTime,executeTime);
             }
-            getTaskQueue().andThen();
+            TaskQueue taskQueue = getTaskQueue();
+            if (taskQueue != null){
+                taskQueue.andThen();
+            }
         }
     }
     public static Logger getLogger() {
