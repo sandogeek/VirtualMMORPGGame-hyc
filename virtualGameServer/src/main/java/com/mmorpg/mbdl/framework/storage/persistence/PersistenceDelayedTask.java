@@ -35,4 +35,24 @@ public class PersistenceDelayedTask extends DelayedTask {
     public void execute() {
 
     }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (!(other instanceof PersistenceDelayedTask)) {
+            return false;
+        }
+        PersistenceDelayedTask otherType = (PersistenceDelayedTask) other;
+        if (this.getDelay() != otherType.getDelay()){
+            return false;
+        }
+        return true;
+    }
 }
