@@ -17,9 +17,6 @@
         <context:include-filter type="annotation"
                                 expression="com.mmorpg.mbdl.framework.communicate.websocket.annotation.PacketHandler"/>
     </context:component-scan>
-    <!-- 使用cglib进行动态代理 -->
-    <aop:aspectj-autoproxy proxy-target-class="true" />
-    <bean class="org.springframework.aop.aspectj.annotation.AnnotationAwareAspectJAutoProxyCreator"/>
 
     <!--加载全局配置-->
     <context:property-placeholder
@@ -104,5 +101,10 @@
           p:poolPreparedStatements="${jdbc.datasource.poolPreparedStatements}"
           p:maxPoolPreparedStatementPerConnectionSize="${jdbc.datasource.maxPoolPreparedStatementPerConnectionSize}"
     />
+    <!--开启@Transactional的支持,并强制使用类代理（cglib代理）-->
+    <tx:annotation-driven proxy-target-class="true"/>
+    <!-- 使用cglib进行动态代理 -->
+    <aop:aspectj-autoproxy proxy-target-class="true" />
+    <bean class="org.springframework.aop.aspectj.annotation.AnnotationAwareAspectJAutoProxyCreator"/>
 
 </beans>

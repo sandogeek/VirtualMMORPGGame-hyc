@@ -3,7 +3,7 @@ package com.mmorpg.mbdl.framework.storage.config;
 import com.alibaba.druid.pool.DruidDataSource;
 import com.github.xiaolyuh.aspect.LayeringAspect;
 import com.github.xiaolyuh.manager.LayeringCacheManager;
-import com.mmorpg.mbdl.framework.storage.core.Storage;
+import com.mmorpg.mbdl.framework.storage.core.StorageMySql;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,10 +16,12 @@ import org.springframework.orm.jpa.vendor.Database;
 import org.springframework.orm.jpa.vendor.HibernateJpaDialect;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 
+import javax.persistence.EntityManagerFactory;
+
 @Configuration
 // @ComponentScan(basePackageClasses = {JpaConfiguration.class})
 @EnableJpaRepositories(basePackageClasses = JpaConfiguration.class,
-        repositoryBaseClass = Storage.class)
+        repositoryBaseClass = StorageMySql.class)
 @ImportResource(locations = {"classpath*:applicationContext.xml"})
 public class JpaConfiguration {
     @Bean
@@ -55,12 +57,17 @@ public class JpaConfiguration {
         entityManagerFactoryBean.setPackagesToScan("com.mmorpg.**.entity");
         entityManagerFactoryBean.setJpaDialect(jpaDialect());
         entityManagerFactoryBean.setJpaVendorAdapter(jpaVendorAdapter());
+        // Map<String,?> jpaPropertyMap = new HashMap<>(10);
+        // TODO jpaProperty优化
+        // jpaProperties.put()
+        // entityManagerFactoryBean.setJpaPropertyMap();
         return entityManagerFactoryBean;
     }
     @Bean
     @Autowired
-    JpaTransactionManager transactionManager(DruidDataSource druidDataSource){
+    JpaTransactionManager transactionManager(EntityManagerFactory entityManagerFactory){
         JpaTransactionManager jpaTransactionManager = new JpaTransactionManager();
+        jpaTransactionManager.setEntityManagerFactory(entityManagerFactory);
         return jpaTransactionManager;
     }
 }

@@ -14,7 +14,7 @@ import java.io.Serializable;
  * @author sando
  */
 @NoRepositoryBean
-public class Storage<PK extends Serializable &Comparable<PK>,E extends IEntity<PK>> extends SimpleJpaRepository<E,PK> implements IStorage<PK,E> {
+public class StorageMySql<PK extends Serializable &Comparable<PK>,E extends IEntity<PK>> extends SimpleJpaRepository<E,PK> implements IStorage<PK,E> {
 
     // private final JpaEntityInformation<E, ?> entityInformation;
     // private final EntityManager em;
@@ -22,7 +22,7 @@ public class Storage<PK extends Serializable &Comparable<PK>,E extends IEntity<P
     // @PersistenceContext
     // private EntityManager entityManager;
 
-    public Storage(JpaEntityInformation<E, ?> entityInformation, EntityManager entityManager) {
+    public StorageMySql(JpaEntityInformation<E, ?> entityInformation, EntityManager entityManager) {
         super(entityInformation, entityManager);
         // Assert.notNull(entityInformation, "JpaEntityInformation must not be null!");
         // Assert.notNull(entityManager, "EntityManager must not be null!");
