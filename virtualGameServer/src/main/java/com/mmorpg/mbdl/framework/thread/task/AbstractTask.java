@@ -110,7 +110,7 @@ public abstract class AbstractTask implements Runnable {
         try{
             execute();
         }catch (Throwable e){
-            logger.error("任务执行失败，抛出异常",e);
+            logger.error("任务{}执行失败，抛出异常",taskName(),e);
         }finally {
             stopWatch.stop();
             long executeTime = stopWatch.getNanoTime();
@@ -122,9 +122,6 @@ public abstract class AbstractTask implements Runnable {
                 getTaskQueue().andThen();
             }
         }
-    }
-    public static Logger getLogger() {
-        return logger;
     }
     /**
      * 最大延迟时间,默认2毫秒

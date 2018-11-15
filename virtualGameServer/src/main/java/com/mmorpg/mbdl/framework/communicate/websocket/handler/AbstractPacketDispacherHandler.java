@@ -34,16 +34,17 @@ public class AbstractPacketDispacherHandler extends SimpleChannelInboundHandler<
         SessionState expectedState = packetMethodDifinition.getPacketMethodAnno().state();
         ISession session = SessionManager.getIntance().getSession(ctx.channel().id());
         boolean executeParallel = packetMethodDifinition.getPacketMethodAnno().executeParallel();
+        // 状态校验，不符合要求的请求直接不生成任务
         if (expectedState!=SessionState.ANY){
             if (session.getState() != expectedState){
-                logger.warn("HandleReqTask({})分发失败，当前wsSession的状态[{}]与方法{}期待的状态[{}]不符",
+                logger.warn("HandleReqTask分发失败，当前wsSession的状态[{}]与方法{}期待的状态[{}]不符",
                         packetMethodDifinition.getAbstractPacketClazz().getSimpleName(),
                         session.getState(),packetMethodDifinition.getBean().getClass().getSimpleName()+"."
                                 +packetMethodDifinition.getMethod().getName()+"(...)",expectedState);
                 return;
             }
         }
-        TaskDispatcher.getIntance().dispatch(new HandleReqTask(packetMethodDifinition, session,abstractPacket,session.getId()),executeParallel);
+        TaskDispatcher.getIntance().dispatch(new HandleReqTask(session.selectDispatcherId(),packetMethodDifinition, session,abstractPacket),executeParallel);
         // TaskExecutorGroup.addTask(new HandleReqTask(packetMethodDifinition,session,abstractPacket));
     }
 

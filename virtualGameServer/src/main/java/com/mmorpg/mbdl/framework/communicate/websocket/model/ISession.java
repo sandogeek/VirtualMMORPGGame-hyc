@@ -3,7 +3,15 @@ package com.mmorpg.mbdl.framework.communicate.websocket.model;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelId;
 
+import java.io.Serializable;
+
 public interface ISession {
+    /**
+     * 选择分发器Id
+     * @return
+     */
+    Serializable selectDispatcherId();
+
     /**
      * 获取Session的id（其实是ChannelId）
      * @return channel().id()

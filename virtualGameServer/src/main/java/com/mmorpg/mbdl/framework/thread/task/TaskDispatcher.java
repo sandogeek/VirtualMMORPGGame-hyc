@@ -47,6 +47,9 @@ public class TaskDispatcher {
             abstractTask.setExecuteParallel(true);
             return BussinessPoolExecutor.getIntance().executeTask(abstractTask);
         }
+        if ((Long)abstractTask.getDispatcherId() < 0){
+            throw new IllegalArgumentException(String.format("任务分发失败，dispatcherId小于0，dispatcherId小于0的队列预留给未登录前的请求使用"));
+        }
         TaskQueue taskQueue = bussinessPoolExecutor.getBusinessThreadPoolTaskQueues().getOrCreate(abstractTask.getDispatcherId());
         return taskQueue.submit(abstractTask);
     }

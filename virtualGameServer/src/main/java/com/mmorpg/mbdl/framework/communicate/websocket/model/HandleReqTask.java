@@ -12,8 +12,8 @@ public class HandleReqTask extends Task {
     private PacketMethodDifinition packetMethodDifinition;
     private ISession session;
     private AbstractPacket abstractPacket;
-    // TODO 优化：用户登录前的请求包并不需要串行，使用ChannelId获取队列，玩家频繁上下线的情况下会导致产生大量无用队列，因此应使用PlayerId拿TaskQueue
-    public HandleReqTask(PacketMethodDifinition packetMethodDifinition, ISession session, AbstractPacket abstractPacket,Serializable dispatcherId){
+    // 使用ChannelId获取队列，玩家频繁上下线的情况下会导致产生大量无用队列，因此应使用PlayerId拿TaskQueue
+    public HandleReqTask(Serializable dispatcherId,PacketMethodDifinition packetMethodDifinition, ISession session, AbstractPacket abstractPacket){
         super(dispatcherId);
         this.setISession(session);
         this.setPacketMethodDifinition(packetMethodDifinition);
@@ -30,6 +30,18 @@ public class HandleReqTask extends Task {
 
     @Override
     public void execute() {
+        SessionState expectedState = packetMethodDifinition.getPacketMethodAnno().state();
+        // 第二次状态校验，主要是为了处理未登录前同时发过来两个登录或者注册等请求的状况
+        if (expectedState!=SessionState.ANY) {
+            if (session.getState() != expectedState) {
+                getTargetLogger().warn("HandleReqTask任务执行失败，当前wsSession的状态[{}]与方法{}期待的状态[{}]不符",
+                        packetMethodDifinition.getAbstractPacketClazz().getSimpleName(),
+                        session.getState(),packetMethodDifinition.getBean().getClass().getSimpleName()+"."
+                                +packetMethodDifinition.getMethod().getName()+"(...)",expectedState);
+                return;
+            }
+        }
+
         Object obj = packetMethodDifinition.invoke(session,abstractPacket);
         if (obj != null){
             session.sendPacket((AbstractPacket) obj);
