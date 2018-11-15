@@ -8,7 +8,6 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 
 import java.io.Serializable;
 import java.net.InetSocketAddress;
@@ -23,10 +22,9 @@ public class WsSession extends AbstractSession {
     private Logger logger = LoggerFactory.getLogger(WsSession.class);
     private Channel channel;
     private Long playerId;
-    // 临时分发器Id，用于未登录时使用
-    private Long tempDispaterId;
-    @Value("${server.config.tempDispaterIdMaxValue}")
-    private Long tempDispaterIdMaxValue = 16L;
+    /** 临时分发器Id，用于未登录时使用 */
+    private Long tempDispatcherId;
+    private Long tempDispatcherIdMaxValue;
     // 是否生成新的DelayedTask
     private static AtomicBoolean genereteDelayedTask = new AtomicBoolean(true);
 
@@ -38,13 +36,17 @@ public class WsSession extends AbstractSession {
     @Override
     public Serializable selectDispatcherId(){
         if (playerId==null){
-            if (tempDispaterId==null){
+            if (tempDispatcherId ==null){
                 // -1 到 -16
-                tempDispaterId = getId().hashCode()%tempDispaterIdMaxValue - tempDispaterIdMaxValue;
+                tempDispatcherId = getId().hashCode()% tempDispatcherIdMaxValue - tempDispatcherIdMaxValue;
             }
-            return tempDispaterId;
+            return tempDispatcherId;
         }
         return playerId;
+    }
+
+    public void setTempDispatcherIdMaxValue(Long tempDispatcherIdMaxValue) {
+        this.tempDispatcherIdMaxValue = tempDispatcherIdMaxValue;
     }
 
     @Override

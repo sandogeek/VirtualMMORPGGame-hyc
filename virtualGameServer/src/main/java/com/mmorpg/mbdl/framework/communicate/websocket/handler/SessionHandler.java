@@ -8,12 +8,15 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @ChannelHandler.Sharable
 @Component
 public class SessionHandler extends ChannelInboundHandlerAdapter {
     private static final Logger logger = LoggerFactory.getLogger(SessionHandler.class);
+    @Value("${server.config.tempDispatcherIdMaxValue}")
+    private Long tempDispaterIdMaxValue;
     @Autowired
     private SessionManager sessionManager;
 
@@ -25,7 +28,9 @@ public class SessionHandler extends ChannelInboundHandlerAdapter {
     }
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        sessionManager.add(new WsSession(ctx.channel()));
+        WsSession wsSession = new WsSession(ctx.channel());
+        wsSession.setTempDispatcherIdMaxValue(tempDispaterIdMaxValue);
+        sessionManager.add(wsSession);
         logger.debug("会话[channelId={}]创建成功",ctx.channel().id());
         super.channelActive(ctx);
     }
