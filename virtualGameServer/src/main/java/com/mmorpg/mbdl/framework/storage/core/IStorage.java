@@ -17,12 +17,12 @@ import java.io.Serializable;
 @NoRepositoryBean
 public interface IStorage<PK extends Serializable&Comparable<PK>,E extends IEntity<PK>> extends JpaRepository<E, PK> {
     /**
-     * 用entityBuilder创建一个实体，并将实体放入缓存(同步)和数据库（异步）
+     * 用jpa创建或者更新一个实体，并将实体放入缓存和数据库
      * @param id 主键
      * @param entityCreator 实体创建器
      * @return 实体
      */
-    E create(PK id, EntityCreator<PK,E> entityCreator);
+    E createOrUpdate(PK id, EntityCreator<PK,E> entityCreator);
 
     /**
      * 根据主键id获取一个实体（同步）
@@ -32,14 +32,14 @@ public interface IStorage<PK extends Serializable&Comparable<PK>,E extends IEnti
      */
     E get(PK id);
 
-    /**
-     * 根据唯一字段（@Column(unique = true)的字段）获取一个实体（同步）
-     * <p>先从缓存中找，找不到再从数据库中找</p>
-     * @param name 字段名
-     * @param value 字段值
-     * @return 不存在则返回null
-     */
-    E getByUnique(String name,Object value);
+    // /**
+    //  * 根据唯一字段（@Column(unique = true)的字段）获取一个实体（同步）
+    //  * <p>先从缓存中找，找不到再从数据库中找</p>
+    //  * @param name 字段名
+    //  * @param value 字段值
+    //  * @return 不存在则返回null
+    //  */
+    // E getByUnique(String name,Object value);
 
     /**
      * 根据id获取实体，如果不存在就用entityBuilder创建一个实体，并将实体放入缓存（同步）和数据库（异步）
@@ -49,13 +49,13 @@ public interface IStorage<PK extends Serializable&Comparable<PK>,E extends IEnti
      */
     E getOrCreate(PK id, EntityCreator<PK,E> entityCreator);
 
-    /**
-     * 更新缓存（同步）和数据库（异步）中的实体，如果不调用，缓存中的实体会根据策略（例如每隔一定的时间）同步到数据库中<br>
-     * 调用update是为了尽快保存重要变更，以免服务器故障导致数据丢失
-     * @param entity
-     * @return
-     */
-    E update(E entity);
+    // /**
+    //  * 更新缓存（同步）和数据库（异步）中的实体，如果不调用，缓存中的实体会根据策略（例如每隔一定的时间）同步到数据库中<br>
+    //  * 调用update是为了尽快保存重要变更，以免服务器故障导致数据丢失
+    //  * @param entity
+    //  * @return
+    //  */
+    // E update(E entity);
 
     /**
      * 删除缓存（同步）和数据库（异步）中指定主键的实体
@@ -69,5 +69,7 @@ public interface IStorage<PK extends Serializable&Comparable<PK>,E extends IEnti
      * @param id
      */
     void invalidate(PK id);
+
+    E getFromCache(PK id,Class<? extends IEntity> entityClass);
 
 }

@@ -5,7 +5,6 @@ import com.mmorpg.mbdl.framework.thread.task.AbstractTask;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * 持久化任务线程池
@@ -16,7 +15,8 @@ import java.util.concurrent.atomic.AtomicReference;
 public class PersistencePoolExecutor {
     private ScheduledThreadPoolExecutor persistenceThreadPool;
     /** 持久化池相关的任务队列
-     *  PersistenceDelayedTask 重写了hashcode和equals,每个延迟时长不同的PersistenceDelayedTask对应一个map。
+     *  PersistenceDelayedTask 重写了hashcode和equals,每个延迟时长不同的PersistenceDelayedTask对应一个map<String,AbstractTask>。
+     *  这个map的键为抽象任务的
      */
-    private ConcurrentHashMap<PersistenceDelayedTask, AtomicReference<ConcurrentHashMap<String,AbstractTask>>> persistenceTaskQueue;
+    private ConcurrentHashMap<PersistenceDelayedTask, ConcurrentHashMap<String,AbstractTask>> persistenceTaskQueue;
 }

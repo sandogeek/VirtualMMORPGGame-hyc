@@ -24,7 +24,7 @@ class PlayerAccountEntityServiceTest {
 
     @Test
     void save() {
-        long playerId = 10000L;
+        long playerId = 1222L;
         long playerId2 = 10001L;
         PlayerAccountEntity playerAccountEntity = new PlayerAccountEntity();
         playerAccountEntity.setAccount("sando"+ new Random().nextInt(300));

@@ -24,24 +24,24 @@ public class PlayerAccountEntityService {
     @Autowired
     private IStorage<Long, PlayerAccountEntity> iStorage;
 
-    @CachePut(value = "player.account", key = "#playerAccount.playerId", depict = "用户信息缓存")
+    @CachePut(value = "PlayerAccountEntity", key = "#playerAccount.playerId", depict = "用户信息缓存")
     public PlayerAccountEntity saveAndFlush(PlayerAccountEntity playerAccount) {
         logger.info("为id、key为:" + playerAccount.getPlayerId() + "数据做了缓存");
         return iStorage.saveAndFlush(playerAccount);
     }
 
-    @CacheEvict(value = "player.account", key = "#id")
+    @CacheEvict(value = "PlayerAccountEntity", key = "#id")
     public void delete(Long id) {
         logger.info("删除了id、key为" + id + "的数据缓存");
         iStorage.delete(id);
     }
 
-    @CacheEvict(value = "player.account", allEntries = true)
+    @CacheEvict(value = "PlayerAccountEntity", allEntries = true)
     public void invalidateAll() {
         logger.info("删除了所有缓存的数据缓存");
     }
 
-    @Cacheable(value = "player.account", key = "#id", depict = "用户信息缓存")
+    @Cacheable(value = "PlayerAccountEntity", key = "#id", depict = "用户信息缓存")
     public PlayerAccountEntity get(Long id) {
         logger.info("为id、key为:" + id + "数据做了缓存");
         return iStorage.findOne(id);

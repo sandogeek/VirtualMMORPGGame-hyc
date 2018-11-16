@@ -2,7 +2,7 @@ package com.mmorpg.mbdl.framework.storage.config;
 
 import com.alibaba.druid.pool.DruidDataSource;
 import com.github.xiaolyuh.aspect.LayeringAspect;
-import com.github.xiaolyuh.manager.LayeringCacheManager;
+import com.mmorpg.mbdl.framework.storage.core.CustomLayeringCacheManager;
 import com.mmorpg.mbdl.framework.storage.core.StorageMySql;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -20,17 +20,17 @@ import javax.persistence.EntityManagerFactory;
 
 @Configuration
 // @ComponentScan(basePackageClasses = {JpaConfiguration.class})
-@EnableJpaRepositories(basePackageClasses = JpaConfiguration.class,
+@EnableJpaRepositories(basePackageClasses = JpaConfiguration.class,basePackages = "com.mmorpg.mbdl.bussiness.**.dao",
         repositoryBaseClass = StorageMySql.class)
 @ImportResource(locations = {"classpath*:applicationContext.xml"})
 public class JpaConfiguration {
     @Bean
     @Autowired
-    LayeringCacheManager layeringCacheManager(RedisTemplate redisTemplate){
-        LayeringCacheManager layeringCacheManager = new LayeringCacheManager(redisTemplate);
+    CustomLayeringCacheManager customLayeringCacheManager(RedisTemplate redisTemplate){
+        CustomLayeringCacheManager customLayeringCacheManager = new CustomLayeringCacheManager(redisTemplate);
         // 统计开关
-        layeringCacheManager.setStats(true);
-        return layeringCacheManager;
+        customLayeringCacheManager.setStats(true);
+        return customLayeringCacheManager;
     }
     @Bean
     LayeringAspect layeringAspect(){

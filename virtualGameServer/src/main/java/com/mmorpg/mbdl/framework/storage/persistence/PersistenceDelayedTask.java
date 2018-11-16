@@ -1,6 +1,7 @@
 package com.mmorpg.mbdl.framework.storage.persistence;
 
 import com.mmorpg.mbdl.framework.thread.task.DelayedTask;
+import org.springframework.util.ObjectUtils;
 
 import java.io.Serializable;
 import java.util.concurrent.TimeUnit;
@@ -22,23 +23,19 @@ public class PersistenceDelayedTask extends DelayedTask {
     }
 
     @Override
-    public Serializable getDispatcherId() {
-        return getDelay();
-    }
-
-    @Override
     public String taskName() {
         return "持久化延迟任务";
     }
 
     @Override
     public void execute() {
-
+        // 这里将这个任务对应的map里的任务封装成一个另一个任务异步执行
+        // 如保存任务，先将所有保存任务存放为一个集合，然后批量保存
     }
 
     @Override
     public int hashCode() {
-        return super.hashCode();
+        return ObjectUtils.nullSafeHashCode(getDelay());
     }
 
     @Override

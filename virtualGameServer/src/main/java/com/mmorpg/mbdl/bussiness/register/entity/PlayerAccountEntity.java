@@ -1,5 +1,6 @@
 package com.mmorpg.mbdl.bussiness.register.entity;
 
+import com.mmorpg.mbdl.framework.storage.annotation.CacheConfig;
 import com.mmorpg.mbdl.framework.storage.core.IEntity;
 
 import javax.persistence.Column;
@@ -7,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 
 @Entity
+@CacheConfig(depict = "玩家账户")
 public class PlayerAccountEntity implements IEntity<Long> {
     @Id
     private Long playerId;
