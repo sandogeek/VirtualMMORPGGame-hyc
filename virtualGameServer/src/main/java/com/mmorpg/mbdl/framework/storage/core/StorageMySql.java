@@ -3,6 +3,7 @@ package com.mmorpg.mbdl.framework.storage.core;
 import com.github.xiaolyuh.annotation.FirstCache;
 import com.github.xiaolyuh.annotation.SecondaryCache;
 import com.github.xiaolyuh.cache.Cache;
+import com.github.xiaolyuh.manager.CacheManager;
 import com.github.xiaolyuh.setting.FirstCacheSetting;
 import com.github.xiaolyuh.setting.LayeringCacheSetting;
 import com.github.xiaolyuh.setting.SecondaryCacheSetting;
@@ -11,9 +12,11 @@ import com.mmorpg.mbdl.framework.storage.annotation.CacheConfig;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.support.JpaEntityInformation;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.data.repository.NoRepositoryBean;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
@@ -30,32 +33,33 @@ public class StorageMySql<PK extends Serializable &Comparable<PK>,E extends IEnt
         implements IStorage<PK,E> {
     private static final Logger logger = LoggerFactory.getLogger(StorageMySql.class);
 
-    // private final JpaEntityInformation<E, ?> entityInformation;
-    // private final EntityManager em;
-    // private final PersistenceProvider provider;
-    // @PersistenceContext
-    // private EntityManager entityManager;
+    /** IStorageBeanPostProcessor中注入 */
+    private CacheManager cacheManager;
+    /** 泛型E的实际类型 */
+    private Class<? extends IEntity> eClazz;
+
+    public void setCacheManager(CacheManager cacheManager) {
+        this.cacheManager = cacheManager;
+    }
+
+    public void seteClazz(Class<? extends IEntity> eClazz) {
+        this.eClazz = eClazz;
+    }
 
     public StorageMySql(JpaEntityInformation<E, ?> entityInformation, EntityManager entityManager) {
         super(entityInformation, entityManager);
-        // Assert.notNull(entityInformation, "JpaEntityInformation must not be null!");
-        // Assert.notNull(entityManager, "EntityManager must not be null!");
-        // this.entityInformation = entityInformation;
-        // this.em = entityManager;
-        // this.provider = PersistenceProvider.fromEntityManager(entityManager);
     }
 
     /**
      * 根据entityClass获取缓存
-     * @param entityClass 标注了@Entity的实体
      * @return Cache
      */
-    private Cache getCache(Class<? extends IEntity> entityClass){
-        CacheConfig cacheConfig = entityClass.getAnnotation(CacheConfig.class);
-        Preconditions.checkNotNull(cacheConfig,"实体类[%s]没有使用@CacheConfig配置缓存",entityClass.getSimpleName());
+    private Cache getCache(){
+        CacheConfig cacheConfig = eClazz.getAnnotation(CacheConfig.class);
+        Preconditions.checkNotNull(cacheConfig,"实体类[%s]没有使用@CacheConfig配置缓存",eClazz.getSimpleName());
         String cacheName = cacheConfig.cacheName();
         if (StringUtils.isEmpty(cacheName)){
-            cacheName = entityClass.getSimpleName();
+            cacheName = eClazz.getSimpleName();
         }
         FirstCache firstCache = cacheConfig.firstCache();
         SecondaryCache secondaryCache = cacheConfig.secondaryCache();
@@ -66,7 +70,7 @@ public class StorageMySql<PK extends Serializable &Comparable<PK>,E extends IEnt
                 secondaryCache.preloadTime(), secondaryCache.timeUnit(), secondaryCache.forceRefresh());
         LayeringCacheSetting layeringCacheSetting = new LayeringCacheSetting(firstCacheSetting, secondaryCacheSetting, cacheConfig.depict());
         // 通过cacheName和缓存配置获取Cache
-        Cache cache = CustomLayeringCacheManager.getInstance().getCache(cacheName, layeringCacheSetting);
+        Cache cache = cacheManager.getCache(cacheName, layeringCacheSetting);
         return cache;
     }
 
@@ -80,17 +84,16 @@ public class StorageMySql<PK extends Serializable &Comparable<PK>,E extends IEnt
     @Transactional(rollbackFor = {Exception.class})
     public E createOrUpdate(PK id, EntityCreator<PK, E> entityCreator) {
         E entity = entityCreator.create(id);
-        Class<? extends IEntity> entityClass = entity.getClass();
-        Cache cache = getCache(entityClass);
+        Cache cache = getCache();
         E entityAfterSave = this.saveAndFlush(entity);
         cache.put(id,entity);
         return entityAfterSave;
     }
 
     @Override
-    public E getFromCache(PK id,Class<? extends IEntity> entityClass){
-        Cache cache = getCache(entityClass);
-        return (E)cache.get(id,entityClass);
+    public E getFromCache(PK id,Class<? extends IEntity> eClazz){
+        Cache cache = getCache();
+        return (E)cache.get(id,eClazz);
     }
 
     @Override
