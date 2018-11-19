@@ -1,4 +1,4 @@
-package com.mmorpg.mbdl.framework.storage.config;
+package com.mmorpg.mbdl.framework.storage.config.LayeringCache;
 
 import com.github.xiaolyuh.aspect.LayeringAspect;
 import com.github.xiaolyuh.manager.LayeringCacheManager;
@@ -19,7 +19,11 @@ import redis.clients.jedis.JedisPoolConfig;
  * @author Sando Geek
  */
 @ImportResource(locations = {"classpath*:applicationContext.xml"})
-public class LayeringCacheConfig {
+public class LayeringCacheConfiguration {
+    @Bean
+    LayeringCacheBeanPostProcessor storageLayringCacheBeanPostProcessor(){
+        return new LayeringCacheBeanPostProcessor();
+    }
     @Bean
     @SuppressWarnings("unchecked")
     RedisTemplate redisTemplate(JedisConnectionFactory jedisConnectionFactory){

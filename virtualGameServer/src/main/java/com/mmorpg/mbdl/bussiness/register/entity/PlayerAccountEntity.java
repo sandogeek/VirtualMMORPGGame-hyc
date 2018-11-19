@@ -1,6 +1,7 @@
 package com.mmorpg.mbdl.bussiness.register.entity;
 
-import com.mmorpg.mbdl.framework.storage.annotation.CacheConfig;
+import com.mmorpg.mbdl.framework.storage.annotation.JetCacheConfig;
+import com.mmorpg.mbdl.framework.storage.annotation.LayeringCacheConfig;
 import com.mmorpg.mbdl.framework.storage.core.IEntity;
 
 import javax.persistence.Column;
@@ -8,18 +9,19 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 
 @Entity
-@CacheConfig(depict = "玩家账户")
-public class PlayerAccountEntity implements IEntity<Long> {
+@LayeringCacheConfig(depict = "玩家账户")
+@JetCacheConfig
+public class PlayerAccountEntity implements IEntity<String> {
     @Id
-    private Long playerId;
-    @Column(unique = true)
     private String account;
+    @Column(unique = true)
+    private Long playerId;
     @Column
     private String password;
 
     @Override
-    public Long getId() {
-        return playerId;
+    public String getId() {
+        return account;
     }
 
     public Long getPlayerId() {

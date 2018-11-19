@@ -22,7 +22,8 @@
     <context:property-placeholder
             location="classpath*:server.properties,classpath*:dev.properties,classpath*:jdbc.properties,classpath*:redis.properties" />
     <!--缓存配置-->
-    <bean class="com.mmorpg.mbdl.framework.storage.config.LayeringCacheConfig"/>
+    <bean class="com.mmorpg.mbdl.framework.storage.config.JetCache.JetCacheConfiguration"/>
+    <jpa:repositories base-package="com.mmorpg.mbdl.**.dao" base-class="com.mmorpg.mbdl.framework.storage.config.JetCache.StorageJetCache"/>
 
     <!--数据库配置-->
     <bean id="dataSource"

@@ -14,7 +14,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Documented
-public @interface CacheConfig {
+public @interface LayeringCacheConfig {
     /**
      * 缓存名称,当其为默认的空字符串时，缓存名称为此注解所在的类的类名
      * @return String

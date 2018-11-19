@@ -17,12 +17,12 @@ import java.io.Serializable;
 @NoRepositoryBean
 public interface IStorage<PK extends Serializable&Comparable<PK>,E extends IEntity<PK>> extends JpaRepository<E, PK> {
     /**
-     * 用jpa创建或者更新一个实体，并将实体放入缓存和数据库
+     * 用jpa创建一个实体，并将实体放入缓存和数据库
      * @param id 主键
      * @param entityCreator 实体创建器
      * @return 实体
      */
-    E createOrUpdate(PK id, EntityCreator<PK,E> entityCreator);
+    E create(PK id, EntityCreator<PK,E> entityCreator);
 
     /**
      * 根据主键id获取一个实体（同步）
@@ -49,27 +49,25 @@ public interface IStorage<PK extends Serializable&Comparable<PK>,E extends IEnti
      */
     E getOrCreate(PK id, EntityCreator<PK,E> entityCreator);
 
-    // /**
-    //  * 更新缓存（同步）和数据库（异步）中的实体，如果不调用，缓存中的实体会根据策略（例如每隔一定的时间）同步到数据库中<br>
-    //  * 调用update是为了尽快保存重要变更，以免服务器故障导致数据丢失
-    //  * @param entity
-    //  * @return
-    //  */
-    // E update(E entity);
+    /**
+     * 更新缓存（同步）和数据库（异步）中的实体<br>
+     * 调用update是为了尽快保存重要变更，以免服务器故障导致数据丢失
+     * @param entity
+     * @return
+     */
+    E update(E entity);
 
     /**
      * 删除缓存（同步）和数据库（异步）中指定主键的实体
      * @param id 主键
-     * @return 如果缓存中存在指定指定主键的实体，则返回相应的实体
+     * @return 如果存在指定主键的实体，则返回相应的实体,否则返回null
      */
     E remove(PK id);
 
-    /**
-     * 使指定主键的缓存失效
-     * @param id
-     */
-    void invalidate(PK id);
-
-    E getFromCache(PK id,Class<? extends IEntity> entityClass);
+    // /**
+    //  * 使指定主键的缓存失效
+    //  * @param id
+    //  */
+    // void invalidate(PK id);
 
 }

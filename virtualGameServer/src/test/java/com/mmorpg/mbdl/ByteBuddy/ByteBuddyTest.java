@@ -1,13 +1,8 @@
 package com.mmorpg.mbdl.ByteBuddy;
 
-import com.mmorpg.mbdl.bussiness.register.cache.PlayerAccountEntityService;
+// import com.mmorpg.mbdl.bussiness.register.cache.PlayerAccountEntityService;
 import com.mmorpg.mbdl.bussiness.register.entity.PlayerAccountEntity;
-import com.mmorpg.mbdl.framework.storage.annotation.ByteBuddyGenerated;
-import com.mmorpg.mbdl.framework.storage.core.IStorage;
-import net.bytebuddy.ByteBuddy;
-import net.bytebuddy.description.annotation.AnnotationDescription;
 import net.bytebuddy.description.type.TypeDescription;
-import net.bytebuddy.dynamic.DynamicType;
 import org.junit.jupiter.api.Test;
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
@@ -20,9 +15,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.ResolvableType;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Set;
 
 public class ByteBuddyTest {
     private static final Logger logger= LoggerFactory.getLogger(ByteBuddyTest.class);
@@ -54,17 +49,17 @@ public class ByteBuddyTest {
 
     @Test
     public void loadClass() throws IOException {
-        TypeDescription.Generic genericSuperClass =
-                TypeDescription.Generic.Builder.parameterizedType(IStorage.class, Long.class, PlayerAccountEntity.class).build();
-        String packageName = PlayerAccountEntityService.class.getPackage().getName();
-        String classFullName = packageName.substring(0,packageName.lastIndexOf(".")).concat(".dao.").concat(PlayerAccountEntity.class.getSimpleName() + "Repository");
-        DynamicType.Unloaded<?> type = new ByteBuddy()
-                .makeInterface(genericSuperClass)
-                .name(classFullName)
-                .annotateType(AnnotationDescription.Builder.ofType(ByteBuddyGenerated.class).build())
-                .make();
-        // 在 Maven 项目中，写类文件在 target/classes/cc/unmi/UserRepository.class 中
-        type.saveIn(new File("target/classes"));
+        // TypeDescription.Generic genericSuperClass =
+        //         TypeDescription.Generic.Builder.parameterizedType(IStorage.class, Long.class, PlayerAccountEntity.class).build();
+        // String packageName = PlayerAccountEntityService.class.getPackage().getName();
+        // String classFullName = packageName.substring(0,packageName.lastIndexOf(".")).concat(".dao.").concat(PlayerAccountEntity.class.getSimpleName() + "Repository");
+        // DynamicType.Unloaded<?> type = new ByteBuddy()
+        //         .makeInterface(genericSuperClass)
+        //         .name(classFullName)
+        //         .annotateType(AnnotationDescription.Builder.ofType(ByteBuddyGenerated.class).build())
+        //         .make();
+        // // 在 Maven 项目中，写类文件在 target/classes/cc/unmi/UserRepository.class 中
+        // type.saveIn(new File("target/classes"));
     }
     // 尝试获取所有dao包下的实现了JpaRepo接口的类
     @Test

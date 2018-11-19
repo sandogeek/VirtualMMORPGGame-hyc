@@ -6,5 +6,5 @@ import com.mmorpg.mbdl.framework.storage.core.IStorage;
 /**
  * @author sando
  */
-public interface PlayerAccountEntityDAO extends IStorage<Long, PlayerAccountEntity> {
+public interface PlayerAccountEntityDAO extends IStorage<String, PlayerAccountEntity> {
 }

@@ -158,6 +158,17 @@
         <!--</dependency>-->
 
         <!--缓存-->
+        <!--ali jetcache-->
+        <dependency>
+            <groupId>com.alicp.jetcache</groupId>
+            <artifactId>jetcache-anno</artifactId>
+            <version>2.5.9</version>
+        </dependency>
+        <dependency>
+            <groupId>com.alicp.jetcache</groupId>
+            <artifactId>jetcache-redis</artifactId>
+            <version>2.5.9</version>
+        </dependency>
         <!-- https://mvnrepository.com/artifact/com.github.xiaolyuh/layering-cache -->
         <dependency>
             <groupId>com.github.xiaolyuh</groupId>
@@ -233,18 +244,22 @@
             <artifactId>caffeine</artifactId>
             <version>2.6.2</version>
         </dependency>
-        <dependency>
-            <groupId>org.jetbrains</groupId>
-            <artifactId>annotations</artifactId>
-            <version>RELEASE</version>
-            <scope>compile</scope>
-        </dependency>
-
 
     </dependencies>
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
+                <configuration>
+                    <!--指定javac的-parameters参数，保证jetCache注解中的spEL表达式成功解析-->
+                    <compilerArgument>-parameters</compilerArgument>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
             <!--支持maven编译时同时进行jprotobuf对象的预编译操作-->
             <plugin>
                 <groupId>com.baidu</groupId>
