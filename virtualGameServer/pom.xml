@@ -89,11 +89,6 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <dependency>
-            <groupId>com.esotericsoftware</groupId>
-            <artifactId>reflectasm</artifactId>
-            <version>1.11.7</version>
-        </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->
         <dependency>

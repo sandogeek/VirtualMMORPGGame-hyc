@@ -1,7 +1,7 @@
 package com.mmorpg.mbdl.ReflectASM;
 
 public class UserService {
-    private int state;
+    int state;
     public int update(int n,String a){
         int hash = n + a.hashCode();
         return hash;

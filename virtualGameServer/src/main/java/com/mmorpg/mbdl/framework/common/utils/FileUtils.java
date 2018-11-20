@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Stack;
 
@@ -136,5 +137,14 @@ public class FileUtils {
             makeDir(file.getParentFile());
         }
         return file.mkdir();
+    }
+
+    /**
+     * 获取资源文件的输入流
+     * @param fileName 文件名
+     * @return InputStream
+     */
+    public static InputStream getResourcesFileInputStream(String fileName) {
+        return Thread.currentThread().getContextClassLoader().getResourceAsStream("" + fileName);
     }
 }

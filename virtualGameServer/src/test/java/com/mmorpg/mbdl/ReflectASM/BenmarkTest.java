@@ -1,19 +1,15 @@
 package com.mmorpg.mbdl.ReflectASM;
 
-import com.esotericsoftware.reflectasm.ConstructorAccess;
-import com.esotericsoftware.reflectasm.FieldAccess;
-import com.esotericsoftware.reflectasm.MethodAccess;
+import com.mmorpg.mbdl.framework.reflectASMwithUnsafe.ConstructorAccess;
+import com.mmorpg.mbdl.framework.reflectASMwithUnsafe.FieldAccess;
+import com.mmorpg.mbdl.framework.reflectASMwithUnsafe.MethodAccess;
+import org.apache.commons.lang3.time.StopWatch;
 import org.junit.jupiter.api.Test;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 public class BenmarkTest {
-    public static void main(String[] args) throws Exception{
-        BenmarkTest test = new BenmarkTest();
-        test.testJdkReflect();
-        test.testReflectAsm4Name();
-        test.testReflectAsm4Index();
-    }
 
     /**
      * JDK反射调用方法
@@ -70,11 +66,31 @@ public class BenmarkTest {
     @Test
     public void testFieldAccess() {
         UserService target = new UserService();
-        FieldAccess fieldAccess = FieldAccess.get(target.getClass());
-        fieldAccess.set(target, "state", 1);
-        int state = (Integer)fieldAccess.get(target, "state");
-        System.out.println(state);
+        FieldAccess fieldAccess = FieldAccess.getAccessUnsafe(target.getClass());
+        int index = fieldAccess.getIndex("state");
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
+        for (int i = 0; i < 100000000; i++) {
+            fieldAccess.set(target, index, 1);
+            int state = (Integer)fieldAccess.get(target, "state");
+        }
+        stopWatch.stop();
+        System.out.println("ReflectAsm字段设值 耗时:"+stopWatch.getTime());
+    }
 
+    @Test
+    void testReflectFieldJDK() throws Exception {
+        UserService target = new UserService();
+        Field state = target.getClass().getDeclaredField("state");
+        state.setAccessible(true);
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
+        for (int i = 0; i < 100000000; i++) {
+            state.set(target, 1);
+            int value = (Integer)state.get(target);
+        }
+        stopWatch.stop();
+        System.out.println("jdk 反射字段设值 耗时:"+stopWatch.getTime());
     }
 
     /**
