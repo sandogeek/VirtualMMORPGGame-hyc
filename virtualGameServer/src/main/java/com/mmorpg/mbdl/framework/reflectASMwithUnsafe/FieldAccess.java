@@ -19,83 +19,65 @@ import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
-import java.util.ArrayList;
+import java.util.*;
 
 import static org.objectweb.asm.Opcodes.*;
 
 public abstract class FieldAccess {
-	private static final Object theUnsafe;
-	// from guava AbstractFuture
-	static {
-		sun.misc.Unsafe unsafe = null;
-		try {
-			unsafe = sun.misc.Unsafe.getUnsafe();
-		} catch (SecurityException tryReflectionInstead) {
-			try {
-				unsafe =
-						AccessController.doPrivileged(
-								new PrivilegedExceptionAction<sun.misc.Unsafe>() {
-									@Override
-									public sun.misc.Unsafe run() throws Exception {
-										Class<sun.misc.Unsafe> k = sun.misc.Unsafe.class;
-										for (java.lang.reflect.Field f : k.getDeclaredFields()) {
-											f.setAccessible(true);
-											Object x = f.get(null);
-											if (k.isInstance(x)) {
-												return k.cast(x);
-											}
-										}
-										throw new NoSuchFieldError("Unsafe字段已经不存在");
-									}
-								});
-			} catch (PrivilegedActionException e) {
-				throw new RuntimeException("Unsafe获取失败", e.getCause());
-			}
-		}
-		theUnsafe = unsafe;
-	}
-	static public FieldAccess getAccessUnsafe(Class<?> type) {
-	    get(type);
-		if(theUnsafe == null) {
-			throw new UnsupportedOperationException();
-		}
 
-		return new FieldAccessUnsafe(type, (sun.misc.Unsafe)theUnsafe);
+	static public FieldAccess accessUnsafe(Class<?> type) {
+		return new FieldAccessUnsafe(type);
 	}
 
 	protected String[] fieldNames;
+	protected Map<String,Integer> fieldName2Index;
 	protected Class[] fieldTypes;
 	private Field[] fields;
 
+	// 安全校验，防止误用setObject
+    private static Set<String> boxTypeNames;
+    static {
+        boxTypeNames = new HashSet<>();
+        boxTypeNames.add(Boolean.class.getSimpleName());
+        boxTypeNames.add(Byte.class.getSimpleName());
+        boxTypeNames.add(Short.class.getSimpleName());
+        boxTypeNames.add(Integer.class.getSimpleName());
+        boxTypeNames.add(Long.class.getSimpleName());
+        boxTypeNames.add(Double.class.getSimpleName());
+    }
+
 	public int getIndex (String fieldName) {
-		for (int i = 0, n = fieldNames.length; i < n; i++){
-			if (fieldNames[i].equals(fieldName)) {
-				return i;
-			}
-		}
-		throw new IllegalArgumentException("Unable to find non-private field: " + fieldName);
+	    Integer index = fieldName2Index.get(fieldName);
+	    if (index == null){
+            throw new IllegalArgumentException(String.format("找不到名为%s的字段",fieldName));
+        }
+        return index;
 	}
 
 	public int getIndex (Field field) {
-		for (int i = 0, n = fields.length; i < n; i++) {
-			if (fields[i].equals(field)) {
-				return i;
-			}
-		}
-		throw new IllegalArgumentException("Unable to find non-private field: " + field);
+        Integer index = fieldName2Index.get(field.getName());
+        if (index == null){
+            throw new IllegalArgumentException(String.format("找不到名为%s的字段",field.getName()));
+        }
+        return index;
 	}
 
-	public void set (Object instance, String fieldName, Object value) {
-		set(instance, getIndex(fieldName), value);
+	public void setObject (Object instance, String fieldName, Object value) {
+	    if (boxTypeNames.contains(value.getClass().getSimpleName())){
+	        throw new IllegalArgumentException("setObject的value不能是基本类型，请使用相应的set方法");
+        }
+		setObject(instance, getIndex(fieldName), value);
 	}
 
-	public Object get (Object instance, String fieldName) {
-		return get(instance, getIndex(fieldName));
+	public Object getObject (Object instance, String fieldName) {
+		return getObject(instance, getIndex(fieldName));
 	}
 
 	public String[] getFieldNames () {
@@ -118,7 +100,13 @@ public abstract class FieldAccess {
 		this.fields = fields;
 	}
 
-	abstract public void set (Object instance, int fieldIndex, Object value);
+    /**
+     * ！！！注意：如果是基础类型，不要调用此方法设置值，请调用相应的setXxx方法赋值
+     * @param instance
+     * @param fieldIndex
+     * @param value
+     */
+	abstract public void setObject (Object instance, int fieldIndex, Object value);
 
 	abstract public void setBoolean (Object instance, int fieldIndex, boolean value);
 
@@ -136,7 +124,7 @@ public abstract class FieldAccess {
 
 	abstract public void setChar (Object instance, int fieldIndex, char value);
 
-	abstract public Object get (Object instance, int fieldIndex);
+	abstract public Object getObject (Object instance, int fieldIndex);
 
 	abstract public String getString (Object instance, int fieldIndex);
 
@@ -157,7 +145,7 @@ public abstract class FieldAccess {
 	abstract public float getFloat (Object instance, int fieldIndex);
 
 	/** @param type Must not be the Object class, an interface, a primitive type, or void. */
-	static public FieldAccess get (Class type) {
+	static public FieldAccess access(Class type) {
 		if (type.getSuperclass() == null) {
 			throw new IllegalArgumentException("The type must not be the Object class, an interface, a primitive type, or void.");
 		}
@@ -172,18 +160,22 @@ public abstract class FieldAccess {
 				if (Modifier.isStatic(modifiers)) {
 					continue;
 				}
-				// if (Modifier.isPrivate(modifiers)) {
-				// 	continue;
-				// }
+				if (Modifier.isPrivate(modifiers)) {
+                    continue;
+                }
 				fields.add(field);
 			}
 			nextClass = nextClass.getSuperclass();
 		}
 
 		String[] fieldNames = new String[fields.size()];
+		Map<String,Integer> fieldName2Index = new HashMap<>(64);
 		Class[] fieldTypes = new Class[fields.size()];
+		String fileName;
 		for (int i = 0, n = fieldNames.length; i < n; i++) {
-			fieldNames[i] = fields.get(i).getName();
+			fileName = fields.get(i).getName();
+			fieldNames[i] = fileName;
+			fieldName2Index.put(fileName,i);
 			fieldTypes[i] = fields.get(i).getType();
 		}
 
@@ -202,8 +194,9 @@ public abstract class FieldAccess {
 				String classNameInternal = className.replace('.', '/');
 
 				ClassWriter cw = new ClassWriter(0);
-				cw.visit(V1_1, ACC_PUBLIC + ACC_SUPER, accessClassNameInternal, null, "com/esotericsoftware/reflectasm/FieldAccess",
-					null);
+				cw.visit(V1_1, ACC_PUBLIC + ACC_SUPER, accessClassNameInternal, null, "com/mmorpg/mbdl/framework/reflectASMwithUnsafe/FieldAccess",
+                        null);
+                        // new String[]{"java/io/Serializable"});
 				insertConstructor(cw);
 				insertGetObject(cw, classNameInternal, fields);
 				insertSetObject(cw, classNameInternal, fields);
@@ -225,12 +218,23 @@ public abstract class FieldAccess {
 				insertSetPrimitive(cw, classNameInternal, fields, Type.CHAR_TYPE);
 				insertGetString(cw, classNameInternal, fields);
 				cw.visitEnd();
+                // 输出成.class文件
+				// byte[] bytes = cw.toByteArray();
+                // FileOutputStream fout;
+                // try {
+                //     fout = new FileOutputStream("C:/Users/sando/Desktop/reflectasmGenerated/"+accessClassName+".class");
+                //     fout.write(bytes);
+                //     fout.close();
+                // } catch (IOException e) {
+                //     e.printStackTrace();
+                // }
 				accessClass = loader.defineAccessClass(accessClassName, cw.toByteArray());
 			}
 		}
 		try {
 			FieldAccess access = (FieldAccess)accessClass.newInstance();
 			access.fieldNames = fieldNames;
+			access.fieldName2Index = fieldName2Index;
 			access.fieldTypes = fieldTypes;
 			access.fields = fields.toArray(new Field[fields.size()]);
 			return access;
@@ -243,7 +247,7 @@ public abstract class FieldAccess {
 		MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
 		mv.visitCode();
 		mv.visitVarInsn(ALOAD, 0);
-		mv.visitMethodInsn(INVOKESPECIAL, "com/esotericsoftware/reflectasm/FieldAccess", "<init>", "()V");
+		mv.visitMethodInsn(INVOKESPECIAL, "com/mmorpg/mbdl/framework/reflectASMwithUnsafe/FieldAccess", "<init>", "()V");
 		mv.visitInsn(RETURN);
 		mv.visitMaxs(1, 1);
 		mv.visitEnd();
@@ -274,48 +278,9 @@ public abstract class FieldAccess {
 				mv.visitTypeInsn(CHECKCAST, classNameInternal);
 				mv.visitVarInsn(ALOAD, 3);
 
-				switch (fieldType.getSort()) {
-				case Type.BOOLEAN:
-					mv.visitTypeInsn(CHECKCAST, "java/lang/Boolean");
-					mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Boolean", "booleanValue", "()Z");
-					break;
-				case Type.BYTE:
-					mv.visitTypeInsn(CHECKCAST, "java/lang/Byte");
-					mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Byte", "byteValue", "()B");
-					break;
-				case Type.CHAR:
-					mv.visitTypeInsn(CHECKCAST, "java/lang/Character");
-					mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Character", "charValue", "()C");
-					break;
-				case Type.SHORT:
-					mv.visitTypeInsn(CHECKCAST, "java/lang/Short");
-					mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Short", "shortValue", "()S");
-					break;
-				case Type.INT:
-					mv.visitTypeInsn(CHECKCAST, "java/lang/Integer");
-					mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Integer", "intValue", "()I");
-					break;
-				case Type.FLOAT:
-					mv.visitTypeInsn(CHECKCAST, "java/lang/Float");
-					mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Float", "floatValue", "()F");
-					break;
-				case Type.LONG:
-					mv.visitTypeInsn(CHECKCAST, "java/lang/Long");
-					mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Long", "longValue", "()J");
-					break;
-				case Type.DOUBLE:
-					mv.visitTypeInsn(CHECKCAST, "java/lang/Double");
-					mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Double", "doubleValue", "()D");
-					break;
-				case Type.ARRAY:
-					mv.visitTypeInsn(CHECKCAST, fieldType.getDescriptor());
-					break;
-				case Type.OBJECT:
-					mv.visitTypeInsn(CHECKCAST, fieldType.getInternalName());
-					break;
-				}
+                visitTypeSort(mv, fieldType);
 
-				mv.visitFieldInsn(PUTFIELD, field.getDeclaringClass().getName().replace('.', '/'), field.getName(),
+                mv.visitFieldInsn(PUTFIELD, field.getDeclaringClass().getName().replace('.', '/'), field.getName(),
 					fieldType.getDescriptor());
 				mv.visitInsn(RETURN);
 			}
@@ -328,9 +293,53 @@ public abstract class FieldAccess {
 		mv.visitEnd();
 	}
 
-	static private void insertGetObject (ClassWriter cw, String classNameInternal, ArrayList<Field> fields) {
+    static void visitTypeSort(MethodVisitor mv, Type fieldType) {
+        switch (fieldType.getSort()) {
+        case Type.BOOLEAN:
+            mv.visitTypeInsn(CHECKCAST, "java/lang/Boolean");
+            mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Boolean", "booleanValue", "()Z");
+            break;
+        case Type.BYTE:
+            mv.visitTypeInsn(CHECKCAST, "java/lang/Byte");
+            mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Byte", "byteValue", "()B");
+            break;
+        case Type.CHAR:
+            mv.visitTypeInsn(CHECKCAST, "java/lang/Character");
+            mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Character", "charValue", "()C");
+            break;
+        case Type.SHORT:
+            mv.visitTypeInsn(CHECKCAST, "java/lang/Short");
+            mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Short", "shortValue", "()S");
+            break;
+        case Type.INT:
+            mv.visitTypeInsn(CHECKCAST, "java/lang/Integer");
+            mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Integer", "intValue", "()I");
+            break;
+        case Type.FLOAT:
+            mv.visitTypeInsn(CHECKCAST, "java/lang/Float");
+            mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Float", "floatValue", "()F");
+            break;
+        case Type.LONG:
+            mv.visitTypeInsn(CHECKCAST, "java/lang/Long");
+            mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Long", "longValue", "()J");
+            break;
+        case Type.DOUBLE:
+            mv.visitTypeInsn(CHECKCAST, "java/lang/Double");
+            mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Double", "doubleValue", "()D");
+            break;
+        case Type.ARRAY:
+            mv.visitTypeInsn(CHECKCAST, fieldType.getDescriptor());
+            break;
+        case Type.OBJECT:
+            mv.visitTypeInsn(CHECKCAST, fieldType.getInternalName());
+            break;
+            default:
+        }
+    }
+
+    static private void insertGetObject (ClassWriter cw, String classNameInternal, ArrayList<Field> fields) {
 		int maxStack = 6;
-		MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "get", "(Ljava/lang/Object;I)Ljava/lang/Object;", null, null);
+		MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "access", "(Ljava/lang/Object;I)Ljava/lang/Object;", null, null);
 		mv.visitCode();
 		mv.visitVarInsn(ILOAD, 2);
 
@@ -579,7 +588,7 @@ public abstract class FieldAccess {
 			returnValueInstruction = DRETURN;
 			break;
 		default:
-			getterMethodName = "get";
+			getterMethodName = "access";
 			returnValueInstruction = ARETURN;
 			break;
 		}

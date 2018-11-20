@@ -2,34 +2,75 @@ package com.mmorpg.mbdl.framework.reflectASMwithUnsafe;
 
 /**
  * 利用Unsafe访问私有成员
+ * TODO 利用ByteBuddy重写ReflectASM
+ * ReflectASM使用场景：类成员使用反射调用量巨大
  * come form https://github.com/EsotericSoftware/reflectasm/pull/39
  **/
 import sun.misc.Unsafe;
 
 import java.lang.reflect.*;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
+import java.util.HashMap;
 
 @SuppressWarnings("restriction")
 class FieldAccessUnsafe extends FieldAccess {
-    FieldAccessUnsafe(Class<?> clazz, Unsafe unsafe)
+    private static final Unsafe unsafe;
+    long[] addresses;
+    // from guava AbstractFuture
+    static {
+        sun.misc.Unsafe unsafeTry = null;
+        try {
+            unsafeTry = sun.misc.Unsafe.getUnsafe();
+        } catch (SecurityException tryReflectionInstead) {
+            try {
+                unsafeTry =
+                        AccessController.doPrivileged(
+                                new PrivilegedExceptionAction<Unsafe>() {
+                                    @Override
+                                    public sun.misc.Unsafe run() throws Exception {
+                                        Class<sun.misc.Unsafe> k = sun.misc.Unsafe.class;
+                                        for (java.lang.reflect.Field f : k.getDeclaredFields()) {
+                                            f.setAccessible(true);
+                                            Object x = f.get(null);
+                                            if (k.isInstance(x)) {
+                                                return k.cast(x);
+                                            }
+                                        }
+                                        throw new NoSuchFieldError("Unsafe字段已经不存在");
+                                    }
+                                });
+            } catch (PrivilegedActionException e) {
+                throw new RuntimeException("Unsafe获取失败", e.getCause());
+            }
+        }
+        unsafe = unsafeTry;
+    }
+    FieldAccessUnsafe(Class<?> clazz)
     {
-        this.unsafe = unsafe;
-
-        Field[] fields = clazz.getFields();
+        if(unsafe == null) {
+            throw new UnsupportedOperationException();
+        }
+        Field[] fields = clazz.getDeclaredFields();
 
         super.fieldNames = new String[fields.length];
+        super.fieldName2Index = new HashMap<>(64);
         super.fieldTypes = new Class<?>[fields.length];
         this.addresses = new long[fields.length];
-
+        String fieldName;
         for(int i = 0; i < fields.length; i++)
         {
-            super.fieldNames[i] = fields[i].getName();
+            fieldName = fields[i].getName();
+            super.fieldNames[i] = fieldName;
+            fieldName2Index.put(fieldName,i);
             super.fieldTypes[i] = fields[i].getType();
             this.addresses[i] = unsafe.objectFieldOffset(fields[i]);
         }
     }
 
     @Override
-    public void set(Object instance, int fieldIndex, Object value)
+    public void setObject(Object instance, int fieldIndex, Object value)
     {
         unsafe.putObject(instance, addresses[fieldIndex], value);
     }
@@ -83,7 +124,7 @@ class FieldAccessUnsafe extends FieldAccess {
     }
 
     @Override
-    public Object get(Object instance, int fieldIndex)
+    public Object getObject(Object instance, int fieldIndex)
     {
         return unsafe.getObject(instance, addresses[fieldIndex]);
     }
@@ -142,7 +183,4 @@ class FieldAccessUnsafe extends FieldAccess {
         return unsafe.getFloat(instance, addresses[fieldIndex]);
     }
 
-    long[] addresses;
-
-    private final Unsafe unsafe;
 }

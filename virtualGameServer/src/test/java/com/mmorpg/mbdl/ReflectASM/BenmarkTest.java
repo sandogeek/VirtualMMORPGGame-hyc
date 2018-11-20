@@ -4,6 +4,7 @@ import com.mmorpg.mbdl.framework.reflectASMwithUnsafe.ConstructorAccess;
 import com.mmorpg.mbdl.framework.reflectASMwithUnsafe.FieldAccess;
 import com.mmorpg.mbdl.framework.reflectASMwithUnsafe.MethodAccess;
 import org.apache.commons.lang3.time.StopWatch;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
@@ -24,7 +25,7 @@ public class BenmarkTest {
             method.invoke(target, 1, "zhangsan");
         }
         long end = System.currentTimeMillis();
-        System.out.println("timeout=" + (end - start));//809 753 880 875 816
+        System.out.println("jdk反射方法调用耗时：" + (end - start));//809 753 880 875 816
     }
 
     /**
@@ -34,13 +35,13 @@ public class BenmarkTest {
     @Test
     public void testReflectAsm4Name() {
         UserService target = new UserService();
-        MethodAccess access = MethodAccess.get(UserService.class);//生成字节码的方式创建UserServiceMethodAccess
+        MethodAccess access = MethodAccess.access(UserService.class);//生成字节码的方式创建UserServiceMethodAccess
         long start = System.currentTimeMillis();
         for (int i = 0; i < 100000000; i++) {
             access.invoke(target, "update", 1, "zhangsan");
         }
         long end = System.currentTimeMillis();
-        System.out.println("timeout=" + (end - start));//523 382 415 489 482
+        System.out.println("ReflectAsm4Name方法调用耗时：" + (end - start));//523 382 415 489 482
     }
 
     /**
@@ -50,33 +51,75 @@ public class BenmarkTest {
     @Test
     public void testReflectAsm4Index() {
         UserService target = new UserService();
-        MethodAccess access = MethodAccess.get(UserService.class);
+        MethodAccess access = MethodAccess.access(UserService.class);
         int index = access.getIndex("update", int.class, String.class);
         long start = System.currentTimeMillis();
         for (int i = 0; i < 100000000; i++) {
             access.invoke(target, index, 1, "zhangsan");
         }
         long end = System.currentTimeMillis();
-        System.out.println("timeout=" + (end - start));//12 15 23 14 24
+        System.out.println("ReflectAsm4Index方法调用耗时：" + (end - start));//12 15 23 14 24
     }
 
     /**
      * ReflectAsm反射来set/get字段值
      */
     @Test
-    public void testFieldAccess() {
+    public void testFieldAccess4Index() {
         UserService target = new UserService();
-        FieldAccess fieldAccess = FieldAccess.getAccessUnsafe(target.getClass());
+        FieldAccess fieldAccess = FieldAccess.accessUnsafe(target.getClass());
+        int index = fieldAccess.getIndex("statePrivate");
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
+        int state = 0;
+        for (int i = 0; i < 100000000; i++) {
+            fieldAccess.setInt(target, index, 1024);
+            state = fieldAccess.getInt(target, index);
+        }
+        stopWatch.stop();
+        System.out.println(String.format("FieldAccess4Index字段设值 耗时:%s",stopWatch.getTime()));
+        // System.out.println(String.format("state最终值:%s",state));
+        Assertions.assertEquals(target.getStatePrivate(),state);
+    }
+
+    @Test
+    void accessWithoutUnsafe() {
+        UserService target = new UserService();
+        FieldAccess fieldAccess = FieldAccess.access(target.getClass());
         int index = fieldAccess.getIndex("state");
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
+        int state = 0;
         for (int i = 0; i < 100000000; i++) {
-            fieldAccess.set(target, index, 1);
-            int state = (Integer)fieldAccess.get(target, "state");
+            fieldAccess.setInt(target, index, 1024);
+            state = fieldAccess.getInt(target, index);
         }
         stopWatch.stop();
-        System.out.println("ReflectAsm字段设值 耗时:"+stopWatch.getTime());
+        System.out.println(String.format("accessWithoutUnsafe字段设值 耗时:%s",stopWatch.getTime()));
+        // System.out.println(String.format("state最终值:%s",state));
+        Assertions.assertEquals(target.getState(),state);
     }
+
+
+    @Test
+    void testFieldAccess4Name() {
+        Assertions.assertThrows(IllegalArgumentException.class, ()->{
+            UserService target = new UserService();
+            FieldAccess fieldAccess = FieldAccess.accessUnsafe(target.getClass());
+            StopWatch stopWatch = new StopWatch();
+            stopWatch.start();
+            int state = 0;
+            for (int i = 0; i < 100000000; i++) {
+                // error调用，使用了setObject设置基本值
+                fieldAccess.setObject(target, "state", 1024);
+                state = (Integer)fieldAccess.getObject(target, "state");
+            }
+            stopWatch.stop();
+            System.out.println(String.format("FieldAccess4Name字段设值 耗时:%s",stopWatch.getTime()));
+            System.out.println(String.format("state最终值:%s",target.state));
+        });
+    }
+
 
     @Test
     void testReflectFieldJDK() throws Exception {
@@ -91,6 +134,7 @@ public class BenmarkTest {
         }
         stopWatch.stop();
         System.out.println("jdk 反射字段设值 耗时:"+stopWatch.getTime());
+        Assertions.assertEquals(target.getState(),1);
     }
 
     /**
@@ -109,7 +153,7 @@ public class BenmarkTest {
     @Test
     public void testIndex() {
         UserService target = new UserService();
-        MethodAccess methodAccess = MethodAccess.get(target.getClass());
+        MethodAccess methodAccess = MethodAccess.access(target.getClass());
         int index = methodAccess.getIndex("update", int.class, String.class);
         System.out.println(index);
     }

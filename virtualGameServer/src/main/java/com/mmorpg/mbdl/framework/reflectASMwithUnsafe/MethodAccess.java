@@ -42,22 +42,31 @@ public abstract class MethodAccess {
 
 	/** Returns the index of the first method with the specified name. */
 	public int getIndex (String methodName) {
-		for (int i = 0, n = methodNames.length; i < n; i++)
-			if (methodNames[i].equals(methodName)) return i;
+		for (int i = 0, n = methodNames.length; i < n; i++){
+			if (methodNames[i].equals(methodName)) {
+				return i;
+			}
+		}
 		throw new IllegalArgumentException("Unable to find non-private method: " + methodName);
 	}
 
 	/** Returns the index of the first method with the specified name and param types. */
 	public int getIndex (String methodName, Class... paramTypes) {
-		for (int i = 0, n = methodNames.length; i < n; i++)
-			if (methodNames[i].equals(methodName) && Arrays.equals(paramTypes, parameterTypes[i])) return i;
+		for (int i = 0, n = methodNames.length; i < n; i++) {
+			if (methodNames[i].equals(methodName) && Arrays.equals(paramTypes, parameterTypes[i])) {
+				return i;
+			}
+		}
 		throw new IllegalArgumentException("Unable to find non-private method: " + methodName + " " + Arrays.toString(paramTypes));
 	}
 
 	/** Returns the index of the first method with the specified name and the specified number of arguments. */
 	public int getIndex (String methodName, int paramsCount) {
-		for (int i = 0, n = methodNames.length; i < n; i++)
-			if (methodNames[i].equals(methodName) && parameterTypes[i].length == paramsCount) return i;
+		for (int i = 0, n = methodNames.length; i < n; i++) {
+			if (methodNames[i].equals(methodName) && parameterTypes[i].length == paramsCount) {
+				return i;
+			}
+		}
 		throw new IllegalArgumentException(
 			"Unable to find non-private method: " + methodName + " with " + paramsCount + " params.");
 	}
@@ -76,10 +85,11 @@ public abstract class MethodAccess {
 
 	/** Creates a new MethodAccess for the specified type.
 	 * @param type Must not be a primitive type, or void. */
-	static public MethodAccess get (Class type) {
+	static public MethodAccess access(Class type) {
 		boolean isInterface = type.isInterface();
-		if (!isInterface && type.getSuperclass() == null && type != Object.class)
+		if (!isInterface && type.getSuperclass() == null && type != Object.class) {
 			throw new IllegalArgumentException("The type must not be an interface, a primitive type, or void.");
+		}
 
 		ArrayList<Method> methods = new ArrayList<Method>();
 		if (!isInterface) {
@@ -88,8 +98,9 @@ public abstract class MethodAccess {
 				addDeclaredMethodsToList(nextClass, methods);
 				nextClass = nextClass.getSuperclass();
 			}
-		} else
+		} else {
 			recursiveAddInterfaceMethodsToList(type, methods);
+		}
 
 		int n = methods.size();
 		String[] methodNames = new String[n];
@@ -104,7 +115,9 @@ public abstract class MethodAccess {
 
 		String className = type.getName();
 		String accessClassName = className + "MethodAccess";
-		if (accessClassName.startsWith("java.")) accessClassName = "reflectasm." + accessClassName;
+		if (accessClassName.startsWith("java.")) {
+			accessClassName = "reflectasm." + accessClassName;
+		}
 
 		Class accessClass;
 		AccessClassLoader loader = AccessClassLoader.get(type);
@@ -116,13 +129,13 @@ public abstract class MethodAccess {
 
 				ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
 				MethodVisitor mv;
-				cw.visit(V1_1, ACC_PUBLIC + ACC_SUPER, accessClassNameInternal, null, "com/esotericsoftware/reflectasm/MethodAccess",
+				cw.visit(V1_1, ACC_PUBLIC + ACC_SUPER, accessClassNameInternal, null, "com/mmorpg/mbdl/framework/reflectASMwithUnsafe/MethodAccess",
 					null);
 				{
 					mv = cw.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
 					mv.visitCode();
 					mv.visitVarInsn(ALOAD, 0);
-					mv.visitMethodInsn(INVOKESPECIAL, "com/esotericsoftware/reflectasm/MethodAccess", "<init>", "()V");
+					mv.visitMethodInsn(INVOKESPECIAL, "com/mmorpg/mbdl/framework/reflectASMwithUnsafe/MethodAccess", "<init>", "()V");
 					mv.visitInsn(RETURN);
 					mv.visitMaxs(0, 0);
 					mv.visitEnd();
@@ -139,18 +152,20 @@ public abstract class MethodAccess {
 
 						mv.visitVarInsn(ILOAD, 2);
 						Label[] labels = new Label[n];
-						for (int i = 0; i < n; i++)
+						for (int i = 0; i < n; i++) {
 							labels[i] = new Label();
+						}
 						Label defaultLabel = new Label();
 						mv.visitTableSwitchInsn(0, labels.length - 1, defaultLabel, labels);
 
 						StringBuilder buffer = new StringBuilder(128);
 						for (int i = 0; i < n; i++) {
 							mv.visitLabel(labels[i]);
-							if (i == 0)
+							if (i == 0) {
 								mv.visitFrame(Opcodes.F_APPEND, 1, new Object[] {classNameInternal}, 0, null);
-							else
+							} else {
 								mv.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
+							}
 							mv.visitVarInsn(ALOAD, 4);
 
 							buffer.setLength(0);
@@ -163,58 +178,20 @@ public abstract class MethodAccess {
 								mv.visitIntInsn(BIPUSH, paramIndex);
 								mv.visitInsn(AALOAD);
 								Type paramType = Type.getType(paramTypes[paramIndex]);
-								switch (paramType.getSort()) {
-								case Type.BOOLEAN:
-									mv.visitTypeInsn(CHECKCAST, "java/lang/Boolean");
-									mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Boolean", "booleanValue", "()Z");
-									break;
-								case Type.BYTE:
-									mv.visitTypeInsn(CHECKCAST, "java/lang/Byte");
-									mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Byte", "byteValue", "()B");
-									break;
-								case Type.CHAR:
-									mv.visitTypeInsn(CHECKCAST, "java/lang/Character");
-									mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Character", "charValue", "()C");
-									break;
-								case Type.SHORT:
-									mv.visitTypeInsn(CHECKCAST, "java/lang/Short");
-									mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Short", "shortValue", "()S");
-									break;
-								case Type.INT:
-									mv.visitTypeInsn(CHECKCAST, "java/lang/Integer");
-									mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Integer", "intValue", "()I");
-									break;
-								case Type.FLOAT:
-									mv.visitTypeInsn(CHECKCAST, "java/lang/Float");
-									mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Float", "floatValue", "()F");
-									break;
-								case Type.LONG:
-									mv.visitTypeInsn(CHECKCAST, "java/lang/Long");
-									mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Long", "longValue", "()J");
-									break;
-								case Type.DOUBLE:
-									mv.visitTypeInsn(CHECKCAST, "java/lang/Double");
-									mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Double", "doubleValue", "()D");
-									break;
-								case Type.ARRAY:
-									mv.visitTypeInsn(CHECKCAST, paramType.getDescriptor());
-									break;
-								case Type.OBJECT:
-									mv.visitTypeInsn(CHECKCAST, paramType.getInternalName());
-									break;
-								}
-								buffer.append(paramType.getDescriptor());
+                                FieldAccess.visitTypeSort(mv, paramType);
+                                buffer.append(paramType.getDescriptor());
 							}
 
 							buffer.append(')');
 							buffer.append(Type.getDescriptor(returnType));
 							int invoke;
-							if (isInterface)
+							if (isInterface) {
 								invoke = INVOKEINTERFACE;
-							else if (Modifier.isStatic(methods.get(i).getModifiers()))
+							} else if (Modifier.isStatic(methods.get(i).getModifiers())) {
 								invoke = INVOKESTATIC;
-							else
+							} else {
 								invoke = INVOKEVIRTUAL;
+							}
 							mv.visitMethodInsn(invoke, classNameInternal, methodNames[i], buffer.toString());
 
 							switch (Type.getType(returnType).getSort()) {
@@ -245,6 +222,7 @@ public abstract class MethodAccess {
 							case Type.DOUBLE:
 								mv.visitMethodInsn(INVOKESTATIC, "java/lang/Double", "valueOf", "(D)Ljava/lang/Double;");
 								break;
+								default:
 							}
 
 							mv.visitInsn(ARETURN);
@@ -289,14 +267,17 @@ public abstract class MethodAccess {
 			Method method = declaredMethods[i];
 			int modifiers = method.getModifiers();
 			// if (Modifier.isStatic(modifiers)) continue;
-			if (Modifier.isPrivate(modifiers)) continue;
+			if (Modifier.isPrivate(modifiers)) {
+				continue;
+			}
 			methods.add(method);
 		}
 	}
 
 	static private void recursiveAddInterfaceMethodsToList (Class interfaceType, ArrayList<Method> methods) {
 		addDeclaredMethodsToList(interfaceType, methods);
-		for (Class nextInterface : interfaceType.getInterfaces())
+		for (Class nextInterface : interfaceType.getInterfaces()) {
 			recursiveAddInterfaceMethodsToList(nextInterface, methods);
+		}
 	}
 }

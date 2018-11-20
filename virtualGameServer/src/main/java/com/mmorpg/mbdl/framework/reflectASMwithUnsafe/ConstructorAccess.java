@@ -87,8 +87,8 @@ abstract public class ConstructorAccess<T> {
 					}
 				}
 				String superclassNameInternal = Modifier.isPublic(modifiers)
-					? "com/esotericsoftware/reflectasm/PublicConstructorAccess"
-					: "com/esotericsoftware/reflectasm/ConstructorAccess";
+					? "com/mmorpg/mbdl/framework/reflectASMwithUnsafe/PublicConstructorAccess"
+					: "com/mmorpg/mbdl/framework/reflectASMwithUnsafe/ConstructorAccess";
 
 				ClassWriter cw = new ClassWriter(0);
 				cw.visit(V1_1, ACC_PUBLIC + ACC_SUPER, accessClassNameInternal, null, superclassNameInternal, null);
