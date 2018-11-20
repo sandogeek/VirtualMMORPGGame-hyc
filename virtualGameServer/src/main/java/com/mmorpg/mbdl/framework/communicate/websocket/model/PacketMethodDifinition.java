@@ -1,5 +1,6 @@
 package com.mmorpg.mbdl.framework.communicate.websocket.model;
 
+import com.esotericsoftware.reflectasm.MethodAccess;
 import com.mmorpg.mbdl.framework.communicate.websocket.annotation.PacketMethod;
 import org.reflections.ReflectionUtils;
 import org.slf4j.Logger;
@@ -15,6 +16,8 @@ public class PacketMethodDifinition {
     private static final Logger logger = LoggerFactory.getLogger(PacketMethodDifinition.class);
     private Object bean;
     private Method method;
+    private MethodAccess methodAccess;
+    private int methodIndex;
     // 日志打印用，AbstractPacket的类对象
     private Class<?> abstractPacketClazz;
     private PacketMethod packetMethodAnno;
@@ -25,19 +28,19 @@ public class PacketMethodDifinition {
     public static PacketMethodDifinition valueOf(Object object,Method method,Class<?> aClazz,PacketMethod packetMethodAnno){
         PacketMethodDifinition packetMethodDifinition = new PacketMethodDifinition();
         packetMethodDifinition.setBean(object);
+        packetMethodDifinition.setMethodAccess(MethodAccess.get(object.getClass()));
+        packetMethodDifinition.setMethodIndex(packetMethodDifinition.getMethodAccess().getIndex(method.getName()));
         packetMethodDifinition.setMethod(method);
         packetMethodDifinition.setPacketMethodAnno(packetMethodAnno);
         packetMethodDifinition.setAbstractPacketClazz(aClazz);
         return packetMethodDifinition;
     }
     public Object invoke(ISession session,AbstractPacket abstractPacket){
-        Object obj= org.springframework.util.ReflectionUtils.invokeMethod(method,bean,session,abstractPacket);
+        /** 高性能反射调用
+         *  {@link com.mmorpg.mbdl.ReflectASM.BenmarkTest#main()}
+         */
+        Object obj= methodAccess.invoke(bean,methodIndex,session,abstractPacket);
         return obj;
-    }
-    public static void main(String[] args){
-        Set<Method> methods = ReflectionUtils.getAllMethods(PacketMethodDifinition.class,ReflectionUtils.withAnnotation(PacketMethod.class));
-        logger.info("{}",(Method) methods.toArray()[0]);
-        // valueOf(new Object(),(Method) methods.toArray()[0]);
     }
     public Object getBean() {
         return bean;
@@ -57,6 +60,22 @@ public class PacketMethodDifinition {
 
     public PacketMethod getPacketMethodAnno() {
         return packetMethodAnno;
+    }
+
+    public MethodAccess getMethodAccess() {
+        return methodAccess;
+    }
+
+    public void setMethodAccess(MethodAccess methodAccess) {
+        this.methodAccess = methodAccess;
+    }
+
+    public int getMethodIndex() {
+        return methodIndex;
+    }
+
+    public void setMethodIndex(int methodIndex) {
+        this.methodIndex = methodIndex;
     }
 
     public void setPacketMethodAnno(PacketMethod packetMethodAnno) {

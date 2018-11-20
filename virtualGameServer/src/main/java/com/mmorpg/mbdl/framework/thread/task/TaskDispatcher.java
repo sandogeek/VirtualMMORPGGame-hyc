@@ -1,5 +1,6 @@
 package com.mmorpg.mbdl.framework.thread.task;
 
+import com.mmorpg.mbdl.framework.communicate.websocket.model.HandleReqTask;
 import com.mmorpg.mbdl.framework.thread.BussinessPoolExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -7,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.io.Serializable;
 import java.util.concurrent.ScheduledFuture;
 
 /**
@@ -47,8 +49,14 @@ public class TaskDispatcher {
             abstractTask.setExecuteParallel(true);
             return BussinessPoolExecutor.getIntance().executeTask(abstractTask);
         }
-        if ((Long)abstractTask.getDispatcherId() < 0){
-            throw new IllegalArgumentException(String.format("任务分发失败，dispatcherId小于0，dispatcherId小于0的队列预留给未登录前的请求使用"));
+        // 如果不是请求处理任务，校验其是否占用了未登录时使用的队列
+        if (!(abstractTask instanceof HandleReqTask)){
+            Serializable dispatcherId = abstractTask.getDispatcherId();
+            if (dispatcherId instanceof Long){
+                if ((Long)dispatcherId < 0){
+                    throw new IllegalArgumentException(String.format("任务分发失败，dispatcherId小于0，dispatcherId小于0的队列预留给未登录前的请求使用"));
+                }
+            }
         }
         TaskQueue taskQueue = bussinessPoolExecutor.getBusinessThreadPoolTaskQueues().getOrCreate(abstractTask.getDispatcherId());
         return taskQueue.submit(abstractTask);

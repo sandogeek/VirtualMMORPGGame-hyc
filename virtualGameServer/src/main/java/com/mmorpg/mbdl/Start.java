@@ -1,10 +1,11 @@
 package com.mmorpg.mbdl;
 
+import com.baidu.bjf.remoting.protobuf.ProtobufProxy;
 import com.mmorpg.mbdl.framework.common.generator.PacketIdTsGenerator;
+import com.mmorpg.mbdl.framework.common.utils.FileUtils;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.AbstractPacket;
 import com.mmorpg.mbdl.framework.communicate.websocket.server.WebSocketServer;
 import com.mmorpg.mbdl.framework.thread.TaskExecutorGroup;
-import com.mmorpg.mbdl.framework.common.utils.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -16,15 +17,17 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 
 import java.util.Properties;
+import java.util.logging.Level;
 
 // @SpringBootApplication
 public class Start {
     private static Logger logger= LoggerFactory.getLogger(Start.class);
 
     public static void  main(String[] args) throws Exception {
-        // TODO 检查所有@AutoWrie IStorage<...,...>是否有对应的拓展了IStorage<...,...>的子接口，如果没有就使用ByteBuddy生成并保存.class文件
-        // 以便下次启动无需生成
-        // checkAndGenerate()
+        // 关闭jprotobuf的信息打印
+        java.util.logging.Logger sysLogger = java.util.logging.Logger.getLogger(ProtobufProxy.class.getName());
+        sysLogger.setLevel(Level.WARNING);
+
         Resource resource = new ClassPathResource("/dev.properties");
         Properties props = PropertiesLoaderUtils.loadProperties(resource);
         clearProto(props.getProperty("dev.PROTO_PATH"));

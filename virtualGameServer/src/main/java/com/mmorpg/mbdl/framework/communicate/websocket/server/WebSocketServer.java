@@ -21,7 +21,7 @@ import javax.annotation.PostConstruct;
 public class WebSocketServer {
     private static final Logger logger = LoggerFactory.getLogger(WebSocketServer.class);
 
-    public static final int PORT = 8088;
+    public static final int PORT = 8090;
     private static WebSocketServer self;
 
     public static WebSocketServer getInstance(){

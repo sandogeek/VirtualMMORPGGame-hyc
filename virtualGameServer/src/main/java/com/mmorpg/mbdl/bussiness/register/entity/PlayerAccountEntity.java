@@ -1,15 +1,16 @@
 package com.mmorpg.mbdl.bussiness.register.entity;
 
 import com.mmorpg.mbdl.framework.storage.annotation.JetCacheConfig;
-import com.mmorpg.mbdl.framework.storage.annotation.LayeringCacheConfig;
 import com.mmorpg.mbdl.framework.storage.core.IEntity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
+/**
+ * @author sando
+ */
 @Entity
-@LayeringCacheConfig(depict = "玩家账户")
 @JetCacheConfig
 public class PlayerAccountEntity implements IEntity<String> {
     @Id

@@ -89,7 +89,6 @@ public class ByteBuddyTest {
             }
             objectResolvableTypeHashMap.put(resolvableType.getSource(),resolvableType);
         }
-
-        System.out.println("怎么说");
     }
+    
 }

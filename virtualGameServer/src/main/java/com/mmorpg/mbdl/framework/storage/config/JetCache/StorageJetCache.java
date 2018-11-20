@@ -105,7 +105,10 @@ public class StorageJetCache <PK extends Serializable &Comparable<PK>,E extends 
             E entityFromCache = cacheGetResult.getValue();
             return entityFromCache;
         }else {
-            return findOne(id);
+            E entity = findOne(id);
+            // 不管是null还是实体都缓存起来
+            cache.put(id,entity);
+            return entity;
         }
     }
 
