@@ -3,8 +3,8 @@ package com.mmorpg.mbdl.framework.reflectASMwithUnsafe;
 /**
  * 利用Unsafe访问私有成员
  * TODO 利用ByteBuddy重写ReflectASM
- * ReflectASM使用场景：类成员使用反射调用量巨大
- * come form https://github.com/EsotericSoftware/reflectasm/pull/39
+ * ReflectASM使用场景：大量使用反射访问类成员
+ * FieldAccessUnsafe come form https://github.com/EsotericSoftware/reflectasm/pull/39 has some revise.
  **/
 import sun.misc.Unsafe;
 
@@ -63,7 +63,7 @@ class FieldAccessUnsafe extends FieldAccess {
         {
             fieldName = fields[i].getName();
             super.fieldNames[i] = fieldName;
-            fieldName2Index.put(fieldName,i);
+            super.fieldName2Index.put(fieldName,i);
             super.fieldTypes[i] = fields[i].getType();
             this.addresses[i] = unsafe.objectFieldOffset(fields[i]);
         }

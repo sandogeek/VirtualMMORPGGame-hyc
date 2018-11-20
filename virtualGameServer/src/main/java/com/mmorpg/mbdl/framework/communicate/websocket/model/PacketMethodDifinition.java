@@ -1,7 +1,8 @@
 package com.mmorpg.mbdl.framework.communicate.websocket.model;
 
-import com.esotericsoftware.reflectasm.MethodAccess;
+
 import com.mmorpg.mbdl.framework.communicate.websocket.annotation.PacketMethod;
+import com.mmorpg.mbdl.framework.reflectASMwithUnsafe.MethodAccess;
 import org.reflections.ReflectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +29,7 @@ public class PacketMethodDifinition {
     public static PacketMethodDifinition valueOf(Object object,Method method,Class<?> aClazz,PacketMethod packetMethodAnno){
         PacketMethodDifinition packetMethodDifinition = new PacketMethodDifinition();
         packetMethodDifinition.setBean(object);
-        packetMethodDifinition.setMethodAccess(MethodAccess.get(object.getClass()));
+        packetMethodDifinition.setMethodAccess(MethodAccess.access(object.getClass()));
         packetMethodDifinition.setMethodIndex(packetMethodDifinition.getMethodAccess().getIndex(method.getName()));
         packetMethodDifinition.setMethod(method);
         packetMethodDifinition.setPacketMethodAnno(packetMethodAnno);
