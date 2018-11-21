@@ -7,6 +7,7 @@ package com.mmorpg.mbdl.framework.reflectASMwithUnsafe;
  * FieldAccessUnsafe come form https://github.com/EsotericSoftware/reflectasm/pull/39 has some revise.
  **/
 
+import com.google.common.base.Preconditions;
 import sun.misc.Unsafe;
 
 import java.lang.reflect.Constructor;
@@ -93,6 +94,8 @@ class FieldAccessUnsafe extends FieldAccess {
     private Object transform(Object instance,int fieldIndex){
         if (isStaticField(fields[fieldIndex])){
             return this.type;
+        }else if (Preconditions.checkNotNull(instance,"访问非静态字段不能传入null").getClass()!=this.type) {
+            throw new IllegalArgumentException(String.format("参数异常，传入的对象类型必须为[%s]",type.getSimpleName()));
         }
         return instance;
     }
