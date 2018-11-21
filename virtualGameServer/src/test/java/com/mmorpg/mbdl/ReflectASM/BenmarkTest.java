@@ -118,6 +118,19 @@ public class BenmarkTest {
             System.out.println(String.format("FieldAccess4Name字段设值 耗时:%s",stopWatch.getTime()));
             System.out.println(String.format("state最终值:%s",target.state));
         });
+        UserService target = new UserService();
+        FieldAccess fieldAccess = FieldAccess.accessUnsafe(target.getClass());
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
+        int state = 0;
+        for (int i = 0; i < 100000000; i++) {
+            // error调用，使用了setObject设置基本值
+            fieldAccess.setInt(target, fieldAccess.getIndex("state"), 1024);
+            state = (Integer)fieldAccess.getInt(target, fieldAccess.getIndex("state"));
+        }
+        stopWatch.stop();
+        System.out.println(String.format("FieldAccess4Name字段设值 耗时:%s",stopWatch.getTime()));
+        System.out.println(String.format("state最终值:%s",target.state));
     }
 
 
@@ -126,6 +139,7 @@ public class BenmarkTest {
         UserService target = new UserService();
         Field state = target.getClass().getDeclaredField("state");
         state.setAccessible(true);
+        Class<?> aClass = int.class;
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
         for (int i = 0; i < 100000000; i++) {

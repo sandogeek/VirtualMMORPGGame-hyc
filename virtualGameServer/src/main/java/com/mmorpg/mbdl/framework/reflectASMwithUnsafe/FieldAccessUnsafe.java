@@ -6,9 +6,10 @@ package com.mmorpg.mbdl.framework.reflectASMwithUnsafe;
  * ReflectASM使用场景：大量使用反射访问类成员
  * FieldAccessUnsafe come form https://github.com/EsotericSoftware/reflectasm/pull/39 has some revise.
  **/
+
 import sun.misc.Unsafe;
 
-import java.lang.reflect.*;
+import java.lang.reflect.Field;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
@@ -47,6 +48,7 @@ class FieldAccessUnsafe extends FieldAccess {
         }
         unsafe = unsafeTry;
     }
+
     FieldAccessUnsafe(Class<?> clazz)
     {
         if(unsafe == null) {
@@ -72,7 +74,13 @@ class FieldAccessUnsafe extends FieldAccess {
     @Override
     public void setObject(Object instance, int fieldIndex, Object value)
     {
+        if (!checked){
+            if (primitiveTypes.contains(fieldTypes[fieldIndex])){
+                throw new IllegalArgumentException("目标类型是原生类型，请使用相应的set方法");
+            }
+        }
         unsafe.putObject(instance, addresses[fieldIndex], value);
+        checked = false;
     }
 
     @Override

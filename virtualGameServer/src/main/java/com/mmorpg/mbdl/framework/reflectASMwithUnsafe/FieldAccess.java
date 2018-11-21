@@ -19,13 +19,8 @@ import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
 import java.util.*;
 
 import static org.objectweb.asm.Opcodes.*;
@@ -36,21 +31,22 @@ public abstract class FieldAccess {
 		return new FieldAccessUnsafe(type);
 	}
 
-	protected String[] fieldNames;
-	protected Map<String,Integer> fieldName2Index;
-	protected Class[] fieldTypes;
+	String[] fieldNames;
+	Map<String,Integer> fieldName2Index;
+	Class[] fieldTypes;
 	private Field[] fields;
 
-	// 安全校验，防止误用setObject
-    private static Set<String> boxTypeNames;
+    /** 安全校验，防止误用setObject */
+    static Set<Class<?>> primitiveTypes;
+    boolean checked = false;
     static {
-        boxTypeNames = new HashSet<>();
-        boxTypeNames.add(Boolean.class.getSimpleName());
-        boxTypeNames.add(Byte.class.getSimpleName());
-        boxTypeNames.add(Short.class.getSimpleName());
-        boxTypeNames.add(Integer.class.getSimpleName());
-        boxTypeNames.add(Long.class.getSimpleName());
-        boxTypeNames.add(Double.class.getSimpleName());
+        primitiveTypes = new HashSet<>();
+        primitiveTypes.add(boolean.class);
+        primitiveTypes.add(byte.class);
+        primitiveTypes.add(short.class);
+        primitiveTypes.add(int.class);
+        primitiveTypes.add(long.class);
+        primitiveTypes.add(double.class);
     }
 
 	public int getIndex (String fieldName) {
@@ -70,10 +66,16 @@ public abstract class FieldAccess {
 	}
 
 	public void setObject (Object instance, String fieldName, Object value) {
-	    if (boxTypeNames.contains(value.getClass().getSimpleName())){
-	        throw new IllegalArgumentException("setObject的value不能是基本类型，请使用相应的set方法");
+        if (primitiveTypes.contains(fieldTypes[getIndex(fieldName)])){
+            throw new IllegalArgumentException("目标类型是原生类型，请使用相应的set方法");
         }
-		setObject(instance, getIndex(fieldName), value);
+        checked = true;
+        try {
+            setObject(instance, getIndex(fieldName), value);
+        } catch (Throwable e){
+        }finally {
+            checked = false;
+        }
 	}
 
 	public Object getObject (Object instance, String fieldName) {
