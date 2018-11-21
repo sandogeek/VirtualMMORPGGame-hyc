@@ -83,6 +83,24 @@ public class BenmarkTest {
     }
 
     @Test
+    void testFieldAccess4IndexInteger() {
+        UserService target = new UserService();
+        FieldAccess fieldAccess = FieldAccess.accessUnsafe(target.getClass());
+        int index = fieldAccess.getIndex("stateInteger");
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
+        Integer state = 0;
+        for (int i = 0; i < 100000000; i++) {
+            fieldAccess.setObject(target, index, 1024);
+            state = (Integer)fieldAccess.getObject(target, index);
+        }
+        stopWatch.stop();
+        System.out.println(String.format("FieldAccess4IndexInteger字段设值 耗时:%s",stopWatch.getTime()));
+        // System.out.println(String.format("state最终值:%s",state));
+        Assertions.assertEquals(target.getStateInteger(),state);
+    }
+
+    @Test
     void accessWithoutUnsafe() {
         UserService target = new UserService();
         FieldAccess fieldAccess = FieldAccess.access(target.getClass());
@@ -126,11 +144,11 @@ public class BenmarkTest {
         for (int i = 0; i < 100000000; i++) {
             // error调用，使用了setObject设置基本值
             fieldAccess.setInt(target, fieldAccess.getIndex("state"), 1024);
-            state = (Integer)fieldAccess.getInt(target, fieldAccess.getIndex("state"));
+            state = fieldAccess.getInt(target, fieldAccess.getIndex("state"));
         }
         stopWatch.stop();
         System.out.println(String.format("FieldAccess4Name字段设值 耗时:%s",stopWatch.getTime()));
-        System.out.println(String.format("state最终值:%s",target.state));
+        // System.out.println(String.format("state最终值:%s",target.state));
     }
 
 
