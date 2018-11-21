@@ -11,6 +11,25 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 public class BenmarkTest {
+    @Test
+    void injectStaticField() {
+        UserService target = new UserService();
+        FieldAccess fieldAccess = FieldAccess.accessUnsafe(target.getClass());
+        int index = fieldAccess.getIndex("longStatic");
+        long injectValue = 1444L;
+        fieldAccess.setLong(target,index,injectValue);
+        // StopWatch stopWatch = new StopWatch();
+        // stopWatch.start();
+        // int state = 0;
+        // for (int i = 0; i < 100000000; i++) {
+        //     fieldAccess.setInt(target, index, 1024);
+        //     state = fieldAccess.getInt(target, index);
+        // }
+        // stopWatch.stop();
+        // System.out.println(String.format("FieldAccess4Index字段设值 耗时:%s",stopWatch.getTime()));
+        System.out.println(String.format("longStatic最终值:%s",fieldAccess.getLong(target,index)));
+        Assertions.assertEquals(injectValue,UserService.getLongStatic());
+    }
 
     /**
      * JDK反射调用方法

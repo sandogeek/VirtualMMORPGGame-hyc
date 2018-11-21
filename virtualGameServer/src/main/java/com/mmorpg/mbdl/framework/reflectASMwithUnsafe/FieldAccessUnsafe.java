@@ -19,7 +19,9 @@ import java.util.HashMap;
 @SuppressWarnings("restriction")
 class FieldAccessUnsafe extends FieldAccess {
     private static final Unsafe unsafe;
-    long[] addresses;
+    private long[] addresses;
+    // 原来的类
+    private Class<?> type;
     // from guava AbstractFuture
     static {
         sun.misc.Unsafe unsafeTry = null;
@@ -62,7 +64,8 @@ class FieldAccessUnsafe extends FieldAccess {
         if(unsafe == null) {
             throw new UnsupportedOperationException();
         }
-        Field[] fields = clazz.getDeclaredFields();
+        this.type = clazz;
+        super.fields = clazz.getDeclaredFields();
 
         super.fieldNames = new String[fields.length];
         super.fieldName2Index = new HashMap<>(64);
@@ -75,7 +78,7 @@ class FieldAccessUnsafe extends FieldAccess {
             super.fieldNames[i] = fieldName;
             super.fieldName2Index.put(fieldName,i);
             super.fieldTypes[i] = fields[i].getType();
-            if (java.lang.reflect.Modifier.isStatic(fields[i].getModifiers())) {
+            if (isStaticField(fields[i])) {
                 this.addresses[i] = unsafe.staticFieldOffset(fields[i]);
             }else {
                 this.addresses[i] = unsafe.objectFieldOffset(fields[i]);
@@ -83,6 +86,16 @@ class FieldAccessUnsafe extends FieldAccess {
         }
     }
 
+    private boolean isStaticField(Field field){
+        return java.lang.reflect.Modifier.isStatic(field.getModifiers());
+    }
+
+    private Object transform(Object instance,int fieldIndex){
+        if (isStaticField(fields[fieldIndex])){
+            return this.type;
+        }
+        return instance;
+    }
     @Override
     public void setObject(Object instance, int fieldIndex, Object value)
     {
@@ -91,116 +104,116 @@ class FieldAccessUnsafe extends FieldAccess {
                 throw new IllegalArgumentException("目标类型是原生类型，请使用相应的set方法");
             }
         }
-        unsafe.putObject(instance, addresses[fieldIndex], value);
+        unsafe.putObject(transform(instance,fieldIndex), addresses[fieldIndex], value);
         checked = false;
     }
 
     @Override
     public void setBoolean(Object instance, int fieldIndex, boolean value)
     {
-        unsafe.putBoolean(instance, addresses[fieldIndex], value);
+        unsafe.putBoolean(transform(instance,fieldIndex), addresses[fieldIndex], value);
     }
 
     @Override
     public void setByte(Object instance, int fieldIndex, byte value)
     {
-        unsafe.putByte(instance, addresses[fieldIndex], value);
+        unsafe.putByte(transform(instance,fieldIndex), addresses[fieldIndex], value);
     }
 
     @Override
     public void setShort(Object instance, int fieldIndex, short value)
     {
-        unsafe.putShort(instance, addresses[fieldIndex], value);
+        unsafe.putShort(transform(instance,fieldIndex), addresses[fieldIndex], value);
     }
 
     @Override
     public void setInt(Object instance, int fieldIndex, int value)
     {
-        unsafe.putInt(instance, addresses[fieldIndex], value);
+        unsafe.putInt(transform(instance,fieldIndex), addresses[fieldIndex], value);
     }
 
     @Override
     public void setLong(Object instance, int fieldIndex, long value)
     {
-        unsafe.putLong(instance, addresses[fieldIndex], value);
+        unsafe.putLong(transform(instance,fieldIndex), addresses[fieldIndex], value);
     }
 
     @Override
     public void setDouble(Object instance, int fieldIndex, double value)
     {
-        unsafe.putDouble(instance, addresses[fieldIndex], value);
+        unsafe.putDouble(transform(instance,fieldIndex), addresses[fieldIndex], value);
     }
 
     @Override
     public void setFloat(Object instance, int fieldIndex, float value)
     {
-        unsafe.putFloat(instance, addresses[fieldIndex], value);
+        unsafe.putFloat(transform(instance,fieldIndex), addresses[fieldIndex], value);
     }
 
     @Override
     public void setChar(Object instance, int fieldIndex, char value)
     {
-        unsafe.putChar(instance, addresses[fieldIndex], value);
+        unsafe.putChar(transform(instance,fieldIndex), addresses[fieldIndex], value);
     }
 
     @Override
     public Object getObject(Object instance, int fieldIndex)
     {
-        return unsafe.getObject(instance, addresses[fieldIndex]);
+        return unsafe.getObject(transform(instance,fieldIndex), addresses[fieldIndex]);
     }
 
     @Override
     public String getString(Object instance, int fieldIndex)
     {
-        return (String)unsafe.getObject(instance, addresses[fieldIndex]);
+        return (String)unsafe.getObject(transform(instance,fieldIndex), addresses[fieldIndex]);
     }
 
     @Override
     public char getChar(Object instance, int fieldIndex)
     {
-        return unsafe.getChar(instance, addresses[fieldIndex]);
+        return unsafe.getChar(transform(instance,fieldIndex), addresses[fieldIndex]);
     }
 
     @Override
     public boolean getBoolean(Object instance, int fieldIndex)
     {
-        return unsafe.getBoolean(instance, addresses[fieldIndex]);
+        return unsafe.getBoolean(transform(instance,fieldIndex), addresses[fieldIndex]);
     }
 
     @Override
     public byte getByte(Object instance, int fieldIndex)
     {
-        return unsafe.getByte(instance, addresses[fieldIndex]);
+        return unsafe.getByte(transform(instance,fieldIndex), addresses[fieldIndex]);
     }
 
     @Override
     public short getShort(Object instance, int fieldIndex)
     {
-        return unsafe.getShort(instance, addresses[fieldIndex]);
+        return unsafe.getShort(transform(instance,fieldIndex), addresses[fieldIndex]);
     }
 
     @Override
     public int getInt(Object instance, int fieldIndex)
     {
-        return unsafe.getInt(instance, addresses[fieldIndex]);
+        return unsafe.getInt(transform(instance,fieldIndex), addresses[fieldIndex]);
     }
 
     @Override
     public long getLong(Object instance, int fieldIndex)
     {
-        return unsafe.getLong(instance, addresses[fieldIndex]);
+        return unsafe.getLong(transform(instance,fieldIndex), addresses[fieldIndex]);
     }
 
     @Override
     public double getDouble(Object instance, int fieldIndex)
     {
-        return unsafe.getDouble(instance, addresses[fieldIndex]);
+        return unsafe.getDouble(transform(instance,fieldIndex), addresses[fieldIndex]);
     }
 
     @Override
     public float getFloat(Object instance, int fieldIndex)
     {
-        return unsafe.getFloat(instance, addresses[fieldIndex]);
+        return unsafe.getFloat(transform(instance,fieldIndex), addresses[fieldIndex]);
     }
 
 }

@@ -34,7 +34,7 @@ public abstract class FieldAccess {
 	String[] fieldNames;
 	Map<String,Integer> fieldName2Index;
 	Class[] fieldTypes;
-	private Field[] fields;
+	Field[] fields;
 
     /** 安全校验，防止误用setObject */
     static Set<Class<?>> primitiveTypes;
