@@ -6,6 +6,7 @@ import com.alicp.jetcache.anno.support.CachedAnnoConfig;
 import com.alicp.jetcache.anno.support.GlobalCacheConfig;
 import com.google.common.base.Preconditions;
 import com.mmorpg.mbdl.framework.common.utils.ReflectUtils;
+import com.mmorpg.mbdl.framework.reflectASMwithUnsafe.FieldAccess;
 import com.mmorpg.mbdl.framework.storage.annotation.JetCacheConfig;
 import com.mmorpg.mbdl.framework.storage.core.IStorage;
 import org.slf4j.Logger;
@@ -16,8 +17,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.ResolvableType;
 
-import java.lang.reflect.Field;
-
 /**
  * JetCache的IStorage代理对象bean的后处理器
  *
@@ -27,6 +26,14 @@ import java.lang.reflect.Field;
 public class JetCacheBeanPostProcessor implements BeanPostProcessor, ApplicationContextAware {
     private static final Logger logger = LoggerFactory.getLogger(JetCacheBeanPostProcessor.class);
     private ApplicationContext applicationContext;
+    private static FieldAccess fieldAccess;
+    private static int cacheIndex;
+
+    static {
+        fieldAccess = FieldAccess.accessUnsafe(StorageJetCache.class);
+        cacheIndex = fieldAccess.getIndex("cache");
+    }
+
     @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
         return bean;
@@ -59,9 +66,10 @@ public class JetCacheBeanPostProcessor implements BeanPostProcessor, Application
                     // 获取dao类泛型接口的第二个具体泛型，E extends IEntity的具体的E
                     Class eClass = resolvableType.getGeneric(1).resolve();
                     // storageJetCache.seteClazz(eClass);
-                    Field cache = storageJetCache.getClass().getDeclaredField("cache");
-                    cache.setAccessible(true);
-                    cache.set(storageJetCache,getCache(eClass));
+                    // Field cache = storageJetCache.getClass().getDeclaredField("cache");
+                    // cache.setAccessible(true);
+                    // cache.set(storageJetCache,getCache(eClass));
+                    fieldAccess.setObject(storageJetCache,cacheIndex,getCache(eClass));
                 }
 
             }catch (Exception e){
