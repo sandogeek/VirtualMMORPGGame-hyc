@@ -75,7 +75,11 @@ class FieldAccessUnsafe extends FieldAccess {
             super.fieldNames[i] = fieldName;
             super.fieldName2Index.put(fieldName,i);
             super.fieldTypes[i] = fields[i].getType();
-            this.addresses[i] = unsafe.objectFieldOffset(fields[i]);
+            if (java.lang.reflect.Modifier.isStatic(fields[i].getModifiers())) {
+                this.addresses[i] = unsafe.staticFieldOffset(fields[i]);
+            }else {
+                this.addresses[i] = unsafe.objectFieldOffset(fields[i]);
+            }
         }
     }
 
