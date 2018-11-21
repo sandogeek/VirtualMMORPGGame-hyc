@@ -41,10 +41,10 @@ public class BenmarkTest {
         long start = System.currentTimeMillis();
         Method method = target.getClass().getMethod("update", int.class, String.class);
         for (int i = 0; i < 100000000; i++) {
-            method.invoke(target, 1, "zhangsan");
+            method.invoke(target, 1, "sandogeek");
         }
         long end = System.currentTimeMillis();
-        System.out.println("jdk反射方法调用耗时：" + (end - start));//809 753 880 875 816
+        System.out.println("jdk反射方法调用耗时：" + (end - start));
     }
 
     /**
@@ -57,10 +57,10 @@ public class BenmarkTest {
         MethodAccess access = MethodAccess.access(UserService.class);//生成字节码的方式创建UserServiceMethodAccess
         long start = System.currentTimeMillis();
         for (int i = 0; i < 100000000; i++) {
-            access.invoke(target, "update", 1, "zhangsan");
+            access.invoke(target, "update", 1, "sandogeek");
         }
         long end = System.currentTimeMillis();
-        System.out.println("ReflectAsm4Name方法调用耗时：" + (end - start));//523 382 415 489 482
+        System.out.println("ReflectAsm4Name方法调用耗时：" + (end - start));
     }
 
     /**
@@ -74,10 +74,10 @@ public class BenmarkTest {
         int index = access.getIndex("update", int.class, String.class);
         long start = System.currentTimeMillis();
         for (int i = 0; i < 100000000; i++) {
-            access.invoke(target, index, 1, "zhangsan");
+            access.invoke(target, index, 1, "sandogeek");
         }
         long end = System.currentTimeMillis();
-        System.out.println("ReflectAsm4Index方法调用耗时：" + (end - start));//12 15 23 14 24
+        System.out.println("ReflectAsm4Index方法调用耗时：" + (end - start));
     }
 
     /**
@@ -120,6 +120,22 @@ public class BenmarkTest {
     }
 
     @Test
+    void testReflectFieldJDK() throws Exception {
+        UserService target = new UserService();
+        Field state = target.getClass().getDeclaredField("stateInteger");
+        state.setAccessible(true);
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
+        for (int i = 0; i < 100000000; i++) {
+            state.set(target, 1024);
+            int value = (Integer)state.get(target);
+        }
+        stopWatch.stop();
+        System.out.println("jdk 反射字段设值 耗时:"+stopWatch.getTime());
+        Assertions.assertEquals(target.getStateInteger(),new Integer(1024));
+    }
+
+    @Test
     void accessWithoutUnsafe() {
         UserService target = new UserService();
         FieldAccess fieldAccess = FieldAccess.access(target.getClass());
@@ -145,7 +161,7 @@ public class BenmarkTest {
             FieldAccess fieldAccess = FieldAccess.accessUnsafe(target.getClass());
             StopWatch stopWatch = new StopWatch();
             stopWatch.start();
-            int state = 0;
+            Integer state = 0;
             for (int i = 0; i < 100000000; i++) {
                 // error调用，使用了setObject设置基本值
                 fieldAccess.setObject(target, "state", 1024);
@@ -170,23 +186,6 @@ public class BenmarkTest {
         // System.out.println(String.format("state最终值:%s",target.state));
     }
 
-
-    @Test
-    void testReflectFieldJDK() throws Exception {
-        UserService target = new UserService();
-        Field state = target.getClass().getDeclaredField("state");
-        state.setAccessible(true);
-        Class<?> aClass = int.class;
-        StopWatch stopWatch = new StopWatch();
-        stopWatch.start();
-        for (int i = 0; i < 100000000; i++) {
-            state.set(target, 1);
-            int value = (Integer)state.get(target);
-        }
-        stopWatch.stop();
-        System.out.println("jdk 反射字段设值 耗时:"+stopWatch.getTime());
-        Assertions.assertEquals(target.getState(),1);
-    }
 
     /**
      * ReflectAsm反射来调用构造方法

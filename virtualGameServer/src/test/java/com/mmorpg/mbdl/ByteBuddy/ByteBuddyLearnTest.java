@@ -15,8 +15,9 @@ public class ByteBuddyLearnTest {
     // 处理字段和方法
     @Test
     public void fieldAndMethod() throws Exception {
-        Class<?> clz = new ByteBuddy(ClassFileVersion.ofThisVm(ClassFileVersion.JAVA_V8)).
-                subclass(Object.class).name("bytebuddy.learn.HandleFiedAndMethod")
+        Class<?> clz = new ByteBuddy(ClassFileVersion.ofThisVm(ClassFileVersion.JAVA_V8))
+                .subclass(Object.class)
+                .name("bytebuddy.learn.HandleFiedAndMethod")
                 .method(named("toString").and(returns(String.class)).and(takesArguments(0)))
                 .intercept(FixedValue.value("custom"))
                 .make().load(getClass().getClassLoader()).getLoaded();

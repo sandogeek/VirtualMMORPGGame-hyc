@@ -65,10 +65,7 @@ public class JetCacheBeanPostProcessor implements BeanPostProcessor, Application
                     resolvableType = ResolvableType.forType(daoClass.getGenericInterfaces()[0]);
                     // 获取dao类泛型接口的第二个具体泛型，E extends IEntity的具体的E
                     Class eClass = resolvableType.getGeneric(1).resolve();
-                    // storageJetCache.seteClazz(eClass);
-                    // Field cache = storageJetCache.getClass().getDeclaredField("cache");
-                    // cache.setAccessible(true);
-                    // cache.set(storageJetCache,getCache(eClass));
+
                     fieldAccess.setObject(storageJetCache,cacheIndex,getCache(eClass));
                 }
 
