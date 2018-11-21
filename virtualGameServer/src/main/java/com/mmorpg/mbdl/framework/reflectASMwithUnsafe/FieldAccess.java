@@ -50,11 +50,17 @@ public abstract class FieldAccess {
     }
 
 	public int getIndex (String fieldName) {
-	    Integer index = fieldName2Index.get(fieldName);
-	    if (index == null){
-            throw new IllegalArgumentException(String.format("找不到名为%s的字段",fieldName));
-        }
-        return index;
+	    // Integer index = fieldName2Index.get(fieldName);
+	    // if (index == null){
+        //     throw new IllegalArgumentException(String.format("找不到名为%s的字段",fieldName));
+        // }
+        // return index;
+		for (int i = 0, n = fieldNames.length; i < n; i++){
+			if (fieldNames[i].equals(fieldName)) {
+				return i;
+			}
+		}
+		throw new IllegalArgumentException(String.format("找不到名为%s的字段",fieldName));
 	}
 
 	public int getIndex (Field field) {
