@@ -9,6 +9,7 @@ package com.mmorpg.mbdl.framework.reflectASMwithUnsafe;
 
 import sun.misc.Unsafe;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
@@ -43,7 +44,14 @@ class FieldAccessUnsafe extends FieldAccess {
                                     }
                                 });
             } catch (PrivilegedActionException e) {
-                throw new RuntimeException("Unsafe获取失败", e.getCause());
+                try {
+                    Constructor<Unsafe> unsafeConstructor = Unsafe.class.getDeclaredConstructor();
+                    unsafeConstructor.setAccessible(true);
+                    unsafeTry = unsafeConstructor.newInstance();
+                }catch (Throwable throwable){
+                    throwable.printStackTrace();
+                    throw new RuntimeException("Unsafe获取失败", e.getCause());
+                }
             }
         }
         unsafe = unsafeTry;
