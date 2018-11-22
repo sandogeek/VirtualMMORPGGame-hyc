@@ -202,7 +202,7 @@ public abstract class FieldAccess {
 				String classNameInternal = className.replace('.', '/');
 
 				ClassWriter cw = new ClassWriter(0);
-				cw.visit(V1_1, ACC_PUBLIC + ACC_SUPER, accessClassNameInternal, null, "com/mmorpg/mbdl/framework/reflectASMwithUnsafe/FieldAccess",
+				cw.visit(V1_1, ACC_PUBLIC + ACC_SUPER, accessClassNameInternal, null, FieldAccess.class.getName().replace(".","/"),
                         null);
                         // new String[]{"java/io/Serializable"});
 				insertConstructor(cw);
@@ -255,7 +255,7 @@ public abstract class FieldAccess {
 		MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
 		mv.visitCode();
 		mv.visitVarInsn(ALOAD, 0);
-		mv.visitMethodInsn(INVOKESPECIAL, "com/mmorpg/mbdl/framework/reflectASMwithUnsafe/FieldAccess", "<init>", "()V");
+		mv.visitMethodInsn(INVOKESPECIAL, FieldAccess.class.getName().replace(".","/"), "<init>", "()V");
 		mv.visitInsn(RETURN);
 		mv.visitMaxs(1, 1);
 		mv.visitEnd();

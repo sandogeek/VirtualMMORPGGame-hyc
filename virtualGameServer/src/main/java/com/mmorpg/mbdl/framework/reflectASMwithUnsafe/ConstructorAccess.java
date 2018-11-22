@@ -87,8 +87,8 @@ abstract public class ConstructorAccess<T> {
 					}
 				}
 				String superclassNameInternal = Modifier.isPublic(modifiers)
-					? "com/mmorpg/mbdl/framework/reflectASMwithUnsafe/PublicConstructorAccess"
-					: "com/mmorpg/mbdl/framework/reflectASMwithUnsafe/ConstructorAccess";
+					? PublicConstructorAccess.class.getName().replace(".","/")
+					: ConstructorAccess.class.getName().replace(".","/");
 
 				ClassWriter cw = new ClassWriter(0);
 				cw.visit(V1_1, ACC_PUBLIC + ACC_SUPER, accessClassNameInternal, null, superclassNameInternal, null);
