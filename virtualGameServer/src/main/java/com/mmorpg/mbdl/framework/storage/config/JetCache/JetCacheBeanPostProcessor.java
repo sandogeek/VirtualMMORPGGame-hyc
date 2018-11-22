@@ -6,7 +6,7 @@ import com.alicp.jetcache.anno.support.CachedAnnoConfig;
 import com.alicp.jetcache.anno.support.GlobalCacheConfig;
 import com.google.common.base.Preconditions;
 import com.mmorpg.mbdl.framework.common.utils.ReflectUtils;
-import com.mmorpg.mbdl.framework.reflectASMwithUnsafe.FieldAccess;
+import com.mmorpg.mbdl.framework.reflectasm.withunsafe.FieldAccess;
 import com.mmorpg.mbdl.framework.storage.annotation.JetCacheConfig;
 import com.mmorpg.mbdl.framework.storage.core.IStorage;
 import org.slf4j.Logger;

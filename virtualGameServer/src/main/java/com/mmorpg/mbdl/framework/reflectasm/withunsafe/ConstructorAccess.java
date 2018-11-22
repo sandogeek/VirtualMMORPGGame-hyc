@@ -12,7 +12,7 @@
  *
  */
 
-package com.mmorpg.mbdl.framework.reflectASMwithUnsafe;
+package com.mmorpg.mbdl.framework.reflectasm.withunsafe;
 
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.MethodVisitor;

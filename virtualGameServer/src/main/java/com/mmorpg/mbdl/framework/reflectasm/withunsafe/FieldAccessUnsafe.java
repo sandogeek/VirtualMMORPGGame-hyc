@@ -1,4 +1,4 @@
-package com.mmorpg.mbdl.framework.reflectASMwithUnsafe;
+package com.mmorpg.mbdl.framework.reflectasm.withunsafe;
 
 /**
  * 利用Unsafe访问私有成员

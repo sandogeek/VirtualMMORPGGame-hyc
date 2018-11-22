@@ -1,8 +1,8 @@
 package com.mmorpg.mbdl.ReflectASM;
 
-import com.mmorpg.mbdl.framework.reflectASMwithUnsafe.ConstructorAccess;
-import com.mmorpg.mbdl.framework.reflectASMwithUnsafe.FieldAccess;
-import com.mmorpg.mbdl.framework.reflectASMwithUnsafe.MethodAccess;
+import com.mmorpg.mbdl.framework.reflectasm.withunsafe.ConstructorAccess;
+import com.mmorpg.mbdl.framework.reflectasm.withunsafe.FieldAccess;
+import com.mmorpg.mbdl.framework.reflectasm.withunsafe.MethodAccess;
 import org.apache.commons.lang3.time.StopWatch;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

@@ -12,7 +12,7 @@
  *
  */
 
-package com.mmorpg.mbdl.framework.reflectASMwithUnsafe;
+package com.mmorpg.mbdl.framework.reflectasm.withunsafe;
 
 public abstract class PublicConstructorAccess extends ConstructorAccess {
 

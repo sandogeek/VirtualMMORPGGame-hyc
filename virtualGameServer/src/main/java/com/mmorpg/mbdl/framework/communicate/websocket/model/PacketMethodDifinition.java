@@ -2,7 +2,7 @@ package com.mmorpg.mbdl.framework.communicate.websocket.model;
 
 
 import com.mmorpg.mbdl.framework.communicate.websocket.annotation.PacketMethod;
-import com.mmorpg.mbdl.framework.reflectASMwithUnsafe.MethodAccess;
+import com.mmorpg.mbdl.framework.reflectasm.withunsafe.MethodAccess;
 import org.reflections.ReflectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -12,7 +12,7 @@
  *
  */
 
-package com.mmorpg.mbdl.framework.reflectASMwithUnsafe;
+package com.mmorpg.mbdl.framework.reflectasm.withunsafe;
 
 import com.esotericsoftware.reflectasm.ConstructorAccess;
 import com.esotericsoftware.reflectasm.PublicConstructorAccess;
