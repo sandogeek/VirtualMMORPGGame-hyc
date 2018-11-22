@@ -1,6 +1,7 @@
 package com.mmorpg.mbdl.framework.resource.facade;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * 静态资源访问接口
@@ -25,6 +26,22 @@ public interface IStaticRes<K,V> {
      * @throws IllegalArgumentException
      */
     V get(K key,boolean throwExceptionNotExist);
+
+    /**
+     * 根据唯一值字段获取V类型的对象
+     * @param name 唯一值字段名
+     * @param uniqueValue 唯一值字段值
+     * @return V类型的对象
+     */
+    V getByUnique(String name,Object uniqueValue);
+
+    /**
+     * 根据索引获取资源对象的集合
+     * @param name 索引字段名
+     * @param indexValue  索引值
+     * @return 资源对象的集合
+     */
+    List<V> getByIndex(String name, Object indexValue);
 
     /**
      * 当前key是否有对应的值
