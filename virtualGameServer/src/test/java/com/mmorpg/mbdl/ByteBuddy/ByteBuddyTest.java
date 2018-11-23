@@ -3,16 +3,12 @@ package com.mmorpg.mbdl.ByteBuddy;
 // import com.mmorpg.mbdl.bussiness.register.cache.PlayerAccountEntityService;
 
 import com.mmorpg.mbdl.ByteBuddy.foo.Bar;
-import com.mmorpg.mbdl.ByteBuddy.foo.Source;
-import com.mmorpg.mbdl.ByteBuddy.foo.Target;
 import com.mmorpg.mbdl.bussiness.register.entity.PlayerAccountEntity;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.NamingStrategy;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.implementation.FixedValue;
-import net.bytebuddy.implementation.MethodDelegation;
-import net.bytebuddy.jar.asm.Opcodes;
 import org.junit.jupiter.api.Test;
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
@@ -27,6 +23,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -62,35 +59,11 @@ public class ByteBuddyTest {
     }
 
     @Test
-    void 分发方法调用() {
-        DynamicType.Unloaded<Source> unloaded = new ByteBuddy()
-                .subclass(Source.class)
-                .name(Source.class.getName()+"Sub")
-                .method(named("hello")).intercept(MethodDelegation.to(Target.class))
-                .method(named("getInt")).intercept(MethodDelegation.to(Target.class))
-                .make();
-        try {
-            unloaded.saveIn(new File("target"));
-            String s = unloaded.load(getClass().getClassLoader())
-                    .getLoaded()
-                    .newInstance()
-                    .hello("World");
-            logger.info(s);
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Test
     void loadingClass() throws Exception {
         Class<?> type = new ByteBuddy()
                 .subclass(Object.class)
                 .defineField("defineByByteBuddy", int.class,
-                        Opcodes.ACC_PUBLIC|Opcodes.ACC_STATIC|Opcodes.ACC_FINAL)
+                        Modifier.PUBLIC|Modifier.STATIC|Modifier.FINAL)
                 .make()
                 .load(getClass().getClassLoader())
                 .getLoaded();
