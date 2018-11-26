@@ -4,7 +4,7 @@ public class UserService {
     private int statePrivate;
     int state;
     Integer stateInteger;
-    private static long longStatic;
+    static long longStatic;
     public int update(int n,String a){
         int hash = n + a.hashCode();
         return hash;

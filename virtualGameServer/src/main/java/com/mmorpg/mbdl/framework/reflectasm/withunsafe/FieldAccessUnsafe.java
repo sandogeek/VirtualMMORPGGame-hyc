@@ -21,8 +21,7 @@ import java.util.HashMap;
 class FieldAccessUnsafe extends FieldAccess {
     private static final Unsafe unsafe;
     private long[] addresses;
-    // 原来的类
-    private Class<?> type;
+
     // from guava AbstractFuture
     static {
         sun.misc.Unsafe unsafeTry = null;
@@ -103,7 +102,7 @@ class FieldAccessUnsafe extends FieldAccess {
     public void setObject(Object instance, int fieldIndex, Object value)
     {
         if (!checked){
-            if (primitiveTypes.contains(fieldTypes[fieldIndex])){
+            if (fieldTypes[fieldIndex].isPrimitive()){
                 throw new IllegalArgumentException("目标类型是原生类型，请使用相应的set方法");
             }
         }

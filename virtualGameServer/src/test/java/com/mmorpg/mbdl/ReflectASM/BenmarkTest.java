@@ -31,6 +31,18 @@ public class BenmarkTest {
         Assertions.assertEquals(injectValue,UserService.getLongStatic());
     }
 
+    @Test
+    void 静态字段注入withoutUnsafe() {
+        Assertions.assertThrows(IllegalArgumentException.class,()->{
+            UserService target = new UserService();
+            FieldAccess fieldAccess = FieldAccess.access(target.getClass());
+            int index = fieldAccess.getIndex("longStatic");
+            long injectValue = 1444L;
+            fieldAccess.setLong(target,index,injectValue);
+            System.out.println(String.format("longStatic最终值:%s",fieldAccess.getLong(target,index)));
+        });
+    }
+
     /**
      * JDK反射调用方法
      * @throws Exception

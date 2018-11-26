@@ -26,28 +26,30 @@ import java.util.*;
 import static org.objectweb.asm.Opcodes.*;
 
 public abstract class FieldAccess {
-
 	static public FieldAccess accessUnsafe(Class<?> type) {
 		return new FieldAccessUnsafe(type);
 	}
 
+	// 原来的类
+	Class<?> type;
 	String[] fieldNames;
 	Map<String,Integer> fieldName2Index;
 	Class[] fieldTypes;
 	Field[] fields;
 
     /** 安全校验，防止误用setObject */
-    static Set<Class<?>> primitiveTypes;
+    // static Set<Class<?>> primitiveTypes;
     boolean checked = false;
-    static {
-        primitiveTypes = new HashSet<>();
-        primitiveTypes.add(boolean.class);
-        primitiveTypes.add(byte.class);
-        primitiveTypes.add(short.class);
-        primitiveTypes.add(int.class);
-        primitiveTypes.add(long.class);
-        primitiveTypes.add(double.class);
-    }
+    // static {
+    //     primitiveTypes = new HashSet<>();
+    //     primitiveTypes.add(boolean.class);
+    //     primitiveTypes.add(byte.class);
+    //     primitiveTypes.add(short.class);
+    //     primitiveTypes.add(int.class);
+    //     primitiveTypes.add(long.class);
+    //     primitiveTypes.add(double.class);
+    //     primitiveTypes.add(float.class);
+    // }
 
 	public int getIndex (String fieldName) {
 	    // Integer index = fieldName2Index.get(fieldName);
@@ -60,19 +62,19 @@ public abstract class FieldAccess {
 				return i;
 			}
 		}
-		throw new IllegalArgumentException(String.format("找不到名为%s的字段",fieldName));
+		throw new IllegalArgumentException(String.format("类[%s]中找不到名为[%s]的字段",type.getSimpleName(),fieldName));
 	}
 
 	public int getIndex (Field field) {
         Integer index = fieldName2Index.get(field.getName());
         if (index == null){
-            throw new IllegalArgumentException(String.format("找不到名为%s的字段",field.getName()));
+            throw new IllegalArgumentException(String.format("类[%s]中找不到名为[%s]的字段",type.getSimpleName(),field.getName()));
         }
         return index;
 	}
 
 	public void setObject (Object instance, String fieldName, Object value) {
-        if (primitiveTypes.contains(fieldTypes[getIndex(fieldName)])){
+        if (fieldTypes[getIndex(fieldName)].isPrimitive()){
             throw new IllegalArgumentException("目标类型是原生类型，请使用相应的set方法");
         }
         checked = true;
@@ -230,7 +232,7 @@ public abstract class FieldAccess {
 				// byte[] bytes = cw.toByteArray();
                 // FileOutputStream fout;
                 // try {
-                //     fout = new FileOutputStream("C:/Users/sando/Desktop/reflectasmGenerated/"+accessClassName+".class");
+                //     fout = new FileOutputStream("C:/Users/sando/Desktop/"+accessClassName+".class");
                 //     fout.write(bytes);
                 //     fout.close();
                 // } catch (IOException e) {
@@ -241,6 +243,7 @@ public abstract class FieldAccess {
 		}
 		try {
 			FieldAccess access = (FieldAccess)accessClass.newInstance();
+			access.type = type;
 			access.fieldNames = fieldNames;
 			access.fieldName2Index = fieldName2Index;
 			access.fieldTypes = fieldTypes;
@@ -263,7 +266,7 @@ public abstract class FieldAccess {
 
 	static private void insertSetObject (ClassWriter cw, String classNameInternal, ArrayList<Field> fields) {
 		int maxStack = 6;
-		MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "set", "(Ljava/lang/Object;ILjava/lang/Object;)V", null, null);
+		MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "setObject", "(Ljava/lang/Object;ILjava/lang/Object;)V", null, null);
 		mv.visitCode();
 		mv.visitVarInsn(ILOAD, 2);
 
@@ -347,7 +350,7 @@ public abstract class FieldAccess {
 
     static private void insertGetObject (ClassWriter cw, String classNameInternal, ArrayList<Field> fields) {
 		int maxStack = 6;
-		MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "access", "(Ljava/lang/Object;I)Ljava/lang/Object;", null, null);
+		MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "getObject", "(Ljava/lang/Object;I)Ljava/lang/Object;", null, null);
 		mv.visitCode();
 		mv.visitVarInsn(ILOAD, 2);
 
