@@ -24,6 +24,11 @@
     <!--缓存配置-->
     <bean class="com.mmorpg.mbdl.framework.storage.config.JetCache.JetCacheConfiguration"/>
 
+    <!--静态资源配置-->
+    <bean class="com.mmorpg.mbdl.framework.resource.config.StaticResConfiguration"
+          p:packageToScan="com.mmorpg.mbdl.bussiness"
+    />
+
     <!--数据库配置-->
     <jpa:repositories base-package="com.mmorpg.mbdl.**.dao" base-class="com.mmorpg.mbdl.framework.storage.config.JetCache.StorageJetCache"/>
     <bean id="dataSource"

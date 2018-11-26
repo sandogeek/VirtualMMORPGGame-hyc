@@ -10,7 +10,7 @@ import java.util.Optional;
 
 /**
  * 静态资源访问接口的实现类
- *
+ * TODO 实现getByUnique getByIndex功能
  * @author Sando Geek
  * @since v1.0
  **/

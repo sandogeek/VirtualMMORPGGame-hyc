@@ -11,4 +11,10 @@ import java.lang.annotation.*;
 public @interface ResDef {
     /** 资源文件名，如果为空，那么资源文件名为类的getSimpleName */
     String value() default "";
+
+    /**
+     * 资源文件后缀名
+     * @return
+     */
+    String getSuffix() default ".xlsx";
 }

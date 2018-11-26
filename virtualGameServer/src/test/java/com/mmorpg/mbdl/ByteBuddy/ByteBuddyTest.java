@@ -136,11 +136,11 @@ public class ByteBuddyTest {
         //Class<?> subClass = unloadedType.load(Main.class.getClassLoader(),
         //    ClassLoadingStrategy.Default.WRAPPER).getLoaded();
 
-        // Class<Repository<String>> repositoryClass = (Class<Repository<String>>) Class.forName("cc.unmi.UserRepository");
+        // Class<Repository<String>> repositoryClass = (Class<Repository<String>>) Class.forName("");
         // System.out.println(repositoryClass.getAnnotation(Scope.class).value()); //输出 Session
         //
         // Repository<String> repository = repositoryClass.newInstance();
-        // System.out.println(repository.findOne(7792));  //输出 http://yanbin.blog/?p=7792
+        // System.out.println(repository.findOne(7792));
     }
 
     @Test
