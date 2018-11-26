@@ -39,7 +39,7 @@ public abstract class FieldAccess {
 
     /** 安全校验，防止误用setObject */
     // static Set<Class<?>> primitiveTypes;
-    boolean checked = false;
+    // boolean checked = false;
     // static {
     //     primitiveTypes = new HashSet<>();
     //     primitiveTypes.add(boolean.class);
@@ -62,28 +62,19 @@ public abstract class FieldAccess {
 				return i;
 			}
 		}
-		throw new IllegalArgumentException(String.format("类[%s]中找不到名为[%s]的字段",type.getSimpleName(),fieldName));
+		throw new IllegalArgumentException(String.format("类[%s]中找不到名为[%s]的非私有字段",type.getSimpleName(),fieldName));
 	}
 
 	public int getIndex (Field field) {
         Integer index = fieldName2Index.get(field.getName());
         if (index == null){
-            throw new IllegalArgumentException(String.format("类[%s]中找不到名为[%s]的字段",type.getSimpleName(),field.getName()));
+            throw new IllegalArgumentException(String.format("类[%s]中找不到名为[%s]的非私有字段",type.getSimpleName(),field.getName()));
         }
         return index;
 	}
 
 	public void setObject (Object instance, String fieldName, Object value) {
-        if (fieldTypes[getIndex(fieldName)].isPrimitive()){
-            throw new IllegalArgumentException("目标类型是原生类型，请使用相应的set方法");
-        }
-        checked = true;
-        try {
-            setObject(instance, getIndex(fieldName), value);
-        } catch (Throwable e){
-        }finally {
-            checked = false;
-        }
+	    setObject(instance, getIndex(fieldName), value);
 	}
 
 	public Object getObject (Object instance, String fieldName) {

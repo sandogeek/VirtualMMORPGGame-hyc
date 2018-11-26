@@ -101,13 +101,10 @@ class FieldAccessUnsafe extends FieldAccess {
     @Override
     public void setObject(Object instance, int fieldIndex, Object value)
     {
-        if (!checked){
-            if (fieldTypes[fieldIndex].isPrimitive()){
-                throw new IllegalArgumentException("目标类型是原生类型，请使用相应的set方法");
-            }
+        if (fieldTypes[fieldIndex].isPrimitive()){
+            throw new IllegalArgumentException("目标类型是原生类型，请使用相应的set方法");
         }
         unsafe.putObject(transform(instance,fieldIndex), addresses[fieldIndex], value);
-        checked = false;
     }
 
     @Override
