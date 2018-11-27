@@ -2,7 +2,6 @@ package com.mmorpg.mbdl.framework.resource.core;
 
 import org.springframework.core.io.Resource;
 
-import java.lang.reflect.Field;
 import java.util.Map;
 
 /**
@@ -15,19 +14,33 @@ public class StaticResDefinition {
     // /**  */
     // private String fullFileName;
 
-    /** 资源类对象 */
+    /** 资源类.class对象 */
     private Class<?> clazz;
     private Resource resource;
+    // 额外的信息
+    private Map<String,Object> extra;
 
-    /** id字段 */
-    private Field idField;
-    private Map<String,Field> uniqueFieldName2Field;
-    private Map<String,Field> indexFieldName2Field;
+    // /** id字段 */
+    // private Field idField;
+    // private Map<String,Field> uniqueFieldName2Field;
+    // private Map<String,Field> indexFieldName2Field;
+    //
+    // /** 动态生成的IStaticRes接口的子类 */
+    // private Class<? extends IStaticRes>
 
-    public StaticResDefinition(Class<?> clazz) {
-        // TODO 初始化其余信息
+    public StaticResDefinition(Class<?> clazz,Map<String,Object> extra) {
+        /*init(clazz);*/
         this.clazz = clazz;
+        this.extra = extra;
     }
+
+    // /**
+    //  * 初始化uniqueFieldName2Field，indexFieldName2Field
+    //  * @param clazz
+    //  */
+    // private void init(Class<?> clazz){
+    //
+    // }
 
     public Class<?> getClazz() {
         return clazz;
@@ -45,27 +58,7 @@ public class StaticResDefinition {
         this.resource = resource;
     }
 
-    public Field getIdField() {
-        return idField;
-    }
-
-    public void setIdField(Field idField) {
-        this.idField = idField;
-    }
-
-    public Map<String, Field> getUniqueFieldName2Field() {
-        return uniqueFieldName2Field;
-    }
-
-    public void setUniqueFieldName2Field(Map<String, Field> uniqueFieldName2Field) {
-        this.uniqueFieldName2Field = uniqueFieldName2Field;
-    }
-
-    public Map<String, Field> getIndexFieldName2Field() {
-        return indexFieldName2Field;
-    }
-
-    public void setIndexFieldName2Field(Map<String, Field> indexFieldName2Field) {
-        this.indexFieldName2Field = indexFieldName2Field;
+    public Map<String, Object> getExtra() {
+        return extra;
     }
 }

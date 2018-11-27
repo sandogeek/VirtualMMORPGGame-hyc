@@ -1,6 +1,6 @@
 package com.mmorpg.mbdl.framework.resource.config;
 
-import com.mmorpg.mbdl.framework.resource.core.IStaticResRegistrer;
+import com.mmorpg.mbdl.framework.resource.core.StaticResHandler;
 import com.mmorpg.mbdl.framework.resource.facade.IStaticRes;
 import com.mmorpg.mbdl.framework.resource.impl.StaticRes;
 import org.springframework.context.annotation.Bean;
@@ -41,8 +41,8 @@ public class StaticResConfiguration {
     // }
 
     @Bean
-    IStaticResRegistrer iStaticResRegistrer(){
-        IStaticResRegistrer iStaticResRegistrer = new IStaticResRegistrer();
+    StaticResHandler iStaticResRegistrer(){
+        StaticResHandler iStaticResRegistrer = new StaticResHandler();
         iStaticResRegistrer.setBaseClass(baseClass);
         iStaticResRegistrer.setPackageToScan(packageToScan);
         iStaticResRegistrer.setSuffix(suffix);
