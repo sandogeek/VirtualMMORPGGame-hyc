@@ -2,6 +2,7 @@ package com.mmorpg.mbdl.framework.resource.core;
 
 import org.springframework.core.io.Resource;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -16,7 +17,7 @@ public class StaticResDefinition {
 
     /** 资源类.class对象 */
     private Class<?> clazz;
-    private Resource resource;
+    private List<Resource> resources;
     // 额外的信息
     private Map<String,Object> extra;
 
@@ -50,12 +51,8 @@ public class StaticResDefinition {
         this.clazz = clazz;
     }
 
-    public Resource getResource() {
-        return resource;
-    }
-
-    public void setResource(Resource resource) {
-        this.resource = resource;
+    public List<Resource> getResources() {
+        return resources;
     }
 
     public Map<String, Object> getExtra() {

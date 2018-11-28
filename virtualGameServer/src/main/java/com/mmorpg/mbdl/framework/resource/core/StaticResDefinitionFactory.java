@@ -14,6 +14,13 @@ public class StaticResDefinitionFactory {
     /**
      * fileName -> suffix -> StaticResDefinition
      */
-    private Table<String,String,StaticResDefinition> stringStringStaticResDefinitionTable;
+    private Table<String,String,StaticResDefinition> fileNameSuffix2StaticResDefinitionTable;
 
+    public Table<String, String, StaticResDefinition> getFileNameSuffix2StaticResDefinitionTable() {
+        return fileNameSuffix2StaticResDefinitionTable;
+    }
+
+    public void setFileNameSuffix2StaticResDefinitionTable(Table<String, String, StaticResDefinition> fileNameSuffix2StaticResDefinitionTable) {
+        this.fileNameSuffix2StaticResDefinitionTable = fileNameSuffix2StaticResDefinitionTable;
+    }
 }

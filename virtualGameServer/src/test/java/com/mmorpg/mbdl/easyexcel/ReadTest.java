@@ -1,6 +1,7 @@
 package com.mmorpg.mbdl.easyexcel;
 
 import com.alibaba.excel.ExcelReader;
+import com.mmorpg.mbdl.bussiness.common.error.resource.ErrorTipsRes;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -34,7 +35,7 @@ public class ReadTest {
         ) {
             // 解析每行结果在listener中处理
             ExcelListener listener = new ExcelListener();
-            ExcelReader excelReader = new ExcelReader(inputStream,ErrorTipsRes.class,listener);
+            ExcelReader excelReader = new ExcelReader(inputStream, ErrorTipsRes.class,listener);
             excelReader.read();
         }catch (IOException e){
             e.printStackTrace();
