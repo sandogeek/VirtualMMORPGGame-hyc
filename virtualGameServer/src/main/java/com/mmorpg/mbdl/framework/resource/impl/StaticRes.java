@@ -1,12 +1,7 @@
 package com.mmorpg.mbdl.framework.resource.impl;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableListMultimap;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Table;
-import com.mmorpg.mbdl.framework.resource.annotation.ResDef;
+import com.google.common.collect.*;
 import com.mmorpg.mbdl.framework.resource.facade.IStaticRes;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.Map;
 import java.util.Optional;
@@ -18,14 +13,21 @@ import java.util.Optional;
  * @since v1.0
  **/
 public class StaticRes<K,V> implements IStaticRes<K,V> {
-    // TODO 热更实现，增加一个带热更功能的子类 implements Reloadable
+    // TODO 增量热更（只热更变更的行）实现（暂时没思路，目前普通热更），增加一个带热更功能的子类 implements Reloadable
     /** 包访问权限，方便ReflectASM设置值,如果要热更，要注意并发访问带来的问题 */
     ImmutableMap<K,V> key2Resource;
     /** 由于导表完成时Unique名称的数量和uniqueValue的数量都是确定的，所以底层使用ArrayTable */
     Table<String,Object,V> uniqueNameValue2Resource;
     Map<String,ImmutableListMultimap<Object,V>> indexNameKey2Resource;
-    /** V的实际类型 */
-    Class vClazz;
+    // /** V的实际类型 */
+    // Class vClazz;
+    /** 资源文件全路径名 */
+    private String fullFileName;
+
+    /**
+     * 缓存所有V,实现热更功能时需要记得把此值设置为null
+     */
+    private ImmutableList<V> values;
 
     @Override
     public V get(K key) {
@@ -36,18 +38,7 @@ public class StaticRes<K,V> implements IStaticRes<K,V> {
     public V get(K key, boolean throwExceptionNotExist) {
         V res = Optional.ofNullable(key2Resource).map((value) -> value.get(key)).orElse(null);
         if (res == null && throwExceptionNotExist){
-            ResDef resDef = (ResDef)vClazz.getAnnotation(ResDef.class);
-            String suffix = resDef.getSuffix();
-            String[] fileNamesWithoutSuffix = resDef.value();
-            // 先把空字符串替换为null,否则空字符串join后可能变为",,",isNotBlank失去作用
-            for (int i = 0; i < fileNamesWithoutSuffix.length; i++) {
-                if ("".equals(fileNamesWithoutSuffix[i])){
-                    fileNamesWithoutSuffix[i] = null;
-                }
-            }
-            String resources = StringUtils.join(fileNamesWithoutSuffix, ",");
-            String tableName = StringUtils.isNotBlank(resources)?resources:vClazz.getSimpleName();
-            throw new RuntimeException(String.format("资源文件[%s,suffix=%s]中不存在键为[%s]的静态资源",tableName,suffix,key));
+            throw new RuntimeException(String.format("资源文件[%s]中不存在键为[%s]的静态资源",fullFileName,key));
         }
         return res;
     }
@@ -65,32 +56,25 @@ public class StaticRes<K,V> implements IStaticRes<K,V> {
 
     @Override
     public boolean containsKey(K key) {
-        return Optional.ofNullable(key2Resource).map(value -> value.containsKey(key)).orElse(false);
+        return key2Resource.containsKey(key);
     }
 
     @Override
     public ImmutableList<V> values() {
-        ImmutableList<V> result = Optional.ofNullable(key2Resource).map(value -> value.values().asList()).orElse(null);
-        if (result == null){
-            result = Optional.ofNullable(uniqueNameValue2Resource).map(value -> ImmutableList.copyOf(value.values())).orElse(null);
-        }else if (result==null){
-            result = Optional.ofNullable(indexNameKey2Resource).map(value -> {
-                ImmutableList.Builder<V> builder = ImmutableList.builder();
-                value.values().forEach((vImmutableListMultimap) -> {
-                     builder.addAll(vImmutableListMultimap.values());
-                 });
-                 return builder.build();
-            }).orElse(null);
+        if (values != null) {
+            return values;
         }
-        if (result==null){
-            ImmutableList.Builder<V> builder = ImmutableList.builder();
-            result = builder.build();
-        }
-        return result;
+        values = key2Resource.values().asList();
+        return values;
     }
 
     @Override
     public int size() {
-        return values().size();
+        ImmutableCollection<V> vs = values != null ? values : key2Resource.values();
+        return vs.size();
+    }
+
+    public void setFullFileName(String fullFileName) {
+        this.fullFileName = fullFileName;
     }
 }

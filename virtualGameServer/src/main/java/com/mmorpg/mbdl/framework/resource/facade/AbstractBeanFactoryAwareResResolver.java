@@ -13,6 +13,6 @@ public abstract class AbstractBeanFactoryAwareResResolver implements IResResolve
         AbstractBeanFactoryAwareResResolver.beanFactory = beanFactory;
     }
 
-    private static BeanFactory beanFactory;
+    protected static BeanFactory beanFactory;
 
 }

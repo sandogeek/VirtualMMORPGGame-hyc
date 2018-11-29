@@ -28,7 +28,7 @@ public class ResResolverFactory implements ApplicationContextAware {
     @PostConstruct
     private void init(){
         applicationContext.getBeansOfType(IResResolver.class).forEach((k,v)->{
-            suffix2ResResolver.put(v.getSuffix(),v);
+            suffix2ResResolver.put(v.suffix(),v);
         });
     }
 }

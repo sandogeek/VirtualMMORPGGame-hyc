@@ -1,7 +1,9 @@
 package com.mmorpg.mbdl.framework.resource.core;
 
-import com.google.common.collect.Table;
 import org.springframework.stereotype.Component;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 静态资源定义管理器
@@ -12,15 +14,13 @@ import org.springframework.stereotype.Component;
 @Component
 public class StaticResDefinitionFactory {
     /**
-     * fileName -> suffix -> StaticResDefinition
+     * 为了实现遍历一次目录就完成向StaticResDefinition注入对应的Resource使用了这个数据结构
+     * fullFileName -> StaticResDefinition
      */
-    private Table<String,String,StaticResDefinition> fileNameSuffix2StaticResDefinitionTable;
+    private Map<String,StaticResDefinition> fullFileNameStaticResDefinition = new HashMap<>(128);
 
-    public Table<String, String, StaticResDefinition> getFileNameSuffix2StaticResDefinitionTable() {
-        return fileNameSuffix2StaticResDefinitionTable;
+    public Map<String, StaticResDefinition> getFullFileNameStaticResDefinition() {
+        return fullFileNameStaticResDefinition;
     }
 
-    public void setFileNameSuffix2StaticResDefinitionTable(Table<String, String, StaticResDefinition> fileNameSuffix2StaticResDefinitionTable) {
-        this.fileNameSuffix2StaticResDefinitionTable = fileNameSuffix2StaticResDefinitionTable;
-    }
 }

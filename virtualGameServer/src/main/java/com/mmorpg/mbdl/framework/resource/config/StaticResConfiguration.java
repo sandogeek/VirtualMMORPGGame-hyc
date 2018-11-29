@@ -1,8 +1,8 @@
 package com.mmorpg.mbdl.framework.resource.config;
 
 import com.mmorpg.mbdl.framework.resource.core.StaticResHandler;
-import com.mmorpg.mbdl.framework.resource.facade.IStaticRes;
-import com.mmorpg.mbdl.framework.resource.impl.StaticRes;
+import com.mmorpg.mbdl.framework.resource.resolver.excel.ExcelFormat;
+import com.mmorpg.mbdl.framework.resource.resolver.excel.IExcelFormat;
 import org.springframework.context.annotation.Bean;
 
 /**
@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Bean;
 public class StaticResConfiguration {
     private String packageToScan;
     private String suffix = ".xlsx";
-    private Class<? extends IStaticRes> baseClass = StaticRes.class;
+    private IExcelFormat iExcelFormat = new ExcelFormat();
 
     /**
      * 定义扫包路径
@@ -32,6 +32,11 @@ public class StaticResConfiguration {
         this.suffix = suffix;
     }
 
+    public void setiExcelFormat(IExcelFormat iExcelFormat) {
+        this.iExcelFormat = iExcelFormat;
+    }
+
+
     // /**
     //  * IStaticRes基础实现类
     //  * @param baseClass
@@ -41,11 +46,10 @@ public class StaticResConfiguration {
     // }
 
     @Bean
-    StaticResHandler iStaticResRegistrer(){
-        StaticResHandler iStaticResRegistrer = new StaticResHandler();
-        iStaticResRegistrer.setBaseClass(baseClass);
-        iStaticResRegistrer.setPackageToScan(packageToScan);
-        iStaticResRegistrer.setSuffix(suffix);
-        return iStaticResRegistrer;
+    StaticResHandler iStaticResRegister(){
+        StaticResHandler staticResHandler = new StaticResHandler();
+        staticResHandler.setPackageToScan(packageToScan);
+        staticResHandler.setSuffix(suffix);
+        return staticResHandler;
     }
 }

@@ -10,17 +10,21 @@ import java.lang.annotation.*;
 @Documented
 public @interface ResDef {
     /**
-     * 资源路径名不带后缀，如果为空，那么资源文件名为类的getSimpleName
-     * <p>支持Ant风格路径，如果填写多个路径，或者路径匹配多个文件，必须设置{@link ResDef#isTargetSingle()}为false</p>
-     * <p>生成的最终文件名默认添加前缀<code>classpath*:&#42;&#42;/</code>,所以定制的文件名如果仅有一份，只写文件名即可</p>
+     * 资源文件名不带后缀，如果为空，那么资源文件名为类的getSimpleName
      */
-    String[] value() default {""};
+    String value() default "";
+
+    /**
+     * 资源文件相对路径，需包含后缀，通常情况不需要配置，如果不同目录下出现同名资源文件时通过配置此值区分使用哪一个资源文件
+     * 配置此值后{@link ResDef#value()}不再生效
+     */
+    String relativePath() default "";
 
     /**
      * 资源文件后缀名
      * @return 后缀名
      */
-    String getSuffix() default ".xlsx";
+    String suffix() default ".xlsx";
 
     /**
      * 是否是表格型的资源

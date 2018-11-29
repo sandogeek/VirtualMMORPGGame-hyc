@@ -1,7 +1,9 @@
 package com.mmorpg.mbdl.framework.resource.core;
 
+import com.mmorpg.mbdl.framework.resource.impl.StaticRes;
 import org.springframework.core.io.Resource;
 
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 
@@ -12,50 +14,48 @@ import java.util.Map;
  * @since v1.0
  **/
 public class StaticResDefinition {
-    // /**  */
-    // private String fullFileName;
+    /** 资源文件全路径名 */
+    private String fullFileName;
 
-    /** 资源类.class对象 */
-    private Class<?> clazz;
+    /** V的实际类型 */
+    private Class<?> vClass;
     private List<Resource> resources;
-    // 额外的信息
-    private Map<String,Object> extra;
 
-    // /** id字段 */
-    // private Field idField;
-    // private Map<String,Field> uniqueFieldName2Field;
-    // private Map<String,Field> indexFieldName2Field;
-    //
-    // /** 动态生成的IStaticRes接口的子类 */
-    // private Class<? extends IStaticRes>
+    /** id字段 */
+    private Field idField;
+    private Map<String,Field> uniqueFieldName2Field;
+    private Map<String,Field> indexFieldName2Field;
+    /** 待注册到容器中的IStaticRes子类的单例Bean */
+    private StaticRes staticRes;
 
-    public StaticResDefinition(Class<?> clazz,Map<String,Object> extra) {
-        /*init(clazz);*/
-        this.clazz = clazz;
-        this.extra = extra;
+    /**
+     * TODO 初始化uniqueFieldName2Field，indexFieldName2Field
+     * @param vClass
+     */
+    private void init(Class<?> vClass){
+
     }
 
-    // /**
-    //  * 初始化uniqueFieldName2Field，indexFieldName2Field
-    //  * @param clazz
-    //  */
-    // private void init(Class<?> clazz){
-    //
-    // }
-
-    public Class<?> getClazz() {
-        return clazz;
+    public String getFullFileName() {
+        return fullFileName;
     }
 
-    public void setClazz(Class<?> clazz) {
-        this.clazz = clazz;
+    public void setIdField(Field idField) {
+        this.idField = idField;
+    }
+
+    public void setvClass(Class<?> vClass) {
+        init(vClass);
+        fullFileName = IStaticResUtil.getFullFileName(vClass);
+        this.vClass = vClass;
+    }
+
+    public void setStaticRes(StaticRes staticRes) {
+        this.staticRes = staticRes;
     }
 
     public List<Resource> getResources() {
         return resources;
     }
 
-    public Map<String, Object> getExtra() {
-        return extra;
-    }
 }
