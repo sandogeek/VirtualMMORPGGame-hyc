@@ -8,10 +8,11 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 /**
  * 持久化任务线程池
- *
+ * @deprecated 目前不使用定时持久化方案，而是在获取数据时依靠缓存，持久化直接到数据库
  * @author Sando Geek
  * @since v1.0
  **/
+@Deprecated
 public class PersistencePoolExecutor {
     private ScheduledThreadPoolExecutor persistenceThreadPool;
     /** 持久化池相关的任务队列

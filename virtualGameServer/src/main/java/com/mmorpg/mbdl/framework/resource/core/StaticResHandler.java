@@ -1,6 +1,8 @@
 package com.mmorpg.mbdl.framework.resource.core;
 
 import com.google.common.base.Preconditions;
+import com.mmorpg.mbdl.EnhanceStarter;
+import com.mmorpg.mbdl.framework.common.utils.SpringPropertiesUtil;
 import com.mmorpg.mbdl.framework.resource.annotation.Id;
 import com.mmorpg.mbdl.framework.resource.annotation.ResDef;
 import com.mmorpg.mbdl.framework.resource.facade.AbstractBeanFactoryAwareResResolver;
@@ -12,8 +14,9 @@ import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.description.annotation.AnnotationDescription;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.dynamic.loading.ClassLoadingStrategy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.core.io.Resource;
@@ -41,16 +44,13 @@ import static org.springframework.util.ClassUtils.convertClassNameToResourcePath
  * @since v1.0
  **/
 public class StaticResHandler implements BeanFactoryPostProcessor {
+    private static Logger logger = LoggerFactory.getLogger(StaticResHandler.class);
     private String packageToScan;
     private String suffix;
     // 完整文件名 = 文件名加后缀名 -> StaticResDefinition
     private Map<String,StaticResDefinition> fileFullName2StaticResDefinition;
     // /** 资源类clazz -> 对应的baseClass的子类 */
     // Map<Class,Class> resDefClazz2IStaticResSubClazz;
-
-    @Autowired
-    private StaticResDefinitionFactory staticResDefinitionFactory;
-
 
     public void setPackageToScan(String packageToScan) {
         Preconditions.checkArgument(packageToScan!=null,"静态资源未配置包扫描路径");
@@ -65,8 +65,12 @@ public class StaticResHandler implements BeanFactoryPostProcessor {
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
         AbstractBeanFactoryAwareResResolver.setBeanFactory(beanFactory);
+        // 使SpringPropertiesUtil可用于Init中
+        beanFactory.getBean(SpringPropertiesUtil.class);
+        EnhanceStarter.setBeanFactory(beanFactory);
+        EnhanceStarter.init();
         Map<Class, StaticResDefinition> classStatic2ResDefinitionMap = getResDefClasses(packageToScan);
-        init(classStatic2ResDefinitionMap);
+        init(classStatic2ResDefinitionMap,beanFactory);
         beanFactory.getBeansOfType(IResResolver.class).forEach((key,value) -> value.resolve());
     }
 
@@ -77,7 +81,7 @@ public class StaticResHandler implements BeanFactoryPostProcessor {
      * @param class2StaticResDefinitionMap
      * @return 资源类clazz -> 对应的baseClass的子类,如果集合大小为0，返回null
      */
-    private void init(Map<Class,StaticResDefinition> class2StaticResDefinitionMap){
+    private void init(Map<Class,StaticResDefinition> class2StaticResDefinitionMap,ConfigurableListableBeanFactory beanFactory){
         if (class2StaticResDefinitionMap.size() == 0) {
             return;
         }
@@ -89,13 +93,54 @@ public class StaticResHandler implements BeanFactoryPostProcessor {
             Field idField = fields.toArray(new Field[0])[0];
             StaticResDefinition staticResDefinition = class2StaticResDefinitionMap.get(clazz);
             staticResDefinition.setIdField(idField);
-            Class<?> idFieldType = idField.getType();
+            Class idBoxedType = null;
+            if (idField.getType().isPrimitive()){
+                switch (idField.getType().getSimpleName()) {
+                    case ("int") : {
+                        idBoxedType = Integer.class;
+                        break;
+                    }
+                    case ("boolean") : {
+                        idBoxedType = Boolean.class;
+                        break;
+                    }
+                    case ("short") : {
+                        idBoxedType = Short.class;
+                        break;
+                    }
+                    case ("byte") : {
+                        idBoxedType = Byte.class;
+                        break;
+                    }
+                    case ("char") : {
+                        idBoxedType = Character.class;
+                        break;
+                    }
+                    case ("long") : {
+                        idBoxedType = Long.class;
+                        break;
+                    }
+                    case ("float") : {
+                        idBoxedType = Float.class;
+                        break;
+                    }
+                    case ("double") : {
+                        idBoxedType = Double.class;
+                        break;
+                    }
+                    default:
+                }
+            }
+            if (idBoxedType == null){
+                idBoxedType = idField.getType();
+            }
+
             TypeDescription.Generic genericSuperClass =
-                    TypeDescription.Generic.Builder.parameterizedType(StaticRes.class, idFieldType, clazz).build();
-            String packageName = IStaticRes.class.getPackage().getName();
+                    TypeDescription.Generic.Builder.parameterizedType(StaticRes.class, idBoxedType, clazz).build();
+            String packageName = clazz.getPackage().getName();
             Class<?> subClass = new ByteBuddy()
-                    .makeInterface(genericSuperClass)
-                    .name(packageName + "." + StaticRes.class.getSimpleName() + idFieldType.getSimpleName() + clazz.getSimpleName())
+                    .subclass(genericSuperClass)
+                    .name(packageName + "." + StaticRes.class.getSimpleName() + idBoxedType.getSimpleName() + clazz.getSimpleName())
                     .annotateType(AnnotationDescription.Builder.ofType(ByteBuddyGenerated.class).build())
                     .make().load(getClass().getClassLoader(), ClassLoadingStrategy.Default.INJECTION).getLoaded();
             staticResDefinition.setvClass(clazz);
@@ -103,9 +148,9 @@ public class StaticResHandler implements BeanFactoryPostProcessor {
                 staticResDefinition.setStaticRes((StaticRes)subClass.newInstance());
             } catch (InstantiationException | IllegalAccessException e) {
                 e.printStackTrace();
-                throw new RuntimeException(String.format("[%s]<%s,%s>类型的bean实例化失败",IStaticRes.class,idFieldType,clazz.getSimpleName()));
+                throw new RuntimeException(String.format("[%s]<%s,%s>类型的bean实例化失败",IStaticRes.class,idBoxedType,clazz.getSimpleName()));
             }
-
+            StaticResDefinitionFactory staticResDefinitionFactory = beanFactory.getBean(StaticResDefinitionFactory.class);
             staticResDefinitionFactory.getFullFileNameStaticResDefinition().put(staticResDefinition.getFullFileName(),staticResDefinition);
         });
     }

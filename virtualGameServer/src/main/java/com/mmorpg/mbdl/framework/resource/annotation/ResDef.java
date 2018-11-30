@@ -10,12 +10,13 @@ import java.lang.annotation.*;
 @Documented
 public @interface ResDef {
     /**
-     * 资源文件名不带后缀，如果为空，那么资源文件名为类的getSimpleName
+     * 资源文件名(不带后缀)，如果为空，那么资源文件名为类的getSimpleName
      */
     String value() default "";
 
     /**
-     * 资源文件相对路径，需包含后缀，通常情况不需要配置，如果不同目录下出现同名资源文件时通过配置此值区分使用哪一个资源文件
+     * 资源文件相对ClassPath的路径(需要带后缀)，推荐在资源文件上右键，Copy Relative Path
+     * <p>通常情况不需要配置，如果不同目录下出现同名资源文件时通过配置此值区分使用哪一个资源文件</p>
      * 配置此值后{@link ResDef#value()}不再生效
      */
     String relativePath() default "";
@@ -34,9 +35,9 @@ public @interface ResDef {
      */
     boolean isTable() default true;
 
-    /**
-     * 当前类是否对应单个Resource文件，默认true
-     * @return 单个true,多个false
-     */
-    boolean isTargetSingle() default true;
+    // /**
+    //  * 当前类是否对应单个Resource文件，默认true
+    //  * @return 单个true,多个false
+    //  */
+    // boolean isTargetSingle() default true;
 }

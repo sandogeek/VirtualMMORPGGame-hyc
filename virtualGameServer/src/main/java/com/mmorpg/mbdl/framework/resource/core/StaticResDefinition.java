@@ -4,7 +4,6 @@ import com.mmorpg.mbdl.framework.resource.impl.StaticRes;
 import org.springframework.core.io.Resource;
 
 import java.lang.reflect.Field;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -19,7 +18,8 @@ public class StaticResDefinition {
 
     /** V的实际类型 */
     private Class<?> vClass;
-    private List<Resource> resources;
+
+    private Resource resource;
 
     /** id字段 */
     private Field idField;
@@ -44,6 +44,10 @@ public class StaticResDefinition {
         this.idField = idField;
     }
 
+    public Class<?> getvClass() {
+        return vClass;
+    }
+
     public void setvClass(Class<?> vClass) {
         init(vClass);
         fullFileName = IStaticResUtil.getFullFileName(vClass);
@@ -54,8 +58,11 @@ public class StaticResDefinition {
         this.staticRes = staticRes;
     }
 
-    public List<Resource> getResources() {
-        return resources;
+    public Resource getResource() {
+        return resource;
     }
 
+    public void setResource(Resource resource) {
+        this.resource = resource;
+    }
 }

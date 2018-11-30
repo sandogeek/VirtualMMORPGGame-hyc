@@ -2,8 +2,10 @@ package com.mmorpg.mbdl.framework.resource.core;
 
 import com.mmorpg.mbdl.framework.resource.annotation.ResDef;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.core.io.FileSystemResource;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 /**
  * 静态资源工具类
@@ -13,7 +15,7 @@ import java.util.Arrays;
  **/
 public class IStaticResUtil {
     /**
-     * 根据{@link ResDef}标注的类获取文件名
+     * 根据{@link ResDef}标注的类获取全文件名
      * @param clazz {@link ResDef}标注的类
      * @return 类对应的文件名
      */
@@ -43,10 +45,23 @@ public class IStaticResUtil {
     public static String getClassPathSuffixWith(String s){
         String cleanString = org.springframework.util.StringUtils.cleanPath(s);
         String[] classPaths = System.getProperty("java.class.path").split(";");
-        String result = Arrays.stream(classPaths).filter(string -> {
+        Optional<String> classPath = Arrays.stream(classPaths).filter(string -> {
             string = org.springframework.util.StringUtils.cleanPath(string);
             return string.endsWith(cleanString);
-        }).findFirst().get();
-        return org.springframework.util.StringUtils.cleanPath(result);
+        }).findFirst();
+        return classPath.map(org.springframework.util.StringUtils::cleanPath).orElse(null);
+
+    }
+
+    /**
+     * 获取{@link FileSystemResource#getPath()}路径相对于以/classes结尾的ClassPath的路径
+     * @param fileSystemResource FileSystemResource
+     * @return {@link FileSystemResource#getPath()}路径相对于以/classes结尾的ClassPath的路径
+     */
+    public static String getResPathRelative2ClassPath(FileSystemResource fileSystemResource){
+        String classPath = IStaticResUtil.getClassPathSuffixWith("/classes");
+        String path = fileSystemResource.getPath();
+        String result = path.substring(classPath.length()+1);
+        return result;
     }
 }
