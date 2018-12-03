@@ -65,12 +65,12 @@ public class StaticResHandler implements BeanFactoryPostProcessor {
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
         AbstractBeanFactoryAwareResResolver.setBeanFactory(beanFactory);
-        // 使SpringPropertiesUtil可用于Init中
+        /** 使SpringPropertiesUtil可用于{@link EnhanceStarter}中 */
         beanFactory.getBean(SpringPropertiesUtil.class);
         EnhanceStarter.setBeanFactory(beanFactory);
         EnhanceStarter.init();
-        Map<Class, StaticResDefinition> classStatic2ResDefinitionMap = getResDefClasses(packageToScan);
-        init(classStatic2ResDefinitionMap,beanFactory);
+        Map<Class, StaticResDefinition> class2StaticResDefinitionMap = getResDefClasses(packageToScan);
+        init(class2StaticResDefinitionMap,beanFactory);
         beanFactory.getBeansOfType(IResResolver.class).forEach((key,value) -> value.resolve());
     }
 
@@ -81,77 +81,93 @@ public class StaticResHandler implements BeanFactoryPostProcessor {
      * @param class2StaticResDefinitionMap
      * @return 资源类clazz -> 对应的baseClass的子类,如果集合大小为0，返回null
      */
-    private void init(Map<Class,StaticResDefinition> class2StaticResDefinitionMap,ConfigurableListableBeanFactory beanFactory){
+    @SuppressWarnings("unchecked")
+    private void init(Map<Class,StaticResDefinition> class2StaticResDefinitionMap, ConfigurableListableBeanFactory beanFactory){
         if (class2StaticResDefinitionMap.size() == 0) {
             return;
         }
         class2StaticResDefinitionMap.keySet().forEach((clazz)->{
-            Set<Field> fields = getAllFields(clazz, withAnnotation(Id.class));
-            if (fields.size() != 1){
-                throw new RuntimeException(String.format("资源类[%s]包含多个@Id注解的字段",clazz.getSimpleName()));
-            }
-            Field idField = fields.toArray(new Field[0])[0];
+            ResDef resDef = (ResDef) clazz.getAnnotation(ResDef.class);
             StaticResDefinition staticResDefinition = class2StaticResDefinitionMap.get(clazz);
-            staticResDefinition.setIdField(idField);
-            Class idBoxedType = null;
-            if (idField.getType().isPrimitive()){
-                switch (idField.getType().getSimpleName()) {
-                    case ("int") : {
-                        idBoxedType = Integer.class;
-                        break;
+            staticResDefinition.setvClass(clazz);
+            /** 表格型资源，检查其Id的唯一性，并生成{@link StaticRes}的子类实例 */
+            if (resDef.isTable()){
+                Set<Field> fields = getAllFields(clazz, withAnnotation(Id.class));
+                if (fields.size() > 1){
+                    throw new RuntimeException(String.format("表格型资源类[%s]包含多个@Id注解的字段",clazz.getSimpleName()));
+                }else if (fields.size() < 1){
+                    throw new RuntimeException(String.format("表格型资源类[%s]不包含@Id注解的字段，如非表格型资源，请在其@ResDef中把isTable设置为false",clazz.getSimpleName()));
+                }
+                Field idField = fields.toArray(new Field[0])[0];
+                staticResDefinition.setIdField(idField);
+                Class idBoxedType = null;
+                if (idField.getType().isPrimitive()){
+                    switch (idField.getType().getSimpleName()) {
+                        case ("int") : {
+                            idBoxedType = Integer.class;
+                            break;
+                        }
+                        case ("boolean") : {
+                            idBoxedType = Boolean.class;
+                            break;
+                        }
+                        case ("short") : {
+                            idBoxedType = Short.class;
+                            break;
+                        }
+                        case ("byte") : {
+                            idBoxedType = Byte.class;
+                            break;
+                        }
+                        case ("char") : {
+                            idBoxedType = Character.class;
+                            break;
+                        }
+                        case ("long") : {
+                            idBoxedType = Long.class;
+                            break;
+                        }
+                        case ("float") : {
+                            idBoxedType = Float.class;
+                            break;
+                        }
+                        case ("double") : {
+                            idBoxedType = Double.class;
+                            break;
+                        }
+                        default:
                     }
-                    case ("boolean") : {
-                        idBoxedType = Boolean.class;
-                        break;
-                    }
-                    case ("short") : {
-                        idBoxedType = Short.class;
-                        break;
-                    }
-                    case ("byte") : {
-                        idBoxedType = Byte.class;
-                        break;
-                    }
-                    case ("char") : {
-                        idBoxedType = Character.class;
-                        break;
-                    }
-                    case ("long") : {
-                        idBoxedType = Long.class;
-                        break;
-                    }
-                    case ("float") : {
-                        idBoxedType = Float.class;
-                        break;
-                    }
-                    case ("double") : {
-                        idBoxedType = Double.class;
-                        break;
-                    }
-                    default:
+                }
+                if (idBoxedType == null){
+                    idBoxedType = idField.getType();
+                }
+
+                TypeDescription.Generic genericSuperClass =
+                        TypeDescription.Generic.Builder.parameterizedType(StaticRes.class, idBoxedType, clazz).build();
+                String packageName = clazz.getPackage().getName();
+                Class<?> subClass = new ByteBuddy()
+                        .subclass(genericSuperClass)
+                        .name(packageName + "." + StaticRes.class.getSimpleName() + idBoxedType.getSimpleName() + clazz.getSimpleName())
+                        .annotateType(AnnotationDescription.Builder.ofType(ByteBuddyGenerated.class).build())
+                        .make().load(getClass().getClassLoader(), ClassLoadingStrategy.Default.INJECTION).getLoaded();
+                try {
+                    StaticRes instance = (StaticRes)subClass.newInstance();
+                    instance.setFullFileName(staticResDefinition.getFullFileName());
+                    staticResDefinition.setStaticRes(instance);
+                } catch (InstantiationException | IllegalAccessException e) {
+                    e.printStackTrace();
+                    throw new RuntimeException(String.format("[%s]<%s,%s>类型的bean实例化失败",IStaticRes.class,idBoxedType,clazz.getSimpleName()));
                 }
             }
-            if (idBoxedType == null){
-                idBoxedType = idField.getType();
-            }
 
-            TypeDescription.Generic genericSuperClass =
-                    TypeDescription.Generic.Builder.parameterizedType(StaticRes.class, idBoxedType, clazz).build();
-            String packageName = clazz.getPackage().getName();
-            Class<?> subClass = new ByteBuddy()
-                    .subclass(genericSuperClass)
-                    .name(packageName + "." + StaticRes.class.getSimpleName() + idBoxedType.getSimpleName() + clazz.getSimpleName())
-                    .annotateType(AnnotationDescription.Builder.ofType(ByteBuddyGenerated.class).build())
-                    .make().load(getClass().getClassLoader(), ClassLoadingStrategy.Default.INJECTION).getLoaded();
-            staticResDefinition.setvClass(clazz);
-            try {
-                staticResDefinition.setStaticRes((StaticRes)subClass.newInstance());
-            } catch (InstantiationException | IllegalAccessException e) {
-                e.printStackTrace();
-                throw new RuntimeException(String.format("[%s]<%s,%s>类型的bean实例化失败",IStaticRes.class,idBoxedType,clazz.getSimpleName()));
-            }
             StaticResDefinitionFactory staticResDefinitionFactory = beanFactory.getBean(StaticResDefinitionFactory.class);
-            staticResDefinitionFactory.getFullFileNameStaticResDefinition().put(staticResDefinition.getFullFileName(),staticResDefinition);
+            Map<String, StaticResDefinition> fullFileNameStaticResDefinition = staticResDefinitionFactory.getFullFileNameStaticResDefinition();
+            String fullFileName = staticResDefinition.getFullFileName();
+            if (fullFileNameStaticResDefinition.keySet().contains(fullFileName)){
+                Class<?> oldClass = fullFileNameStaticResDefinition.get(fullFileName).getvClass();
+                throw new RuntimeException(String.format("类[%s]与类[%s]对应同一个资源文件名[%s]",clazz,oldClass,fullFileName));
+            }
+            fullFileNameStaticResDefinition.put(fullFileName,staticResDefinition);
         });
     }
 

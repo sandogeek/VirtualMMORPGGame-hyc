@@ -14,11 +14,11 @@ import java.util.Optional;
  **/
 public class StaticRes<K,V> implements IStaticRes<K,V> {
     // TODO 增量热更（只热更变更的行）实现（暂时没思路，目前普通热更），增加一个带热更功能的子类 implements Reloadable
-    /** 包访问权限，方便ReflectASM设置值,如果要热更，要注意并发访问带来的问题 */
-    ImmutableMap<K,V> key2Resource;
+    /** 如果要热更，要注意并发访问带来的问题 */
+    private ImmutableMap<K,V> key2Resource;
     /** 由于导表完成时Unique名称的数量和uniqueValue的数量都是确定的，所以底层使用ArrayTable */
-    Table<String,Object,V> uniqueNameValue2Resource;
-    Map<String,ImmutableListMultimap<Object,V>> indexNameKey2Resource;
+    private Table<String,Object,V> uniqueNameValue2Resource;
+    private Map<String,ImmutableListMultimap<Object,V>> indexNameKey2Resource;
     // /** V的实际类型 */
     // Class vClazz;
     /** 资源文件全路径名 */
@@ -36,7 +36,7 @@ public class StaticRes<K,V> implements IStaticRes<K,V> {
 
     @Override
     public V get(K key, boolean throwExceptionNotExist) {
-        V res = Optional.ofNullable(key2Resource).map((value) -> value.get(key)).orElse(null);
+        V res = Optional.of(key2Resource).map((value) -> value.get(key)).orElse(null);
         if (res == null && throwExceptionNotExist){
             throw new RuntimeException(String.format("资源文件[%s]中不存在键为[%s]的静态资源",fullFileName,key));
         }
@@ -76,5 +76,17 @@ public class StaticRes<K,V> implements IStaticRes<K,V> {
 
     public void setFullFileName(String fullFileName) {
         this.fullFileName = fullFileName;
+    }
+
+    public void setKey2Resource(ImmutableMap<K, V> key2Resource) {
+        this.key2Resource = key2Resource;
+    }
+
+    public void setUniqueNameValue2Resource(Table<String, Object, V> uniqueNameValue2Resource) {
+        this.uniqueNameValue2Resource = uniqueNameValue2Resource;
+    }
+
+    public void setIndexNameKey2Resource(Map<String, ImmutableListMultimap<Object, V>> indexNameKey2Resource) {
+        this.indexNameKey2Resource = indexNameKey2Resource;
     }
 }

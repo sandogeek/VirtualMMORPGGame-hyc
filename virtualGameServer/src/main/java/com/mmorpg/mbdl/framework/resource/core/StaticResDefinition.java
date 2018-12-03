@@ -33,7 +33,12 @@ public class StaticResDefinition {
      * @param vClass
      */
     private void init(Class<?> vClass){
-
+        if (idField==null){
+            // idField==null说明不是表格型资源
+            return;
+        }else {
+            idField.setAccessible(true);
+        }
     }
 
     public String getFullFileName() {
@@ -64,5 +69,9 @@ public class StaticResDefinition {
 
     public void setResource(Resource resource) {
         this.resource = resource;
+    }
+
+    public StaticRes getStaticRes() {
+        return staticRes;
     }
 }

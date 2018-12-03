@@ -10,7 +10,7 @@ import java.util.ArrayList;
  **/
 public interface IExcelFormat {
     /**
-     * 表格前N列的内容不当作数据部分
+     * 表格前N(从1计数)列的内容不当作数据部分
      * @return N的具体数值
      */
     int ignoreFirstNColumn();

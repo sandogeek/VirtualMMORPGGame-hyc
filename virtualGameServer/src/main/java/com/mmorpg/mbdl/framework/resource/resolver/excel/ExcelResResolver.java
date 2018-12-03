@@ -1,5 +1,6 @@
 package com.mmorpg.mbdl.framework.resource.resolver.excel;
 
+import com.alibaba.excel.ExcelReader;
 import com.mmorpg.mbdl.framework.common.utils.SpringPropertiesUtil;
 import com.mmorpg.mbdl.framework.resource.core.IStaticResUtil;
 import com.mmorpg.mbdl.framework.resource.core.StaticResDefinition;
@@ -15,10 +16,8 @@ import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.io.InputStream;
+import java.util.*;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinWorkerThread;
 
@@ -52,7 +51,7 @@ public class ExcelResResolver extends AbstractBeanFactoryAwareResResolver {
         }
         Map<String, StaticResDefinition> fileName2StaticResDefinition = beanFactory
                 .getBean(StaticResDefinitionFactory.class).getFullFileNameStaticResDefinition();
-        // 利用ForkJoinPool并行处理，因为包含IO,所以使用
+        // 利用ForkJoinPool并行处理，因为包含IO,所以使用自定义的ForkJoinPool
         Runnable resourceLoadTask = () -> {
             Arrays.stream(resources).parallel().filter(Resource::isReadable).map((res)->{
                 String filename = res.getFilename();
@@ -78,6 +77,17 @@ public class ExcelResResolver extends AbstractBeanFactoryAwareResResolver {
                 return staticResDefinitionResult;
             }).filter(Objects::nonNull).forEach((staticResDefinition -> {
                 logger.debug("静态资源{}成功关联类{}",staticResDefinition.getFullFileName(),staticResDefinition.getvClass().getSimpleName());
+                try (InputStream inputStream = staticResDefinition.getResource().getInputStream()){
+                    List<Object> context = new ArrayList<>(2);
+                    context.add(0,beanFactory);
+                    context.add(1,staticResDefinition);
+                    ExcelListener listener = new ExcelListener();
+                    ExcelReader excelReader = new ExcelReader(inputStream, context,listener);
+                    excelReader.read();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    throw new RuntimeException(String.format("读取资源文件[%s]发生异常",staticResDefinition.getFullFileName()));
+                }
             }));
         };
         StopWatch stopWatch = new StopWatch();
@@ -98,7 +108,7 @@ public class ExcelResResolver extends AbstractBeanFactoryAwareResResolver {
         String threadSize = SpringPropertiesUtil.getProperty("sever.config.static.res.load.thread.size");
         new ForkJoinPool(Integer.parseInt(threadSize),factory,null,false).submit(resourceLoadTask).join();
         stopWatch.stop();
-        logger.info("静态资源解析完毕{}ms",stopWatch.getTime());
+        logger.info("静态资源解析完毕，耗时{}ms",stopWatch.getTime());
         logger.info("");
     }
 

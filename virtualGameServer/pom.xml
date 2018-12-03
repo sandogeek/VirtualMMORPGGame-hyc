@@ -15,6 +15,7 @@
     <!--</parent>-->
 
     <properties>
+        <jackson.version>2.9.7</jackson.version>
         <spring.version>4.3.14.RELEASE</spring.version>
         <netty.version>4.1.27.Final</netty.version>
         <protobuf.version>3.3.0</protobuf.version>
@@ -223,9 +224,9 @@
             <version>2.9.0</version>
         </dependency>
         <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>fastjson</artifactId>
-            <version>1.2.31</version>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
         </dependency>
         <dependency>
             <groupId>com.esotericsoftware</groupId>

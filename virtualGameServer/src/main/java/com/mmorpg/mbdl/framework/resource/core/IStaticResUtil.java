@@ -40,7 +40,7 @@ public class IStaticResUtil {
     /**
      * 获取以指定字符串结尾的ClassPath
      * @param s 指定字符串
-     * @return 指定字符串结尾的ClassPath
+     * @return 指定字符串结尾的ClassPath,不存在时返回null
      */
     public static String getClassPathSuffixWith(String s){
         String cleanString = org.springframework.util.StringUtils.cleanPath(s);
