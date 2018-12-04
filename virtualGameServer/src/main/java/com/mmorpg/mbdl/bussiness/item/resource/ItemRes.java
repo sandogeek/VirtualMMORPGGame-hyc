@@ -1,6 +1,6 @@
 package com.mmorpg.mbdl.bussiness.item.resource;
 
-import com.mmorpg.mbdl.framework.resource.annotation.Attr;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.mmorpg.mbdl.framework.resource.annotation.Id;
 import com.mmorpg.mbdl.framework.resource.annotation.ResDef;
 
@@ -13,31 +13,66 @@ import com.mmorpg.mbdl.framework.resource.annotation.ResDef;
 @ResDef
 public class ItemRes {
     @Id
-    @Attr(value = "Id")
-    private int id;
+    @JsonProperty(value = "Id")
+    private String id;
 
-    @Attr(value = "Name")
+    @JsonProperty(value = "Name")
     private String name;
 
-    @Attr(value = "Quality")
+    @JsonProperty(value = "Quality")
     private int quality;
 
-    @Attr(value = "CanUse")
+    @JsonProperty(value = "CanUse")
     private boolean canUse;
 
-    @Attr(value = "Type")
+    @JsonProperty(value = "Type")
     private int type;
 
-    @Attr(value = "Func")
+    @JsonProperty(value = "Func")
     private int func;
 
-    @Attr(value = "Name")
+    @JsonProperty(value = "Parameter1")
     private int parameter1;
 
-    @Attr(value = "Parameter2")
+    @JsonProperty(value = "Parameter2")
     private int parameter2;
 
-    @Attr(value = "Parameter3")
+    @JsonProperty(value = "Parameter3")
     private int parameter3;
 
+    public String getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getQuality() {
+        return quality;
+    }
+
+    public boolean isCanUse() {
+        return canUse;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public int getFunc() {
+        return func;
+    }
+
+    public int getParameter1() {
+        return parameter1;
+    }
+
+    public int getParameter2() {
+        return parameter2;
+    }
+
+    public int getParameter3() {
+        return parameter3;
+    }
 }

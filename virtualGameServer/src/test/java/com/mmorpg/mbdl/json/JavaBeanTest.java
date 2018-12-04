@@ -1,4 +1,4 @@
-package com.mmorpg.mbdl.fastjson;
+package com.mmorpg.mbdl.json;
 
 /**
  * 测试用的javabean
@@ -11,4 +11,5 @@ public class JavaBeanTest {
     private State state;
     private String string;
     private JavaBean2 javaBean2;
+    private Integer integer;
 }

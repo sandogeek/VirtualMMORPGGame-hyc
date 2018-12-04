@@ -20,7 +20,7 @@ public interface IExcelFormat {
      * @param arrayList Excel的一行数据
      * @return 是字段名所在行，true,否则，false
      */
-    boolean isFieldNameRow(ArrayList<String> arrayList);
+    boolean isFieldNamesRow(ArrayList<String> arrayList);
 
     /**
      * 是否是表头最后一行

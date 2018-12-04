@@ -5,20 +5,22 @@ import com.mmorpg.mbdl.EnhanceStarter;
 import com.mmorpg.mbdl.framework.common.utils.SpringPropertiesUtil;
 import com.mmorpg.mbdl.framework.resource.annotation.Id;
 import com.mmorpg.mbdl.framework.resource.annotation.ResDef;
-import com.mmorpg.mbdl.framework.resource.facade.AbstractBeanFactoryAwareResResolver;
-import com.mmorpg.mbdl.framework.resource.facade.IResResolver;
-import com.mmorpg.mbdl.framework.resource.facade.IStaticRes;
+import com.mmorpg.mbdl.framework.resource.exposed.AbstractBeanFactoryAwareResResolver;
+import com.mmorpg.mbdl.framework.resource.exposed.IResResolver;
+import com.mmorpg.mbdl.framework.resource.exposed.IStaticRes;
 import com.mmorpg.mbdl.framework.resource.impl.StaticRes;
 import com.mmorpg.mbdl.framework.storage.annotation.ByteBuddyGenerated;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.description.annotation.AnnotationDescription;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.dynamic.loading.ClassLoadingStrategy;
+import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
@@ -30,9 +32,10 @@ import org.springframework.util.SystemPropertyUtils;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ForkJoinWorkerThread;
 
 import static org.reflections.ReflectionUtils.getAllFields;
 import static org.reflections.ReflectionUtils.withAnnotation;
@@ -71,7 +74,80 @@ public class StaticResHandler implements BeanFactoryPostProcessor {
         EnhanceStarter.init();
         Map<Class, StaticResDefinition> class2StaticResDefinitionMap = getResDefClasses(packageToScan);
         init(class2StaticResDefinitionMap,beanFactory);
-        beanFactory.getBeansOfType(IResResolver.class).forEach((key,value) -> value.resolve());
+        handleStaticRes(beanFactory);
+    }
+
+    /**
+     * 处理静态资源
+     * @param beanFactory bean工厂
+     */
+    private void handleStaticRes(ConfigurableListableBeanFactory beanFactory){
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
+        beanFactory.getBeansOfType(IResResolver.class).forEach((key, value) -> {
+            Resource[] resources;
+            ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
+            try {
+                resources = resourcePatternResolver.getResources(ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX +
+                        "**/*" + value.suffix());
+            } catch (IOException e) {
+                String message = String.format("获取%s资源发生IO异常", value.suffix());
+                logger.error(message);
+                throw new RuntimeException(message);
+            }
+            Map<String, StaticResDefinition> fileName2StaticResDefinition = beanFactory
+                    .getBean(StaticResDefinitionFactory.class).getFullFileNameStaticResDefinition();
+            // 利用ForkJoinPool并行处理，因为包含IO,所以使用自定义的ForkJoinPool
+            Runnable resourceLoadTask = () -> {
+                Arrays.stream(resources).parallel().filter(Resource::isReadable).map((res)->{
+                    String filename = res.getFilename();
+                    // 初始化StaticResDefinition的List<Resource> resources字段
+                    StaticResDefinition staticResDefinitionResult = Optional.ofNullable(fileName2StaticResDefinition.get(filename)).orElseGet(() -> {
+                        String resPathRelative2ClassPath = IStaticResUtil.getResPathRelative2ClassPath((FileSystemResource) res);
+                        return fileName2StaticResDefinition.get(resPathRelative2ClassPath);
+                    });
+                    if (staticResDefinitionResult!=null){
+                        Resource resource = staticResDefinitionResult.getResource();
+                        if ( resource != null ){
+                            String newPath = IStaticResUtil.getResPathRelative2ClassPath((FileSystemResource) res);
+                            String oldPath = IStaticResUtil.getResPathRelative2ClassPath((FileSystemResource) resource);
+                            String message = String.format(
+                                    "资源类[%s]对应两份文件：[%s],[%s],请在其注解上使用@ResDef(relativePath = \"%s\")或@ResDef(relativePath = \"%s\")确定此类对应的资源文件",
+                                    staticResDefinitionResult.getvClass().getSimpleName(),
+                                    newPath, oldPath, newPath, oldPath
+                            );
+                            throw new RuntimeException(message);
+                        }
+                        staticResDefinitionResult.setResource(res);
+                    }
+                    return staticResDefinitionResult;
+                }).filter(Objects::nonNull).forEach((staticResDefinition -> {
+                    logger.debug("静态资源{}成功关联到类[{}]",staticResDefinition.getFullFileName(),staticResDefinition.getvClass().getSimpleName());
+                    value.resolve(staticResDefinition);
+                }));
+            };
+
+
+            // 使用默认ForkJoinPool执行耗时测试
+            // resourceLoadTask.run();
+
+            final ForkJoinPool.ForkJoinWorkerThreadFactory factory = pool -> {
+                final ForkJoinWorkerThread worker = ForkJoinPool.defaultForkJoinWorkerThreadFactory.newThread(pool);
+                worker.setName("资源加载线程-" + worker.getPoolIndex());
+                return worker;
+            };
+
+            String threadSize = SpringPropertiesUtil.getProperty("sever.config.static.res.load.thread.size");
+            ForkJoinPool forkJoinPool = new ForkJoinPool(Integer.parseInt(threadSize), factory, null, false);
+            try {
+                forkJoinPool.submit(resourceLoadTask).get();
+            } catch (InterruptedException | ExecutionException e) {
+                throw new RuntimeException("静态资源解析失败",e);
+            }
+            forkJoinPool.shutdown();
+        });
+        stopWatch.stop();
+        logger.info("静态资源解析完毕，耗时{}ms",stopWatch.getTime());
     }
 
     /**
@@ -89,7 +165,7 @@ public class StaticResHandler implements BeanFactoryPostProcessor {
         class2StaticResDefinitionMap.keySet().forEach((clazz)->{
             ResDef resDef = (ResDef) clazz.getAnnotation(ResDef.class);
             StaticResDefinition staticResDefinition = class2StaticResDefinitionMap.get(clazz);
-            staticResDefinition.setvClass(clazz);
+
             /** 表格型资源，检查其Id的唯一性，并生成{@link StaticRes}的子类实例 */
             if (resDef.isTable()){
                 Set<Field> fields = getAllFields(clazz, withAnnotation(Id.class));
@@ -150,6 +226,7 @@ public class StaticResHandler implements BeanFactoryPostProcessor {
                         .name(packageName + "." + StaticRes.class.getSimpleName() + idBoxedType.getSimpleName() + clazz.getSimpleName())
                         .annotateType(AnnotationDescription.Builder.ofType(ByteBuddyGenerated.class).build())
                         .make().load(getClass().getClassLoader(), ClassLoadingStrategy.Default.INJECTION).getLoaded();
+                staticResDefinition.setvClass(clazz);
                 try {
                     StaticRes instance = (StaticRes)subClass.newInstance();
                     instance.setFullFileName(staticResDefinition.getFullFileName());
@@ -159,7 +236,6 @@ public class StaticResHandler implements BeanFactoryPostProcessor {
                     throw new RuntimeException(String.format("[%s]<%s,%s>类型的bean实例化失败",IStaticRes.class,idBoxedType,clazz.getSimpleName()));
                 }
             }
-
             StaticResDefinitionFactory staticResDefinitionFactory = beanFactory.getBean(StaticResDefinitionFactory.class);
             Map<String, StaticResDefinition> fullFileNameStaticResDefinition = staticResDefinitionFactory.getFullFileNameStaticResDefinition();
             String fullFileName = staticResDefinition.getFullFileName();

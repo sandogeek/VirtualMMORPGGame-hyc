@@ -1,6 +1,6 @@
 package com.mmorpg.mbdl.framework.resource.resolver;
 
-import com.mmorpg.mbdl.framework.resource.facade.IResResolver;
+import com.mmorpg.mbdl.framework.resource.exposed.IResResolver;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;

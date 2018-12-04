@@ -1,4 +1,4 @@
-package com.mmorpg.mbdl.fastjson;
+package com.mmorpg.mbdl.json;
 
 /**
  * 状态

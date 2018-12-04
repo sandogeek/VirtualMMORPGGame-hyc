@@ -14,4 +14,8 @@ import com.mmorpg.mbdl.framework.resource.annotation.ResDef;
 public class ErrorTipsRes {
     @Id
     private int code;
+
+    public int getCode() {
+        return code;
+    }
 }

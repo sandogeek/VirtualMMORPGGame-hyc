@@ -1,7 +1,7 @@
 package com.mmorpg.mbdl.framework.resource.impl;
 
 import com.google.common.collect.*;
-import com.mmorpg.mbdl.framework.resource.facade.IStaticRes;
+import com.mmorpg.mbdl.framework.resource.exposed.IStaticRes;
 
 import java.util.Map;
 import java.util.Optional;

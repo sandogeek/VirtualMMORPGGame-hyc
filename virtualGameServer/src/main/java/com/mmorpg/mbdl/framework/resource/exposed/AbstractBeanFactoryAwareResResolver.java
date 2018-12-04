@@ -1,4 +1,4 @@
-package com.mmorpg.mbdl.framework.resource.facade;
+package com.mmorpg.mbdl.framework.resource.exposed;
 
 import org.springframework.beans.factory.BeanFactory;
 

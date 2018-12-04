@@ -1,6 +1,7 @@
 package com.mmorpg.mbdl.framework.resource.resolver.excel;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 /**
  * excel格式自定义
@@ -15,18 +16,12 @@ public class ExcelFormat implements IExcelFormat {
     }
 
     @Override
-    public boolean isFieldNameRow(ArrayList<String> arrayList) {
-        if (arrayList.get(0).startsWith("S")){
-            return true;
-        }
-        return false;
+    public boolean isFieldNamesRow(ArrayList<String> arrayList) {
+        return Optional.ofNullable(arrayList.get(0)).map(value -> value.startsWith("S")).orElse(false);
     }
 
     @Override
     public boolean isTableHeadLastLine(ArrayList<String> arrayList) {
-        if (arrayList.get(0).startsWith("S")){
-            return true;
-        }
-        return false;
+        return Optional.ofNullable(arrayList.get(0)).map(value -> value.startsWith("S")).orElse(false);
     }
 }

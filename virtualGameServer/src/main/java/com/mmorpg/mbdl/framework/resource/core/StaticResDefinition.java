@@ -23,6 +23,8 @@ public class StaticResDefinition {
 
     /** id字段 */
     private Field idField;
+
+
     private Map<String,Field> uniqueFieldName2Field;
     private Map<String,Field> indexFieldName2Field;
     /** 待注册到容器中的IStaticRes子类的单例Bean */
@@ -41,8 +43,16 @@ public class StaticResDefinition {
         }
     }
 
+    // public Object getIdFieldValue(Object obj){
+    //     return fieldAccess.getObject(obj,idFieldIndex);
+    // }
+
     public String getFullFileName() {
         return fullFileName;
+    }
+
+    public Field getIdField() {
+        return idField;
     }
 
     public void setIdField(Field idField) {

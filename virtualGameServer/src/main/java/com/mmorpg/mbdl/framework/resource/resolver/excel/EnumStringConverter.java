@@ -1,6 +1,5 @@
 package com.mmorpg.mbdl.framework.resource.resolver.excel;
 
-import java.lang.reflect.Field;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -12,9 +11,9 @@ import java.util.function.Predicate;
  **/
 public class EnumStringConverter extends AbstractConverter {
     @Override
-    public Predicate<Field> getPredicate() {
-        return field -> {
-            if (field.getType().isEnum()||field.getType() == String.class){
+    public Predicate<Class<?>> getPredicate() {
+        return clazz -> {
+            if (clazz.isEnum()||clazz == String.class){
                 return true;
             }
             return false;
