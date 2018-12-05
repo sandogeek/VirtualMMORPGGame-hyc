@@ -25,8 +25,11 @@ import java.util.*;
  **/
 public class ExcelListener extends AnalysisEventListener<ArrayList<String>> {
     private static Logger logger = LoggerFactory.getLogger(ExcelListener.class);
-    ObjectMapper mapper;
-    {
+    /**
+     * ObjectMapper线程安全的，设为静态，避免频繁创建
+     */
+    private static ObjectMapper mapper;
+    static  {
         mapper = new ObjectMapper();
         mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
     }
