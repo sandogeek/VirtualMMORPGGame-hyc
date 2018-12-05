@@ -13,7 +13,10 @@ import com.mmorpg.mbdl.framework.storage.annotation.ByteBuddyGenerated;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.description.annotation.AnnotationDescription;
 import net.bytebuddy.description.type.TypeDescription;
+import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.dynamic.loading.ClassLoadingStrategy;
+import net.bytebuddy.implementation.MethodDelegation;
+import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,7 +94,7 @@ public class StaticResHandler implements BeanFactoryPostProcessor {
                 resources = resourcePatternResolver.getResources(ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX +
                         "**/*" + value.suffix());
             } catch (IOException e) {
-                String message = String.format("获取%s资源发生IO异常", value.suffix());
+                String message = String.format("获取后缀为[%s]的资源时发生IO异常", value.suffix());
                 logger.error(message);
                 throw new RuntimeException(message);
             }
@@ -125,6 +128,7 @@ public class StaticResHandler implements BeanFactoryPostProcessor {
                     logger.debug("静态资源{}成功关联到类[{}]",staticResDefinition.getFullFileName(),staticResDefinition.getvClass().getSimpleName());
                     value.resolve(staticResDefinition);
                 }));
+                checkNullResStaticResDefinition(fileName2StaticResDefinition);
             };
 
 
@@ -148,6 +152,18 @@ public class StaticResHandler implements BeanFactoryPostProcessor {
         });
         stopWatch.stop();
         logger.info("静态资源解析完毕，耗时{}ms",stopWatch.getTime());
+    }
+
+    /**
+     * 检查是否存在Resource字段为null的StaticResDefinition
+     */
+    private void checkNullResStaticResDefinition(Map<String, StaticResDefinition> fileName2StaticResDefinition) {
+        fileName2StaticResDefinition.values().stream()
+                .filter(staticResDefinition -> staticResDefinition.getResource()==null).findAny()
+        .ifPresent(staticResDefinition -> {
+            throw new RuntimeException(
+                    String.format("静态资源类[%s]找不到对应的资源文件[%s]",staticResDefinition.getvClass().getSimpleName(),staticResDefinition.getFullFileName()));
+        });
     }
 
     /**
@@ -218,19 +234,38 @@ public class StaticResHandler implements BeanFactoryPostProcessor {
                     idBoxedType = idField.getType();
                 }
 
-                TypeDescription.Generic genericSuperClass =
+                TypeDescription.Generic genericStaticRes =
                         TypeDescription.Generic.Builder.parameterizedType(StaticRes.class, idBoxedType, clazz).build();
                 String packageName = clazz.getPackage().getName();
-                Class<?> subClass = new ByteBuddy()
-                        .subclass(genericSuperClass)
+                Class<?> staticResSubClass = new ByteBuddy().subclass(genericStaticRes)
                         .name(packageName + "." + StaticRes.class.getSimpleName() + idBoxedType.getSimpleName() + clazz.getSimpleName())
-                        .annotateType(AnnotationDescription.Builder.ofType(ByteBuddyGenerated.class).build())
                         .make().load(getClass().getClassLoader(), ClassLoadingStrategy.Default.INJECTION).getLoaded();
+                StaticRes staticRes = null;
+                try {
+                    staticRes = (StaticRes) staticResSubClass.newInstance();
+                } catch (InstantiationException | IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+                TypeDescription.Generic genericIStaticRes =
+                        TypeDescription.Generic.Builder.parameterizedType(IStaticRes.class, idBoxedType, clazz).build();
+                DynamicType.Unloaded<?> unloaded = new ByteBuddy()
+                        .subclass(genericIStaticRes)
+                        .name(packageName + "." + IStaticRes.class.getSimpleName() + idBoxedType.getSimpleName() + clazz.getSimpleName())
+                        .method(ElementMatchers.isDeclaredBy(IStaticRes.class)).intercept(MethodDelegation.to(staticRes))
+                        .annotateType(AnnotationDescription.Builder.ofType(ByteBuddyGenerated.class).build())
+                        .make();
+                // try {
+                //     unloaded.saveIn(new File("target"));
+                // } catch (IOException e) {
+                //     e.printStackTrace();
+                // }
+                Class<?> subClass = unloaded.load(getClass().getClassLoader(), ClassLoadingStrategy.Default.INJECTION).getLoaded();
                 staticResDefinition.setvClass(clazz);
                 try {
-                    StaticRes instance = (StaticRes)subClass.newInstance();
-                    instance.setFullFileName(staticResDefinition.getFullFileName());
-                    staticResDefinition.setStaticRes(instance);
+                    IStaticRes instance = (IStaticRes)subClass.newInstance();
+                    staticRes.setFullFileName(staticResDefinition.getFullFileName());
+                    staticResDefinition.setStaticRes(staticRes);
+                    staticResDefinition.setiStaticRes(instance);
                 } catch (InstantiationException | IllegalAccessException e) {
                     e.printStackTrace();
                     throw new RuntimeException(String.format("[%s]<%s,%s>类型的bean实例化失败",IStaticRes.class,idBoxedType,clazz.getSimpleName()));

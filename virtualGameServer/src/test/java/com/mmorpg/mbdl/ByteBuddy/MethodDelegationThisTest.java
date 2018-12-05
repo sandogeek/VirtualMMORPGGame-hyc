@@ -1,23 +1,19 @@
 package com.mmorpg.mbdl.ByteBuddy;
 
 import net.bytebuddy.ByteBuddy;
+import net.bytebuddy.ClassFileVersion;
 import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.dynamic.loading.ClassLoadingStrategy;
 import net.bytebuddy.implementation.MethodDelegation;
-import net.bytebuddy.implementation.bind.annotation.Argument;
-import net.bytebuddy.implementation.bind.annotation.Super;
-import net.bytebuddy.implementation.bind.annotation.SuperCall;
 import net.bytebuddy.implementation.bind.annotation.This;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Modifier;
-import java.util.concurrent.Callable;
 
 import static net.bytebuddy.matcher.ElementMatchers.*;
 
@@ -44,51 +40,27 @@ public class MethodDelegationThisTest {
 
     @Test
     void 利用this完成AOP() {
-        DynamicType.Unloaded<Source> unloaded = new ByteBuddy()
-                .subclass(Source.class)
-                .name(Source.class.getName()+"Sub")
-                .method(named("hello")).intercept(MethodDelegation.to(Target.class))
-                .method(named("getInt").and(takesArguments(0))).intercept(MethodDelegation.to(Target.class))
-                .defineMethod("myMethod",int.class, Modifier.PUBLIC|Modifier.STATIC).withParameters(int.class).intercept(MethodDelegation.to(Target.class))
+        Target target = new Target();
+        DynamicType.Unloaded<ISource> unloaded = new ByteBuddy(ClassFileVersion.JAVA_V8)
+                .subclass(ISource.class)
+                .name(ISource.class.getName()+"Sub")
+                .method(isDeclaredBy(ISource.class)).intercept(MethodDelegation.to(target))
+                // .method(named("hello")).intercept(MethodDelegation.to(target))
+                // .method(named("getInt").and(takesArguments(0))).intercept(MethodDelegation.to(target))
+                .defineMethod("myMethod",int.class, Modifier.PUBLIC).withParameters(int.class).intercept(MethodDelegation.to(target))
                 .make();
         try {
             unloaded.saveIn(new File("target"));
-            Source source = unloaded.load(getClass().getClassLoader(), ClassLoadingStrategy.Default.INJECTION)
+            ISource iSource = unloaded.load(getClass().getClassLoader(), ClassLoadingStrategy.Default.INJECTION)
                     .getLoaded()
                     .newInstance();
-            String s = source.hello("World");
-            logger.info(s);
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+            logger.info(iSource.hello("World"));
+        } catch (InstantiationException | IllegalAccessException | IOException e) {
             e.printStackTrace();
         }
     }
 
-    public static class Source {
-        int k = 2;
-        @Transactional
-        public String hello(String name) { return null; }
-        public int getInt() { return 1; }
-    }
 
-    public static class Target {
-        public static String hello(@This Source source, @Argument(0) String name) {
-            // @This,所以访问的是增强后的方法，所以anInt应该为2
-            int anInt = source.getInt();
-            return "Hello " + name + "! int= "+anInt+" k = "+source.k;
-        }
-        public static int getInt(@Super Source source, @SuperCall Callable<Integer> zuper) throws Exception {
-            return 2+zuper.call();
-        }
-
-        public static int myMethod(int a){
-            return a;
-        }
-        // public static String intercept(Object o) { return o.toString(); }
-    }
 
     public static class Foo {
 

@@ -37,7 +37,6 @@ public class ExcelListener extends AnalysisEventListener<ArrayList<String>> {
     private String idFieldJsonName;
 
 
-    private ImmutableMap key2Resource;
     private ImmutableMap.Builder key2ResourceBuilder = ImmutableMap.builder();
 
     private boolean foundFieldNameLine= false;
@@ -105,14 +104,8 @@ public class ExcelListener extends AnalysisEventListener<ArrayList<String>> {
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
-            logger.debug("当前行：{},内容：{}",context.getCurrentRowNum()+1,list);
+            // logger.debug("当前行：{},内容：{}",context.getCurrentRowNum()+1,list);
         }
-
-        doSomething(list);
-    }
-
-    private void doSomething(ArrayList<String> list) {
-        //1、入库调用接口
     }
 
     @Override
@@ -122,10 +115,10 @@ public class ExcelListener extends AnalysisEventListener<ArrayList<String>> {
         }else if (!tableHeadHandleOver) {
             throw new RuntimeException(String.format("资源文件[%s]表头处理失败，未找到表头字段名称行和表头结束行",staticResDefinition.getFullFileName()));
         }
-        key2Resource = key2ResourceBuilder.build();
+        ImmutableMap key2Resource = key2ResourceBuilder.build();
         staticResDefinition.getStaticRes().setKey2Resource(key2Resource);
-        String resBeanName = StringUtils.uncapitalize(staticResDefinition.getStaticRes().getClass().getSimpleName());
-        beanFactory.registerSingleton(resBeanName,staticResDefinition.getStaticRes());
+        String resBeanName = StringUtils.uncapitalize(staticResDefinition.getiStaticRes().getClass().getSimpleName());
+        beanFactory.registerSingleton(resBeanName,staticResDefinition.getiStaticRes());
     }
 
     /**

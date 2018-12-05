@@ -1,5 +1,6 @@
 package com.mmorpg.mbdl.framework.resource.core;
 
+import com.mmorpg.mbdl.framework.resource.exposed.IStaticRes;
 import com.mmorpg.mbdl.framework.resource.impl.StaticRes;
 import org.springframework.core.io.Resource;
 
@@ -23,12 +24,14 @@ public class StaticResDefinition {
 
     /** id字段 */
     private Field idField;
-
-
     private Map<String,Field> uniqueFieldName2Field;
     private Map<String,Field> indexFieldName2Field;
-    /** 待注册到容器中的IStaticRes子类的单例Bean */
+    /**
+     * 实际存储静态资源数据的对象
+     */
     private StaticRes staticRes;
+    /** 待注册到容器中的IStaticRes子类的单例Bean */
+    private IStaticRes iStaticRes;
 
     /**
      * TODO 初始化uniqueFieldName2Field，indexFieldName2Field
@@ -69,8 +72,16 @@ public class StaticResDefinition {
         this.vClass = vClass;
     }
 
+    public StaticRes getStaticRes() {
+        return staticRes;
+    }
+
     public void setStaticRes(StaticRes staticRes) {
         this.staticRes = staticRes;
+    }
+
+    public void setiStaticRes(IStaticRes iStaticRes) {
+        this.iStaticRes = iStaticRes;
     }
 
     public Resource getResource() {
@@ -81,7 +92,7 @@ public class StaticResDefinition {
         this.resource = resource;
     }
 
-    public StaticRes getStaticRes() {
-        return staticRes;
+    public IStaticRes getiStaticRes() {
+        return iStaticRes;
     }
 }
