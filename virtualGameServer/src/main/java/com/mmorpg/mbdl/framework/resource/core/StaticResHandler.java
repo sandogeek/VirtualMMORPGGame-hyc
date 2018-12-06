@@ -9,9 +9,7 @@ import com.mmorpg.mbdl.framework.resource.exposed.AbstractBeanFactoryAwareResRes
 import com.mmorpg.mbdl.framework.resource.exposed.IResResolver;
 import com.mmorpg.mbdl.framework.resource.exposed.IStaticRes;
 import com.mmorpg.mbdl.framework.resource.impl.StaticRes;
-import com.mmorpg.mbdl.framework.storage.annotation.ByteBuddyGenerated;
 import net.bytebuddy.ByteBuddy;
-import net.bytebuddy.description.annotation.AnnotationDescription;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.dynamic.loading.ClassLoadingStrategy;
@@ -182,7 +180,7 @@ public class StaticResHandler implements BeanFactoryPostProcessor {
             ResDef resDef = (ResDef) clazz.getAnnotation(ResDef.class);
             StaticResDefinition staticResDefinition = class2StaticResDefinitionMap.get(clazz);
 
-            /** 表格型资源，检查其Id的唯一性，并生成{@link StaticRes}的子类实例 */
+            /** 表格型资源，检查其Id的唯一性，并生成{@link IStaticRes}的子类实例 */
             if (resDef.isTable()){
                 Set<Field> fields = getAllFields(clazz, withAnnotation(Id.class));
                 if (fields.size() > 1){
@@ -252,7 +250,6 @@ public class StaticResHandler implements BeanFactoryPostProcessor {
                         .subclass(genericIStaticRes)
                         .name(packageName + "." + IStaticRes.class.getSimpleName() + idBoxedType.getSimpleName() + clazz.getSimpleName())
                         .method(ElementMatchers.isDeclaredBy(IStaticRes.class)).intercept(MethodDelegation.to(staticRes))
-                        .annotateType(AnnotationDescription.Builder.ofType(ByteBuddyGenerated.class).build())
                         .make();
                 // try {
                 //     unloaded.saveIn(new File("target"));

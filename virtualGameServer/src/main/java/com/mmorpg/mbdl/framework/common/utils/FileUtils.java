@@ -15,9 +15,9 @@ public class FileUtils {
     /**
      * 后缀名文件过滤器
      * @param ext 后缀名，不带"."
-     * @return
+     * @return FileFilter
      */
-    public static final FileFilter extFileFilter(String ext){
+    public static final FileFilter withSuffix(String ext){
         FileFilter extFileFilter = (pathName) -> {
             if (pathName.getName().endsWith("."+ext)){
                 return true;
@@ -26,12 +26,7 @@ public class FileUtils {
         };
         return extFileFilter;
     }
-    public static void main(String[] args){
-        clearByFileFilter("C:\\假桌面天下第一\\test",true,(fileName)->{
-            return true;
-        });
-        // deleteFolder("C:\\假桌面天下第一\\test",false);
-    }
+
     private static final Logger logger = LoggerFactory.getLogger(FileUtils.class);
     /**
      * 清空指定目录下满足FileFilter的所有File
@@ -119,7 +114,8 @@ public class FileUtils {
     }
     /**
      * 创建文件
-     * @return
+     * @param file File对象
+     * @return 成功返回true，失败返回false
      */
     public static boolean createFile(File file) throws IOException {
         if (!file.getParentFile().exists()){

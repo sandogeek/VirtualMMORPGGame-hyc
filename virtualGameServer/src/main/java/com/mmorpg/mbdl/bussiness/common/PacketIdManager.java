@@ -16,6 +16,7 @@ import java.util.Set;
 
 /**
  * websocket frame的id
+ * TODO 通过注解定义Req、Resp后，这个类使用枚举的方式配置
  * @author sando
  */
 @Component

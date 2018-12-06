@@ -1,5 +1,6 @@
 package com.mmorpg.mbdl.framework.common.utils;
 
+import com.mmorpg.mbdl.EnhanceStarter;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
@@ -39,7 +40,7 @@ public class SpringPropertiesUtil extends PropertyPlaceholderConfigurer {
     }
 
     /**
-     * 此方法只可以用在Init.init()方法中，或者容器启动后运行的任何代码中
+     * 此方法只可以用在{@link EnhanceStarter#init()}方法中，或者容器启动后运行的任何代码中
      * @param name .properties属性名
      * @return .properties属性名
      */
