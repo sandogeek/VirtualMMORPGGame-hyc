@@ -296,7 +296,6 @@ public class StaticResHandler implements BeanFactoryPostProcessor {
     private void classesScan(String packageName, ConfigurableListableBeanFactory beanFactory) {
         ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
         MetadataReaderFactory metadataReaderFactory = new CachingMetadataReaderFactory(resourcePatternResolver);
-        Map<Class,StaticResDefinition> result = new HashMap<>(64);
         String packageSearchPath = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX + resolveBasePackage(packageName)
                 + "/" + "**/*.class";
         Resource[] resources;
@@ -305,9 +304,6 @@ public class StaticResHandler implements BeanFactoryPostProcessor {
         } catch (IOException e) {
             throw new RuntimeException(String.format("无法获取指定包下[%s]的.class资源",packageName),e);
         }
-        Class clz;
-        // TODO 实现MetadataReaderPostProcessor,避免多次循环.class文件Resource，
-        // 思路：第一次遍历找出所有实现了MetadataReaderPostProcessor的.class文件，实例化后在第二次遍历时，调用其postProcess方法
         for (Resource resource : resources) {
             if (resource.isReadable()) {
                 try {

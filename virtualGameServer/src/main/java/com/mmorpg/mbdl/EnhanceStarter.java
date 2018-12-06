@@ -38,6 +38,6 @@ public class EnhanceStarter {
      * @param dir
      */
     private static void clearProto(String dir) {
-        FileUtils.clearByFileFilter(dir,true,FileUtils.withSuffix("proto"));
+        FileUtils.clearByFileFilter(dir,true,FileUtils.withSuffix(".proto"));
     }
 }

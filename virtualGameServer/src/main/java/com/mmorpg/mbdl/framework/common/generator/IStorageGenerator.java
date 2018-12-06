@@ -11,7 +11,6 @@ import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.core.ResolvableType;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Set;
@@ -23,7 +22,6 @@ import java.util.Set;
  * @author sando
  */
 @Deprecated
-@Component
 public class IStorageGenerator implements BeanFactoryPostProcessor {
     // private static final HashMap
     @Override

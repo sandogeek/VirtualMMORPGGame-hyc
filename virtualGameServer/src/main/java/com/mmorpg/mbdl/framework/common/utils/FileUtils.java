@@ -13,13 +13,13 @@ import java.util.Stack;
 
 public class FileUtils {
     /**
-     * 后缀名文件过滤器
-     * @param ext 后缀名，不带"."
+     * 检索出以ext结尾的文件
+     * @param ext 后缀名
      * @return FileFilter
      */
     public static final FileFilter withSuffix(String ext){
         FileFilter extFileFilter = (pathName) -> {
-            if (pathName.getName().endsWith("."+ext)){
+            if (pathName.getName().endsWith(ext)){
                 return true;
             }
             return false;
