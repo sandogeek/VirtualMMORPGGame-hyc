@@ -1,5 +1,7 @@
 package com.mmorpg.mbdl.framework.resource.resolver.excel;
 
+import com.mmorpg.mbdl.framework.resource.exposed.IExcelFormat;
+
 import java.util.ArrayList;
 import java.util.Optional;
 

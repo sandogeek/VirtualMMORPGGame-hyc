@@ -37,8 +37,7 @@ public class ExcelResResolver extends AbstractBeanFactoryAwareResResolver {
             ExcelReader excelReader = new ExcelReader(inputStream, context,listener);
             excelReader.read();
         } catch (IOException e) {
-            e.printStackTrace();
-            throw new RuntimeException(String.format("读取资源文件[%s]发生异常",staticResDefinition.getFullFileName()));
+            throw new RuntimeException(String.format("读取资源文件[%s]发生异常",staticResDefinition.getFullFileName()),e);
         }
     }
 

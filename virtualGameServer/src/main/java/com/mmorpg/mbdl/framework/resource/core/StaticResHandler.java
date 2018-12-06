@@ -53,8 +53,21 @@ public class StaticResHandler implements BeanFactoryPostProcessor {
     private String suffix;
     // 完整文件名 = 文件名加后缀名 -> StaticResDefinition
     private Map<String,StaticResDefinition> fileFullName2StaticResDefinition;
-    // /** 资源类clazz -> 对应的baseClass的子类 */
-    // Map<Class,Class> resDefClazz2IStaticResSubClazz;
+    /**
+     * 自定义的用于IO的ForkJoinPool
+     */
+    ForkJoinPool forkJoinPool;
+    {
+        final ForkJoinPool.ForkJoinWorkerThreadFactory factory = pool -> {
+            final ForkJoinWorkerThread worker = ForkJoinPool.defaultForkJoinWorkerThreadFactory.newThread(pool);
+            worker.setName("资源加载线程-" + worker.getPoolIndex());
+            return worker;
+        };
+
+        String threadSize = SpringPropertiesUtil.getProperty("sever.config.static.res.load.thread.size");
+        forkJoinPool = new ForkJoinPool(Integer.parseInt(threadSize), factory, null, false);
+    }
+
 
     public void setPackageToScan(String packageToScan) {
         Preconditions.checkArgument(packageToScan!=null,"静态资源未配置包扫描路径");
@@ -85,14 +98,14 @@ public class StaticResHandler implements BeanFactoryPostProcessor {
     private void handleStaticRes(ConfigurableListableBeanFactory beanFactory){
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
-        beanFactory.getBeansOfType(IResResolver.class).forEach((key, value) -> {
+        beanFactory.getBeansOfType(IResResolver.class).values().forEach(iResResolver -> {
             Resource[] resources;
             ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
             try {
                 resources = resourcePatternResolver.getResources(ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX +
-                        "**/*" + value.suffix());
+                        "**/*" + iResResolver.suffix());
             } catch (IOException e) {
-                String message = String.format("获取后缀为[%s]的资源时发生IO异常", value.suffix());
+                String message = String.format("获取后缀为[%s]的资源时发生IO异常", iResResolver.suffix());
                 logger.error(message);
                 throw new RuntimeException(message);
             }
@@ -124,31 +137,24 @@ public class StaticResHandler implements BeanFactoryPostProcessor {
                     return staticResDefinitionResult;
                 }).filter(Objects::nonNull).forEach((staticResDefinition -> {
                     logger.debug("静态资源{}成功关联到类[{}]",staticResDefinition.getFullFileName(),staticResDefinition.getvClass().getSimpleName());
-                    value.resolve(staticResDefinition);
+                    iResResolver.resolve(staticResDefinition);
                 }));
-                checkNullResStaticResDefinition(fileName2StaticResDefinition);
             };
-
 
             // 使用默认ForkJoinPool执行耗时测试
             // resourceLoadTask.run();
 
-            final ForkJoinPool.ForkJoinWorkerThreadFactory factory = pool -> {
-                final ForkJoinWorkerThread worker = ForkJoinPool.defaultForkJoinWorkerThreadFactory.newThread(pool);
-                worker.setName("资源加载线程-" + worker.getPoolIndex());
-                return worker;
-            };
-
-            String threadSize = SpringPropertiesUtil.getProperty("sever.config.static.res.load.thread.size");
-            ForkJoinPool forkJoinPool = new ForkJoinPool(Integer.parseInt(threadSize), factory, null, false);
             try {
                 forkJoinPool.submit(resourceLoadTask).get();
             } catch (InterruptedException | ExecutionException e) {
                 throw new RuntimeException("静态资源解析失败",e);
             }
-            forkJoinPool.shutdown();
+
         });
         stopWatch.stop();
+        forkJoinPool.shutdown();
+        checkNullResStaticResDefinition(beanFactory
+                .getBean(StaticResDefinitionFactory.class).getFullFileNameStaticResDefinition());
         logger.info("静态资源解析完毕，耗时{}ms",stopWatch.getTime());
     }
 

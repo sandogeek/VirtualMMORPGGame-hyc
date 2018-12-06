@@ -4,7 +4,7 @@
  * <ol>
  * <li>新增资源解析器{@link com.mmorpg.mbdl.framework.resource.exposed.IResResolver}</li>
  * <li>能够拿到BeanFactory的资源解析器{@link com.mmorpg.mbdl.framework.resource.exposed.AbstractBeanFactoryAwareResResolver}</li>
- * <li>自定义Excel格式{@link com.mmorpg.mbdl.framework.resource.resolver.excel.IExcelFormat}</li>
+ * <li>自定义Excel格式{@link com.mmorpg.mbdl.framework.resource.exposed.IExcelFormat}</li>
  * </ol>
  */
 package com.mmorpg.mbdl.framework.resource;

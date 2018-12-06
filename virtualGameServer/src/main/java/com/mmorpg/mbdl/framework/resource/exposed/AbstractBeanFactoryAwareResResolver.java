@@ -1,6 +1,6 @@
 package com.mmorpg.mbdl.framework.resource.exposed;
 
-import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 
 /**
  * 包含beanFactory字段的静态资源解析器
@@ -9,10 +9,10 @@ import org.springframework.beans.factory.BeanFactory;
  * @since v1.0
  **/
 public abstract class AbstractBeanFactoryAwareResResolver implements IResResolver {
-    public static void setBeanFactory(BeanFactory beanFactory) {
+    public static void setBeanFactory(ConfigurableListableBeanFactory beanFactory) {
         AbstractBeanFactoryAwareResResolver.beanFactory = beanFactory;
     }
 
-    protected static BeanFactory beanFactory;
+    protected static ConfigurableListableBeanFactory beanFactory;
 
 }

@@ -1,0 +1,36 @@
+[
+  {
+    "mapId":1001,
+    "monsterSpawnDatas":[
+      {
+        "objectKey":10001,
+        "name":"羊"
+      },
+      {
+        "objectKey":10001,
+        "name":"羊"
+      },
+      {
+        "objectKey":10002,
+        "name":"猪"
+      }
+    ]
+  },
+  {
+    "mapId":1002,
+    "monsterSpawnDatas":[
+      {
+        "objectKey":10003,
+        "name":"狗"
+      },
+      {
+        "objectKey":10001,
+        "name":"羊"
+      },
+      {
+        "objectKey":10004,
+        "name":"牛"
+      }
+    ]
+  }
+]

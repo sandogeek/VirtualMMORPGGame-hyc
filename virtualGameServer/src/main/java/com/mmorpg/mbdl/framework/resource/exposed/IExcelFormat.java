@@ -1,4 +1,4 @@
-package com.mmorpg.mbdl.framework.resource.resolver.excel;
+package com.mmorpg.mbdl.framework.resource.exposed;
 
 import java.util.ArrayList;
 

@@ -2,7 +2,7 @@ package com.mmorpg.mbdl.framework.resource.config;
 
 import com.mmorpg.mbdl.framework.resource.core.StaticResHandler;
 import com.mmorpg.mbdl.framework.resource.resolver.excel.ExcelFormat;
-import com.mmorpg.mbdl.framework.resource.resolver.excel.IExcelFormat;
+import com.mmorpg.mbdl.framework.resource.exposed.IExcelFormat;
 import org.springframework.context.annotation.Bean;
 
 /**

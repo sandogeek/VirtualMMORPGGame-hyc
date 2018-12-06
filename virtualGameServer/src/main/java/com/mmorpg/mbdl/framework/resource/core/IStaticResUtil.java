@@ -21,9 +21,9 @@ public class IStaticResUtil {
      */
     public static String getFullFileName(Class clazz){
         ResDef resDef = (ResDef)clazz.getAnnotation(ResDef.class);
-        String suffix = resDef.suffix();
-        String fileNameWithoutSuffix = StringUtils.isEmpty(resDef.value())?clazz.getSimpleName():resDef.value();
-        String relativePath = StringUtils.isEmpty(resDef.relativePath())?null:resDef.relativePath();
+        String suffix = StringUtils.trim(resDef.suffix());
+        String fileNameWithoutSuffix = StringUtils.isEmpty(resDef.value())?clazz.getSimpleName():StringUtils.trim(resDef.value());
+        String relativePath = StringUtils.isEmpty(resDef.relativePath())?null:StringUtils.trim(resDef.relativePath());
         String fullFileName;
         if (relativePath != null) {
             fullFileName =relativePath;
