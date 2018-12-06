@@ -14,6 +14,7 @@ public interface IStaticRes<K,V> {
      * 根据键获取V类型的对象，相当于调用get(K key,true)
      * @param key 资源键的值
      * @return
+     * @throws IllegalArgumentException 如果资源不存在
      */
     V get(K key);
 
@@ -22,7 +23,7 @@ public interface IStaticRes<K,V> {
      * @param key 资源主键值
      * @param throwExceptionNotExist 资源不存在时是否抛出异常
      * @return if存在，资源对象 if不存在 if throwExceptionNotExist==true else null
-     * @throws IllegalArgumentException
+     * @throws IllegalArgumentException throwExceptionNotExist==true 并且资源不存在
      */
     V get(K key,boolean throwExceptionNotExist);
 
@@ -38,7 +39,7 @@ public interface IStaticRes<K,V> {
      * 根据索引获取资源对象的集合
      * @param name 索引字段名
      * @param indexValue  索引值
-     * @return 装载资源对象的ImmutableList，注意，不会返回null,如果没有对应的资源对象，返回size()为0的ImmutableList
+     * @return 装载资源对象的ImmutableList，不存在时返回null
      */
     ImmutableList<V> getByIndex(String name, Object indexValue);
 

@@ -35,7 +35,7 @@ public class StaticRes<K,V> {
     public V get(K key, boolean throwExceptionNotExist) {
         V res = key2Resource.get(key);
         if (res == null && throwExceptionNotExist){
-            throw new RuntimeException(String.format("资源文件[%s]中不存在键为[%s]的静态资源",fullFileName,key));
+            throw new IllegalArgumentException(String.format("资源文件[%s]中不存在键为[%s]的静态资源",fullFileName,key));
         }
         return res;
     }
