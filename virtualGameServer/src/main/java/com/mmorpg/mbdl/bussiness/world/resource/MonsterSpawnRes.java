@@ -16,13 +16,13 @@ import java.util.List;
 public class MonsterSpawnRes {
     @Id
     private int mapId;
-    private List<MonsterSpawn> monsterSpawnDatas;
+    private List<MonsterSpawn> MonsterSpawnList;
 
     public int getMapId() {
         return mapId;
     }
 
-    public List<MonsterSpawn> getMonsterSpawnDatas() {
-        return monsterSpawnDatas;
+    public List<MonsterSpawn> getMonsterSpawnList() {
+        return MonsterSpawnList;
     }
 }

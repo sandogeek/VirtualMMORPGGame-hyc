@@ -6,6 +6,7 @@ import com.mmorpg.mbdl.framework.common.utils.SpringPropertiesUtil;
 import com.mmorpg.mbdl.framework.resource.annotation.Id;
 import com.mmorpg.mbdl.framework.resource.annotation.ResDef;
 import com.mmorpg.mbdl.framework.resource.exposed.AbstractBeanFactoryAwareResResolver;
+import com.mmorpg.mbdl.framework.resource.exposed.AbstractMetadataReaderPostProcessor;
 import com.mmorpg.mbdl.framework.resource.exposed.IResResolver;
 import com.mmorpg.mbdl.framework.resource.exposed.IStaticRes;
 import com.mmorpg.mbdl.framework.resource.impl.StaticRes;
@@ -25,7 +26,6 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
-import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.classreading.CachingMetadataReaderFactory;
 import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
@@ -51,8 +51,7 @@ public class StaticResHandler implements BeanFactoryPostProcessor {
     private static Logger logger = LoggerFactory.getLogger(StaticResHandler.class);
     private String packageToScan;
     private String suffix;
-    // 完整文件名 = 文件名加后缀名 -> StaticResDefinition
-    private Map<String,StaticResDefinition> fileFullName2StaticResDefinition;
+    private Map<Class, StaticResDefinition> class2StaticResDefinitionMap = new HashMap<>(32);
     /**
      * 自定义的用于IO的ForkJoinPool
      */
@@ -68,6 +67,9 @@ public class StaticResHandler implements BeanFactoryPostProcessor {
         forkJoinPool = new ForkJoinPool(Integer.parseInt(threadSize), factory, null, false);
     }
 
+    public Map<Class, StaticResDefinition> getClass2StaticResDefinitionMap() {
+        return class2StaticResDefinitionMap;
+    }
 
     public void setPackageToScan(String packageToScan) {
         Preconditions.checkArgument(packageToScan!=null,"静态资源未配置包扫描路径");
@@ -85,8 +87,9 @@ public class StaticResHandler implements BeanFactoryPostProcessor {
         /** 使SpringPropertiesUtil可用于{@link EnhanceStarter}中 */
         beanFactory.getBean(SpringPropertiesUtil.class);
         EnhanceStarter.setBeanFactory(beanFactory);
+        AbstractMetadataReaderPostProcessor.setBeanFactory(beanFactory);
         EnhanceStarter.init();
-        Map<Class, StaticResDefinition> class2StaticResDefinitionMap = getResDefClasses(packageToScan);
+        classesScan(packageToScan,beanFactory);
         init(class2StaticResDefinitionMap,beanFactory);
         handleStaticRes(beanFactory);
     }
@@ -286,12 +289,11 @@ public class StaticResHandler implements BeanFactoryPostProcessor {
     }
 
     /**
-     * 根据包名获取被ResDef注解的所有class对象
-     * @param packageName
-     * @return Map<Class,StaticResDefinition>
-     * @throws IOException
+     * 扫描指定包下的所有.class文件
+     * @param packageName 包名
+     * @param beanFactory beanFactory
      */
-    private Map<Class,StaticResDefinition> getResDefClasses(String packageName) {
+    private void classesScan(String packageName, ConfigurableListableBeanFactory beanFactory) {
         ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
         MetadataReaderFactory metadataReaderFactory = new CachingMetadataReaderFactory(resourcePatternResolver);
         Map<Class,StaticResDefinition> result = new HashMap<>(64);
@@ -301,33 +303,22 @@ public class StaticResHandler implements BeanFactoryPostProcessor {
         try {
             resources = resourcePatternResolver.getResources(packageSearchPath);
         } catch (IOException e) {
-            throw new RuntimeException(String.format("无法获取指定包下[%s]的.class资源",packageName));
+            throw new RuntimeException(String.format("无法获取指定包下[%s]的.class资源",packageName),e);
         }
         Class clz;
         // TODO 实现MetadataReaderPostProcessor,避免多次循环.class文件Resource，
         // 思路：第一次遍历找出所有实现了MetadataReaderPostProcessor的.class文件，实例化后在第二次遍历时，调用其postProcess方法
         for (Resource resource : resources) {
             if (resource.isReadable()) {
-                MetadataReader metadataReader = null;
                 try {
-                    metadataReader = metadataReaderFactory.getMetadataReader(resource);
+                    final MetadataReader metadataReader = metadataReaderFactory.getMetadataReader(resource);
+                    beanFactory.getBeansOfType(AbstractMetadataReaderPostProcessor.class).values().
+                            forEach(metadataReaderPostProcessor -> metadataReaderPostProcessor.postProcessMetadataReader(metadataReader));
                 } catch (IOException e) {
                     throw new RuntimeException(String.format("无法读取[%s]的Metadata",resource.getFilename()));
                 }
-                AnnotationMetadata annotationMetadata = metadataReader.getAnnotationMetadata();
-                if (!annotationMetadata.hasAnnotation(ResDef.class.getName())) {
-                    continue;
-                }
-                try {
-                    Class<?> resClazz = Class.forName(metadataReader.getClassMetadata().getClassName());
-                    result.put(resClazz,new StaticResDefinition());
-                } catch (ClassNotFoundException e) {
-                    throw new RuntimeException(String.format("无法加载类[%s]",metadataReader.getClassMetadata().getClassName()));
-                }
-
             }
         }
-        return result;
     }
     protected String resolveBasePackage(String basePackage) {
         return convertClassNameToResourcePath(SystemPropertyUtils.resolvePlaceholders(basePackage));

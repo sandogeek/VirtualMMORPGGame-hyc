@@ -29,7 +29,7 @@ class StaticResHandlerTest extends TestWithSpring {
         Assertions.assertNotNull(itemReses);
         Assertions.assertNotNull(globalSettingResIStaticRes);
         Assertions.assertNotNull(monsterSpawnResIStaticRes);
-        logger.debug("{}", monsterSpawnResIStaticRes.get(1001).getMonsterSpawnDatas());
+        logger.debug("{}", monsterSpawnResIStaticRes.get(1001).getMonsterSpawnList());
     }
 
 }

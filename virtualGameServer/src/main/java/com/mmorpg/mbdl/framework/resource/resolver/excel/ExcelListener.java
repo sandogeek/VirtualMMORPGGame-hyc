@@ -49,6 +49,7 @@ public class ExcelListener extends AnalysisEventListener<ArrayList<String>> {
     private Map<Integer,String> index2JsonPropertyName = new HashMap<>(16);
     private Map<Integer,Class<?>> index2FieldType = new HashMap<>(16);
     @Override
+    @SuppressWarnings("unchecked")
     public void invoke(ArrayList<String> list, AnalysisContext context) {
         if (beanFactory==null){
             List contextCustom = (List) context.getCustom();

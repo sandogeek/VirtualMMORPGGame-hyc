@@ -8,7 +8,7 @@ import com.mmorpg.mbdl.framework.communicate.websocket.model.ISession;
  * @author sando
  */
 @PacketHandler
-public class RegiserFacade {
+public class RegisterFacade {
 
     public void register(ISession session, RegisterReq regiserReq){
 

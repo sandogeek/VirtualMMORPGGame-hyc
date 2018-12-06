@@ -1,7 +1,7 @@
 [
   {
     "mapId":1001,
-    "monsterSpawnDatas":[
+    "MonsterSpawnList":[
       {
         "objectKey":10001,
         "name":"羊"
@@ -18,7 +18,7 @@
   },
   {
     "mapId":1002,
-    "monsterSpawnDatas":[
+    "MonsterSpawnList":[
       {
         "objectKey":10003,
         "name":"狗"
