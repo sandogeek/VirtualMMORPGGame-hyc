@@ -39,7 +39,7 @@ public class ProtoGenerator {
      * 生成abstractPacket对应的.proto文件
      */
     public void generateProto(AbstractPacket abstractPacket){
-        StringBuilder result = new StringBuilder();
+
         String code = ProtobufIDLGenerator.getIDL(abstractPacket.getClass(),typesCache,enumCache,true);
         Annotation protoDesc = abstractPacket.getClass().getAnnotation(ProtoDesc.class);
         if (protoDesc!=null){
@@ -47,12 +47,9 @@ public class ProtoGenerator {
 
             File file = new File(String.format("%s\\%s-%s-%s.proto",PROTO_PATH,
                     abstractPacket.getPacketId(),abstractPacket.getClass().getSimpleName(),desc));
-            try {
+            try (FileWriter fw = new FileWriter(file)) {
                 createFile(file);
-                FileWriter fw = new FileWriter(file);
                 fw.write(code);
-                fw.flush();
-                fw.close();
             }catch (IOException e){
                 e.printStackTrace();
             }
