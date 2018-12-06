@@ -1,7 +1,6 @@
 package com.mmorpg.mbdl.framework.resource.config;
 
 import com.mmorpg.mbdl.framework.resource.core.StaticResHandler;
-import com.mmorpg.mbdl.framework.resource.resolver.excel.ExcelFormat;
 import com.mmorpg.mbdl.framework.resource.exposed.IExcelFormat;
 import org.springframework.context.annotation.Bean;
 
@@ -14,7 +13,7 @@ import org.springframework.context.annotation.Bean;
 public class StaticResConfiguration {
     private String packageToScan;
     private String suffix = ".xlsx";
-    private IExcelFormat iExcelFormat = new ExcelFormat();
+    private IExcelFormat iExcelFormat;
 
     /**
      * 定义扫包路径
@@ -36,6 +35,9 @@ public class StaticResConfiguration {
         this.iExcelFormat = iExcelFormat;
     }
 
+    public IExcelFormat getiExcelFormat() {
+        return iExcelFormat;
+    }
 
     // /**
     //  * IStaticRes基础实现类

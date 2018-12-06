@@ -8,7 +8,6 @@ import com.mmorpg.mbdl.framework.thread.TaskExecutorGroup;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * 强化的启动器，其init方法会在{@link StaticResHandler#postProcessBeanFactory(ConfigurableListableBeanFactory)}中被调用
@@ -20,9 +19,10 @@ import java.util.logging.Logger;
 
 public class EnhanceStarter {
     private static ConfigurableListableBeanFactory beanFactory;
+    private static java.util.logging.Logger sysLogger = java.util.logging.Logger.getLogger(ProtobufProxy.class.getName());
     public static void init(){
         // 关闭jprotobuf的信息打印
-        Logger.getLogger(ProtobufProxy.class.getName()).setLevel(Level.OFF);
+        sysLogger.setLevel(Level.OFF);
 
         String PROTO_PATH = SpringPropertiesUtil.getProperty("dev.PROTO_PATH");
         clearProto(PROTO_PATH);

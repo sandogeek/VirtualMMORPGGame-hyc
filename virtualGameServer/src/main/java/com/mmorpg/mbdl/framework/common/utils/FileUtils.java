@@ -108,7 +108,7 @@ public class FileUtils {
                 }
                 oldFile[i].delete();
             }
-        }else if (includeSelf && oldFile==null){
+        }else if (includeSelf){
             delfolder.delete();
         }
     }

@@ -17,9 +17,9 @@ import java.util.logging.Level;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration("classpath:applicationContext.xml")
 public class TestWithSpring {
+    private static java.util.logging.Logger sysLogger = java.util.logging.Logger.getLogger(ProtobufProxy.class.getName());
     @BeforeAll
-    public static void dummy() {
-        java.util.logging.Logger sysLogger = java.util.logging.Logger.getLogger(ProtobufProxy.class.getName());
-        sysLogger.setLevel(Level.WARNING);
+    public static void closeSysLogger() {
+        sysLogger.setLevel(Level.OFF);
     }
 }

@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
+import com.mmorpg.mbdl.framework.resource.config.StaticResConfiguration;
 import com.mmorpg.mbdl.framework.resource.core.StaticResDefinition;
 import com.mmorpg.mbdl.framework.resource.exposed.IExcelFormat;
 import org.apache.commons.lang3.StringUtils;
@@ -55,7 +56,7 @@ public class ExcelListener extends AnalysisEventListener<ArrayList<String>> {
             List contextCustom = (List) context.getCustom();
             beanFactory = (ConfigurableListableBeanFactory)contextCustom.get(0);
             staticResDefinition = (StaticResDefinition)contextCustom.get(1);
-            excelFormat = beanFactory.getBean(IExcelFormat.class);
+            excelFormat = beanFactory.getBean(StaticResConfiguration.class).getiExcelFormat();
             idFieldJsonName = Optional.ofNullable(staticResDefinition.getIdField().getAnnotation(JsonProperty.class))
                     .map(JsonProperty::value)
                     .orElseGet(() -> staticResDefinition.getIdField().getName());
