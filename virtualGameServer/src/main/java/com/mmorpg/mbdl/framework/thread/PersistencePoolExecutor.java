@@ -2,6 +2,7 @@ package com.mmorpg.mbdl.framework.thread;
 
 import com.mmorpg.mbdl.framework.storage.persistence.PersistenceDelayedTask;
 import com.mmorpg.mbdl.framework.thread.task.AbstractTask;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -12,6 +13,7 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
  * @author Sando Geek
  * @since v1.0
  **/
+@SuppressFBWarnings("UUF_UNUSED_FIELD")
 @Deprecated
 public class PersistencePoolExecutor {
     private ScheduledThreadPoolExecutor persistenceThreadPool;

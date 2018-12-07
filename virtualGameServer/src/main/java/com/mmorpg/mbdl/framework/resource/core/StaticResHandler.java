@@ -10,6 +10,7 @@ import com.mmorpg.mbdl.framework.resource.exposed.AbstractMetadataReaderPostProc
 import com.mmorpg.mbdl.framework.resource.exposed.IResResolver;
 import com.mmorpg.mbdl.framework.resource.exposed.IStaticRes;
 import com.mmorpg.mbdl.framework.resource.impl.StaticRes;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.dynamic.DynamicType;
@@ -49,6 +50,7 @@ import static org.springframework.util.ClassUtils.convertClassNameToResourcePath
  * @author Sando Geek
  * @since v1.0
  **/
+@SuppressFBWarnings("NP_NONNULL_PARAM_VIOLATION")
 @Component
 public class StaticResHandler implements BeanFactoryPostProcessor {
     private static Logger logger = LoggerFactory.getLogger(StaticResHandler.class);

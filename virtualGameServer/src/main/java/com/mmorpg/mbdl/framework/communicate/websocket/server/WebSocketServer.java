@@ -29,7 +29,7 @@ public class WebSocketServer {
     }
 
     @PostConstruct
-    public void init(){
+    private void init(){
         self=this;
     }
 

@@ -22,7 +22,7 @@ public class AbstractPacketOutboundHandler extends ChannelOutboundHandlerAdapter
     public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
         if (msg instanceof AbstractPacket) {
             try{
-                PacketIdManager packetIdManager = PacketIdManager.getIntance();
+                PacketIdManager packetIdManager = PacketIdManager.getInstance();
                 short packetId = packetIdManager.getPacketId(msg.getClass());
                 super.write(ctx, WsPacket.valueOf(packetId,packetIdManager.getCodec(packetId).encode(msg)), promise);
             }catch (IOException e){

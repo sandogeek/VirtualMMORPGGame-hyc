@@ -1,5 +1,7 @@
 package com.mmorpg.mbdl.bussiness.world.model;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * 怪物出生的特殊信息，公共信息可以通过objectKey在其它静态资源中找到
  *
@@ -14,6 +16,7 @@ public class MonsterSpawn {
         return objectKey;
     }
 
+    @SuppressFBWarnings("UWF_UNWRITTEN_FIELD")
     public String getName() {
         return name;
     }

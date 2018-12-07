@@ -25,6 +25,7 @@ import java.util.*;
 
 import static org.objectweb.asm.Opcodes.*;
 
+@edu.umd.cs.findbugs.annotations.SuppressFBWarnings({"EI_EXPOSE_REP2", "EI_EXPOSE_REP"})
 public abstract class FieldAccess {
 	static public FieldAccess accessUnsafe(Class<?> type) {
 		return new FieldAccessUnsafe(type);
@@ -390,6 +391,7 @@ public abstract class FieldAccess {
 				case Type.DOUBLE:
 					mv.visitMethodInsn(INVOKESTATIC, "java/lang/Double", "valueOf", "(D)Ljava/lang/Double;");
 					break;
+					default:
 				}
 
 				mv.visitInsn(ARETURN);

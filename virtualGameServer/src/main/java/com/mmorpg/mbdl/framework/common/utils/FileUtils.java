@@ -2,6 +2,7 @@ package com.mmorpg.mbdl.framework.common.utils;
 
 import com.google.common.collect.Lists;
 import edu.emory.mathcs.backport.java.util.Collections;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,6 +35,7 @@ public class FileUtils {
      * @param recursive 是否递归子目录
      * @param fileFilters File过滤器
      */
+    @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED_BAD_PRACTICE")
     public static void clearByFileFilter(String targetDirName, boolean recursive, FileFilter...fileFilters){
         File targetDir = new File(targetDirName);
         if (!targetDir.isDirectory()) {
@@ -91,7 +93,8 @@ public class FileUtils {
      * @param dir 目标文件夹名称
      * @param includeSelf 是否包含自身
      */
-    public static void deleteFolder(String dir,boolean includeSelf) {
+    @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED_BAD_PRACTICE")
+    public static void deleteFolder(String dir, boolean includeSelf) {
         File delfolder = new File(dir);
         if (!delfolder.isDirectory()){
             return;

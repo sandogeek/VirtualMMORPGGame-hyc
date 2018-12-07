@@ -30,8 +30,9 @@ public class SpringPropertiesUtil extends PropertyPlaceholderConfigurer {
     @Override
     protected void processProperties(ConfigurableListableBeanFactory beanFactory, Properties props) throws BeansException {
         super.processProperties(beanFactory, props);
-
-        propertiesMap = new HashMap<>(64);
+        if (propertiesMap==null){
+            propertiesMap = new HashMap<>(64);
+        }
         for (Object key : props.keySet()) {
             String keyStr = key.toString();
             String valueStr = resolvePlaceholder(keyStr, props, springSystemPropertiesMode);

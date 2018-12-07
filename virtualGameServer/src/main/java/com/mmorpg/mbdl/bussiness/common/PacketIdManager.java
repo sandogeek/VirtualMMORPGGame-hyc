@@ -39,11 +39,11 @@ public class PacketIdManager {
 
 
     private static PacketIdManager self;
-    public static PacketIdManager getIntance(){
+    public static PacketIdManager getInstance(){
         return self;
     }
     @PostConstruct
-    public void init(){
+    private void init(){
         self=this;
         // 把浏览器端的src\app\shared\model\packet和src\assets\proto作为一个仓库，每当新增协议后端push变更的内容
         // 前端利用tasks npm boot更新这两个文件夹的内容

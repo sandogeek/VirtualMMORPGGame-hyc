@@ -1,6 +1,7 @@
 package com.mmorpg.mbdl.framework.thread;
 
 import com.mmorpg.mbdl.framework.thread.task.AbstractTask;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
@@ -32,10 +33,11 @@ public class TaskExecutorGroup {
     public static void init(int executorSize){
         init(executorSize,"-");
     }
-    public static void init(int executorSize,String threadNamePrefix){
+    @SuppressFBWarnings("LI_LAZY_INIT_UPDATE_STATIC")
+    public static void init(int executorSize, String threadNamePrefix){
         EXECUTOR_SIZE = executorSize;
         if (executorGroup == null){
-            executorGroup = new ScheduledThreadPoolExecutor[new Long(executorSize).intValue()];
+            executorGroup = new ScheduledThreadPoolExecutor[Long.valueOf(executorSize).intValue()];
             for (int i = 0; i < executorGroup.length; i++) {
                 // TODO 由于ScheduledThreadPoolExecutor内部使用无界队列，因为可能导致OOM，因而需要定制
                 executorGroup[i] = new ScheduledThreadPoolExecutor(1,new CustomizableThreadFactory("池-"+i+threadNamePrefix));

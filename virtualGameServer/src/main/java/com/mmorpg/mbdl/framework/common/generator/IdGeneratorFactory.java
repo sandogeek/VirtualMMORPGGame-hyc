@@ -50,7 +50,7 @@ public class IdGeneratorFactory {
     private void init(){
         self = this;
         String[] date = StringUtils.split(this.beginOnString,'/');
-        Calendar calendar = new Calendar.Builder().setDate(Integer.valueOf(date[0]),Integer.valueOf(date[1])-1,Integer.valueOf(date[2])).build();
+        Calendar calendar = new Calendar.Builder().setDate(Integer.parseInt(date[0]),Integer.parseInt(date[1])-1,Integer.parseInt(date[2])).build();
         this.beginOn = calendar.getTimeInMillis();
         if (serverId > maxServerId || serverId < 0) {
             throw new IllegalArgumentException(String.format("服务器Id不能大于%d或小于0", maxServerId));

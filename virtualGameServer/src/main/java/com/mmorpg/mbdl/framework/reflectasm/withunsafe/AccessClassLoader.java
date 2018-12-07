@@ -19,10 +19,13 @@ import com.esotericsoftware.reflectasm.PublicConstructorAccess;
 
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.security.ProtectionDomain;
 import java.util.HashSet;
 import java.util.WeakHashMap;
 
+@SuppressWarnings("unchecked")
 class AccessClassLoader extends ClassLoader {
 	/** Weak-references to class loaders, to avoid perm gen memory leaks, for example in app servers/web containters if the
 	  * reflectasm library (including this class) is loaded outside the deployed applications (WAR/EAR) using ReflectASM/Kryo (exts,
@@ -33,8 +36,13 @@ class AccessClassLoader extends ClassLoader {
 
 	// Fast-path for classes loaded in the same ClassLoader as this class.
 	static private final ClassLoader selfContextParentClassLoader = getParentClassLoader(AccessClassLoader.class);
-	static private volatile AccessClassLoader selfContextAccessClassLoader = new AccessClassLoader(selfContextParentClassLoader);
-
+	static private volatile AccessClassLoader selfContextAccessClassLoader;
+	static {
+		AccessController.doPrivileged((PrivilegedAction) () -> {
+			selfContextAccessClassLoader = new AccessClassLoader(selfContextParentClassLoader);
+			return null;
+		});
+	}
 	static private volatile Method defineClassMethod;
 
 	private final HashSet<String> localClassNames = new HashSet();
@@ -128,7 +136,10 @@ class AccessClassLoader extends ClassLoader {
 					defineClassMethod = ClassLoader.class.getDeclaredMethod("defineClass",
 						String.class, byte[].class, int.class, int.class, ProtectionDomain.class);
 					try {
-						defineClassMethod.setAccessible(true);
+						AccessController.doPrivileged((PrivilegedAction) () -> {
+							defineClassMethod.setAccessible(true);
+							return null;
+						});
 					} catch (Exception ignored) {
 					}
 				}
@@ -145,7 +156,10 @@ class AccessClassLoader extends ClassLoader {
 				synchronized (accessClassLoaders) {
 					// DCL with volatile semantics
 					if (selfContextAccessClassLoader == null) {
-						selfContextAccessClassLoader = new AccessClassLoader(selfContextParentClassLoader);
+						AccessController.doPrivileged((PrivilegedAction) () -> {
+							selfContextAccessClassLoader = new AccessClassLoader(selfContextParentClassLoader);
+							return null;
+						});
 					}
 				}
 			}
@@ -164,7 +178,11 @@ class AccessClassLoader extends ClassLoader {
 					accessClassLoaders.remove(parent);
 				}
 			}
-			AccessClassLoader accessClassLoader = new AccessClassLoader(parent);
+
+			AccessClassLoader accessClassLoader = AccessController.doPrivileged((PrivilegedAction<AccessClassLoader>) () -> {
+				AccessClassLoader accessClassLoaderTemp = new AccessClassLoader(parent);
+				return accessClassLoaderTemp;
+			});
 			accessClassLoaders.put(parent, new WeakReference<AccessClassLoader>(accessClassLoader));
 			return accessClassLoader;
 		}

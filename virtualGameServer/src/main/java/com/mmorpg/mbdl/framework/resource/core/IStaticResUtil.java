@@ -35,7 +35,7 @@ public class IStaticResUtil {
         if (pathToUse.startsWith("/")) {
             pathToUse = pathToUse.substring(1);
         }
-        return fullFileName;
+        return pathToUse;
     }
 
     /**

@@ -23,6 +23,7 @@ import java.util.Arrays;
 
 import static org.objectweb.asm.Opcodes.*;
 
+@edu.umd.cs.findbugs.annotations.SuppressFBWarnings({"EI_EXPOSE_REP"})
 public abstract class MethodAccess {
 	private String[] methodNames;
 	private Class[][] parameterTypes;

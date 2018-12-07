@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.io.*;
 import java.lang.annotation.Annotation;
+import java.nio.charset.Charset;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -47,7 +48,7 @@ public class PacketIdTsGenerator {
         if (!packetIdTs.exists()){
             throw new RuntimeException(this.PACKET_ID_TS_PATH+"文件不存在");
         }
-        try (BufferedReader packetIdTsBR=new BufferedReader(new FileReader(packetIdTs))) {
+        try (BufferedReader packetIdTsBR=new BufferedReader(new InputStreamReader(new FileInputStream(PACKET_ID_TS_PATH) ,Charset.forName("UTF-8").newDecoder()))) {
             String line = packetIdTsBR.readLine();
             while ( line != null){
                 packetIdTsSB.append(line+"\r\n");
@@ -89,10 +90,10 @@ public class PacketIdTsGenerator {
             StringBuilder idAssignNew = new StringBuilder();
             StringBuilder mapInputNew = new StringBuilder();
 
-            int size = PacketIdManager.getIntance().getAbstractPackets().size();
+            int size = PacketIdManager.getInstance().getAbstractPackets().size();
             int count = 0;
             for (Class<? extends AbstractPacket> clazz:
-                    PacketIdManager.getIntance().getAbstractPackets()) {
+                    PacketIdManager.getInstance().getAbstractPackets()) {
                 count++;
                 String simpleName =clazz.getSimpleName();
                 String sinpleNameUpperUnderscore = CaseFormat.UPPER_CAMEL.to(CaseFormat.UPPER_UNDERSCORE,simpleName);
@@ -107,7 +108,7 @@ public class PacketIdTsGenerator {
                     importClassNew.append(simpleName+" ");
                     idAssignNew.append("\r\n"+tap+"/** "+desc+"*/"+"\r\n"
                             + tap+"static readonly "+ sinpleNameUpperUnderscore
-                            + ": number = " + PacketIdManager.getIntance().getPacketId(clazz)+";"+"\r\n"+tap
+                            + ": number = " + PacketIdManager.getInstance().getPacketId(clazz)+";"+"\r\n"+tap
                     );
                     mapInputNew.append("\r\n"+tap+tap+"PacketId.put(PacketId."+sinpleNameUpperUnderscore+", "+simpleName+");"+"\r\n"+tap+tap);
                     break;
@@ -115,7 +116,7 @@ public class PacketIdTsGenerator {
                 importClassNew.append(simpleName+", ");
                 idAssignNew.append("\r\n"+tap+"/** "+desc+"*/"+"\r\n"
                      + tap+"static readonly "+ sinpleNameUpperUnderscore
-                        + ": number = " + PacketIdManager.getIntance().getPacketId(clazz)+";"
+                        + ": number = " + PacketIdManager.getInstance().getPacketId(clazz)+";"
                 );
                 mapInputNew.append("\r\n"+tap+tap+"PacketId.put(PacketId."+sinpleNameUpperUnderscore+", "+simpleName+");");
             }
@@ -123,7 +124,7 @@ public class PacketIdTsGenerator {
             StringBuilder result = new StringBuilder();
             result.append(part1+importClassNew+part2+idAssignNew+part3+mapInputNew+part4);
             // logger.info(result.toString());
-            try (BufferedWriter out=new BufferedWriter(new FileWriter(PACKET_ID_TS_PATH))) {
+            try (BufferedWriter out=new BufferedWriter(new OutputStreamWriter(new FileOutputStream(PACKET_ID_TS_PATH), Charset.forName("UTF-8").newEncoder()))) {
                 out.write(result.toString());
             } catch (IOException e){
                 e.printStackTrace();

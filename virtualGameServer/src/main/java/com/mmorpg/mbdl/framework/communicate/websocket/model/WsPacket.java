@@ -1,9 +1,12 @@
 package com.mmorpg.mbdl.framework.communicate.websocket.model;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * websocket字节包
  * @author sando
  */
+@SuppressFBWarnings("EI_EXPOSE_REP")
 public class WsPacket {
     // 请求包id
     private short packetId;
@@ -13,7 +16,7 @@ public class WsPacket {
     public static WsPacket valueOf(short packetId, byte[] data){
         WsPacket wRequest = new WsPacket();
         wRequest.setPacketId(packetId);
-        wRequest.setData(data);
+        wRequest.data = data;
         return wRequest;
     }
 
@@ -29,7 +32,4 @@ public class WsPacket {
         return data;
     }
 
-    public void setData(byte[] data) {
-        this.data = data;
-    }
 }

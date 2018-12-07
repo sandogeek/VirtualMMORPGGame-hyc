@@ -3,6 +3,7 @@ package com.mmorpg.mbdl.bussiness.world.resource;
 import com.mmorpg.mbdl.bussiness.world.model.MonsterSpawn;
 import com.mmorpg.mbdl.framework.resource.annotation.Id;
 import com.mmorpg.mbdl.framework.resource.annotation.ResDef;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import java.util.List;
 
@@ -22,6 +23,7 @@ public class MonsterSpawnRes {
         return mapId;
     }
 
+    @SuppressFBWarnings("UWF_UNWRITTEN_FIELD")
     public List<MonsterSpawn> getMonsterSpawnList() {
         return MonsterSpawnList;
     }

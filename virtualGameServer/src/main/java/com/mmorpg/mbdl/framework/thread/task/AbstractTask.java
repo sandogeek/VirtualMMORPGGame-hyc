@@ -19,7 +19,7 @@ public abstract class AbstractTask implements Runnable {
     private Logger targetLogger = logger;
     private Serializable dispatcherId;
     private boolean executeParallel = false;
-    // private TaskQueue taskQueue = TaskDispatcher.getIntance().getOrCreateTaskQueue(getDispatcherId());
+    // private TaskQueue taskQueue = TaskDispatcher.getInstance().getOrCreateTaskQueue(getDispatcherId());
 
 
     public AbstractTask(Serializable dispatcherId) {

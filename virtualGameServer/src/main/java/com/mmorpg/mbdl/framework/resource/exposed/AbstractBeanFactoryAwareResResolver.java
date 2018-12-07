@@ -1,5 +1,6 @@
 package com.mmorpg.mbdl.framework.resource.exposed;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 
 /**
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
  * @author Sando Geek
  * @since v1.0
  **/
+@SuppressFBWarnings("MS_CANNOT_BE_FINAL")
 public abstract class AbstractBeanFactoryAwareResResolver implements IResResolver {
     public static void setBeanFactory(ConfigurableListableBeanFactory beanFactory) {
         AbstractBeanFactoryAwareResResolver.beanFactory = beanFactory;

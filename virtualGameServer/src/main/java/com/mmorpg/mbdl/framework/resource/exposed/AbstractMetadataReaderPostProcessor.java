@@ -9,6 +9,7 @@ import org.springframework.core.type.classreading.MetadataReader;
  * @author Sando Geek
  * @since v1.0 2018/12/6
  **/
+@edu.umd.cs.findbugs.annotations.SuppressFBWarnings("MS_CANNOT_BE_FINAL")
 public abstract class AbstractMetadataReaderPostProcessor {
     protected static ConfigurableListableBeanFactory beanFactory;
     /**

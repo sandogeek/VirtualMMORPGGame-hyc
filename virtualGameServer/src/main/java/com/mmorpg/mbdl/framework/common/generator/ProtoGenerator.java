@@ -7,10 +7,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.lang.annotation.Annotation;
+import java.nio.charset.Charset;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -47,9 +46,9 @@ public class ProtoGenerator {
 
             File file = new File(String.format("%s\\%s-%s-%s.proto",PROTO_PATH,
                     abstractPacket.getPacketId(),abstractPacket.getClass().getSimpleName(),desc));
-            try (FileWriter fw = new FileWriter(file)) {
+            try (BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file.getName()), Charset.forName("UTF-8").newEncoder()))) {
                 createFile(file);
-                fw.write(code);
+                out.write(code);
             }catch (IOException e){
                 e.printStackTrace();
             }
