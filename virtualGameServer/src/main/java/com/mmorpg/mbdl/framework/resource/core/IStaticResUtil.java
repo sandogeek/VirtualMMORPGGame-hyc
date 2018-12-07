@@ -22,6 +22,7 @@ public class IStaticResUtil {
     public static String getFullFileName(Class clazz){
         ResDef resDef = (ResDef)clazz.getAnnotation(ResDef.class);
         String suffix = StringUtils.trim(resDef.suffix());
+        suffix = StringUtils.isEmpty(suffix)?".xlsx":suffix;
         String fileNameWithoutSuffix = StringUtils.isEmpty(resDef.value())?clazz.getSimpleName():StringUtils.trim(resDef.value());
         String relativePath = StringUtils.isEmpty(resDef.relativePath())?null:StringUtils.trim(resDef.relativePath());
         String fullFileName;

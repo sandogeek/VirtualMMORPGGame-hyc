@@ -34,11 +34,11 @@
     <!--缓存配置-->
     <bean class="com.mmorpg.mbdl.framework.storage.config.JetCache.JetCacheConfiguration"/>
 
-    <!--静态资源配置-->
-    <bean class="com.mmorpg.mbdl.framework.resource.config.StaticResConfiguration"
-          p:packageToScan="com.mmorpg.mbdl.bussiness"
-          p:iExcelFormat-ref="iExcelFormat"
-    />
+    <!--&lt;!&ndash;静态资源配置&ndash;&gt;-->
+    <!--<bean class="com.mmorpg.mbdl.framework.resource.config.StaticResConfiguration"-->
+          <!--p:packageToScan="com.mmorpg.mbdl.bussiness"-->
+          <!--p:iExcelFormat-ref="iExcelFormat" -->
+    <!--/>-->
     <!--Excel格式定义，可自行实现IExcelFormat接口，然后把这个class换成自己的class-->
     <bean id="iExcelFormat" class="com.mmorpg.mbdl.framework.resource.resolver.excel.ExcelFormat"/>
 

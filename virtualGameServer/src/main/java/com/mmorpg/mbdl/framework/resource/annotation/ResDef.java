@@ -25,7 +25,7 @@ public @interface ResDef {
      * 资源文件后缀名
      * @return 后缀名
      */
-    String suffix() default ".xlsx";
+    String suffix() default "";
 
     /**
      * 是否是表格型的资源

@@ -16,6 +16,7 @@ import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.dynamic.loading.ClassLoadingStrategy;
 import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.matcher.ElementMatchers;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +30,7 @@ import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.core.type.classreading.CachingMetadataReaderFactory;
 import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
+import org.springframework.stereotype.Component;
 import org.springframework.util.SystemPropertyUtils;
 
 import java.io.IOException;
@@ -47,6 +49,7 @@ import static org.springframework.util.ClassUtils.convertClassNameToResourcePath
  * @author Sando Geek
  * @since v1.0
  **/
+@Component
 public class StaticResHandler implements BeanFactoryPostProcessor {
     private static Logger logger = LoggerFactory.getLogger(StaticResHandler.class);
     private String packageToScan;
@@ -71,15 +74,15 @@ public class StaticResHandler implements BeanFactoryPostProcessor {
         return class2StaticResDefinitionMap;
     }
 
-    public void setPackageToScan(String packageToScan) {
-        Preconditions.checkArgument(packageToScan!=null,"静态资源未配置包扫描路径");
-        this.packageToScan = packageToScan;
-    }
+    // public void setPackageToScan(String packageToScan) {
+    //     Preconditions.checkArgument(packageToScan!=null,"静态资源未配置包扫描路径");
+    //     this.packageToScan = packageToScan;
+    // }
 
-    public void setSuffix(String suffix) {
-        Preconditions.checkArgument(suffix!=null,"静态资源未配置默认静态资源后缀");
-        this.suffix = suffix;
-    }
+    // public void setSuffix(String suffix) {
+    //     Preconditions.checkArgument(suffix!=null,"静态资源未配置默认静态资源后缀");
+    //     this.suffix = suffix;
+    // }
 
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
@@ -89,6 +92,12 @@ public class StaticResHandler implements BeanFactoryPostProcessor {
         EnhanceStarter.setBeanFactory(beanFactory);
         AbstractMetadataReaderPostProcessor.setBeanFactory(beanFactory);
         EnhanceStarter.init();
+
+        String suffix = SpringPropertiesUtil.getProperty("sever.config.static.res.load.suffix");
+        this.suffix = StringUtils.isEmpty(suffix)?".xlsx":suffix;
+        this.packageToScan = SpringPropertiesUtil.getProperty("sever.config.static.res.load.package.scan");
+        Preconditions.checkNotNull(packageToScan,"静态资源包扫描路径不能为空");
+
         classesScan(packageToScan,beanFactory);
         init(class2StaticResDefinitionMap,beanFactory);
         handleStaticRes(beanFactory);

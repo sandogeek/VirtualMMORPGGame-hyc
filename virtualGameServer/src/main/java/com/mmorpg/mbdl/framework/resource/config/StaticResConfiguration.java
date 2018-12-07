@@ -1,8 +1,7 @@
 package com.mmorpg.mbdl.framework.resource.config;
 
-import com.mmorpg.mbdl.framework.resource.core.StaticResHandler;
 import com.mmorpg.mbdl.framework.resource.exposed.IExcelFormat;
-import org.springframework.context.annotation.Bean;
+import com.mmorpg.mbdl.framework.resource.resolver.excel.ExcelFormat;
 
 /**
  * 静态资源配置类
@@ -13,7 +12,7 @@ import org.springframework.context.annotation.Bean;
 public class StaticResConfiguration {
     private String packageToScan;
     private String suffix = ".xlsx";
-    private IExcelFormat iExcelFormat;
+    private IExcelFormat iExcelFormat = new ExcelFormat();
 
     /**
      * 定义扫包路径
@@ -29,6 +28,14 @@ public class StaticResConfiguration {
      */
     public void setSuffix(String suffix) {
         this.suffix = suffix;
+    }
+
+    public String getSuffix() {
+        return suffix;
+    }
+
+    public String getPackageToScan() {
+        return packageToScan;
     }
 
     public void setiExcelFormat(IExcelFormat iExcelFormat) {
@@ -47,11 +54,11 @@ public class StaticResConfiguration {
     //     this.baseClass = baseClass;
     // }
 
-    @Bean
-    StaticResHandler iStaticResRegister(){
-        StaticResHandler staticResHandler = new StaticResHandler();
-        staticResHandler.setPackageToScan(packageToScan);
-        staticResHandler.setSuffix(suffix);
-        return staticResHandler;
-    }
+    // @Bean
+    // StaticResHandler staticResHandler(){
+    //     StaticResHandler staticResHandler = new StaticResHandler();
+    //     staticResHandler.setPackageToScan(packageToScan);
+    //     staticResHandler.setSuffix(suffix);
+    //     return staticResHandler;
+    // }
 }
