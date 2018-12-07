@@ -46,9 +46,10 @@ public class ProtoGenerator {
 
             File file = new File(String.format("%s\\%s-%s-%s.proto",PROTO_PATH,
                     abstractPacket.getPacketId(),abstractPacket.getClass().getSimpleName(),desc));
-            try (BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file.getName()), Charset.forName("UTF-8").newEncoder()))) {
+            try (BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8").newEncoder()))) {
                 createFile(file);
                 out.write(code);
+                out.flush();
             }catch (IOException e){
                 e.printStackTrace();
             }

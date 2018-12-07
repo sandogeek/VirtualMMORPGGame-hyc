@@ -45,7 +45,7 @@ public class Start {
     private static String ENTITY_CLZ_PACKAGE = "com.mmorpg.mbdl.bussiness";
 
     public static void  main(String[] args) throws Exception {
-        generateDaoInterfaces();
+        // generateDaoInterfaces();
         ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("applicationContext.xml");
         PacketIdTsGenerator.getInstance().generatePacketIdTs();
         removeAbstractPacketBean(ctx);
@@ -76,9 +76,9 @@ public class Start {
         Random random = new Random();
         for (Class clz : entityClz2DaoInterfaceName.keySet()){
             // 已有对应接口的不需要生成
-            // if (entityClz2DaoInterfaceName.get(clz)!=null){
-            //     continue;
-            // }
+            if (entityClz2DaoInterfaceName.get(clz)!=null){
+                continue;
+            }
             ResolvableType genericIStorage = ResolvableType.forType(clz.getGenericInterfaces()[0]);
             // 主键类
             Class<?> pkClass = genericIStorage.getGeneric(0).resolve();

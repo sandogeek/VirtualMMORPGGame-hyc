@@ -262,7 +262,7 @@ public class StaticResHandler implements BeanFactoryPostProcessor {
                 try {
                     staticRes = (StaticRes) staticResSubClass.newInstance();
                 } catch (InstantiationException | IllegalAccessException e) {
-                    e.printStackTrace();
+                    throw  new RuntimeException(String.format("生成%s的子类时发生异常",StaticRes.class.getSimpleName()),e);
                 }
                 TypeDescription.Generic genericIStaticRes =
                         TypeDescription.Generic.Builder.parameterizedType(IStaticRes.class, idBoxedType, clazz).build();
@@ -284,8 +284,7 @@ public class StaticResHandler implements BeanFactoryPostProcessor {
                     staticResDefinition.setStaticRes(staticRes);
                     staticResDefinition.setiStaticRes(instance);
                 } catch (InstantiationException | IllegalAccessException e) {
-                    e.printStackTrace();
-                    throw new RuntimeException(String.format("[%s]<%s,%s>类型的bean实例化失败",IStaticRes.class,idBoxedType,clazz.getSimpleName()));
+                    throw new RuntimeException(String.format("[%s]<%s,%s>类型的bean实例化失败",IStaticRes.class,idBoxedType.getSimpleName(),clazz.getSimpleName()),e);
                 }
             }
             StaticResDefinitionFactory staticResDefinitionFactory = beanFactory.getBean(StaticResDefinitionFactory.class);
