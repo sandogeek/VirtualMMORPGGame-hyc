@@ -2,7 +2,7 @@ package com.mmorpg.mbdl.bussiness.login.packet;
 
 import com.baidu.bjf.remoting.protobuf.annotation.Protobuf;
 import com.mmorpg.mbdl.bussiness.common.PacketIdManager;
-import com.mmorpg.mbdl.bussiness.login.model.LoninResultType;
+import com.mmorpg.mbdl.bussiness.login.model.LoginResultType;
 import com.mmorpg.mbdl.framework.communicate.websocket.annotation.ProtoDesc;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.AbstractPacket;
 import org.springframework.stereotype.Component;
@@ -14,13 +14,13 @@ import org.springframework.stereotype.Component;
 @ProtoDesc(description = "登录结果响应包")
 public class LoginResultResp extends AbstractPacket {
     @Protobuf(description = "登录结果",required = true)
-    private LoninResultType resultType;
+    private LoginResultType resultType;
 
-    public LoninResultType getResultType() {
+    public LoginResultType getResultType() {
         return resultType;
     }
 
-    public void setResultType(LoninResultType resultType) {
+    public void setResultType(LoginResultType resultType) {
         this.resultType = resultType;
     }
 

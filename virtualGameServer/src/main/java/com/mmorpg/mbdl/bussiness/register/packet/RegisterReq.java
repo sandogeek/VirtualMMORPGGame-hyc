@@ -9,12 +9,20 @@ import org.springframework.stereotype.Component;
 @Component
 @ProtoDesc(description = "注册请求")
 public class RegisterReq extends AbstractPacket {
-    @Protobuf
+    @Protobuf(required = true)
     private String account;
-    @Protobuf
+    @Protobuf(required = true)
     private String password;
     @Override
     public short getPacketId() {
         return PacketIdManager.REGISTER_REQ;
+    }
+
+    public String getAccount() {
+        return account;
+    }
+
+    public String getPassword() {
+        return password;
     }
 }

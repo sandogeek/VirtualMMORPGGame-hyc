@@ -1,29 +1,24 @@
 package com.mmorpg.mbdl.bussiness.login.facade;
 
-import com.mmorpg.mbdl.bussiness.login.model.LoninResultType;
 import com.mmorpg.mbdl.bussiness.login.packet.LoginAuthReq;
 import com.mmorpg.mbdl.bussiness.login.packet.LoginResultResp;
+import com.mmorpg.mbdl.bussiness.login.service.LoginService;
 import com.mmorpg.mbdl.framework.communicate.websocket.annotation.PacketHandler;
 import com.mmorpg.mbdl.framework.communicate.websocket.annotation.PacketMethod;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.ISession;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.SessionState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @PacketHandler
 public class LoginFacade {
     private static final Logger logger = LoggerFactory.getLogger(LoginFacade.class);
+    @Autowired
+    private LoginService loginService;
+
     @PacketMethod(state = SessionState.CONNECTED)
     public LoginResultResp loginAuth(ISession session, LoginAuthReq req){
-        // TODO 密码采用非对称加密传输并存储到数据库
-        // String message = String.format("协议[%s-%s]分发成功：帐号：%s,密码：%s",req.getPacketId(),req.getClass().getSimpleName(),req.getAccount(),req.getPassword());
-        // logger.debug(message);
-        LoginResultResp loginResultResp = new LoginResultResp();
-        loginResultResp.setResultType(LoninResultType.FAILURE);
-        // session.setState(SessionState.LOGINED);
-        return loginResultResp;
+        return loginService.login(session,req);
     }
-    // public void handleChatReq(WsSession session, ChatReq chatReq){
-    //
-    // }
 }

@@ -9,11 +9,8 @@ import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
 import io.netty.handler.stream.ChunkedWriteHandler;
-import io.netty.handler.timeout.IdleStateHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.util.concurrent.TimeUnit;
 
 /**
  * ChannelInitializer
@@ -56,7 +53,7 @@ public class WebSocketServerInitializer extends ChannelInitializer<SocketChannel
          * 文本和二进制WebSocketFrame将会交给下一个你自己实现的handler处理
          */
         pipeline.addLast("Inbound:WebSocketFrame2WebSocketFrame",new WebSocketServerProtocolHandler(WEBSOCKET_PATH));
-        pipeline.addLast("Duplex:IdleStateHandler",new IdleStateHandler(READER_IDLE_TIME,0,0, TimeUnit.SECONDS));
+        // pipeline.addLast("Duplex:IdleStateHandler",new IdleStateHandler(READER_IDLE_TIME,0,0, TimeUnit.SECONDS));
         // inbound:接收WebSocketServerProtocolHandler传来的WebSocketFrame，转化为WsPacket后继续往后传
         pipeline.addLast("Inbound:WebSocketFrame2WsPacket和Outbound:WsPacket2WebSocketFrame",webSocketFrameToWsPacketCodec);
 

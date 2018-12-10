@@ -16,20 +16,20 @@ import org.springframework.stereotype.Component;
 public class SessionHandler extends ChannelInboundHandlerAdapter {
     private static final Logger logger = LoggerFactory.getLogger(SessionHandler.class);
     @Value("${server.config.tempDispatcherIdMaxValue}")
-    private Long tempDispaterIdMaxValue;
+    private Long tempDispatcherIdMaxValue;
     @Autowired
     private SessionManager sessionManager;
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
             throws Exception {
-        logger.error("捕获到异常：",cause);
-        sessionManager.getSession(ctx.channel().id()).close();
+        logger.error("捕获到异常：{}",cause);
+        ctx.close();
     }
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         WsSession wsSession = new WsSession(ctx.channel());
-        wsSession.setTempDispatcherIdMaxValue(tempDispaterIdMaxValue);
+        wsSession.setTempDispatcherIdMaxValue(tempDispatcherIdMaxValue);
         sessionManager.add(wsSession);
         logger.debug("会话[channelId={}]创建成功",ctx.channel().id());
         super.channelActive(ctx);
