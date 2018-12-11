@@ -20,6 +20,7 @@ import org.springframework.stereotype.Component;
 public class LoginService {
     @Autowired
     private IStorage<String, PlayerAccountEntity> playerAccountEntityIStorage;
+
     public LoginResultResp login(ISession session, LoginAuthReq loginAuthReq){
         // TODO 密码采用非对称加密传输并存储到数据库
         PlayerAccountEntity playerAccountEntity = playerAccountEntityIStorage.get(loginAuthReq.getAccount());

@@ -32,6 +32,7 @@ public interface ISession {
 
     /**
      *设置会话状态
+     * @param state 会话状态
      */
     void setState(SessionState state);
 
@@ -44,6 +45,7 @@ public interface ISession {
     /**
      * 立刻发送一个响应包（无缓冲处理）
      * @param abstractPacket 抽象包
+     * @param flushNow 是否立即刷新
      * @return ChannelFuture
      */
     ChannelFuture sendPacket(AbstractPacket abstractPacket,boolean flushNow);
@@ -71,4 +73,10 @@ public interface ISession {
      * @return 玩家id
      */
     Long getPlayerId();
+
+    /**
+     * 设置玩家id
+     * @return 玩家id
+     */
+    void setPlayerId(Long playerId);
 }

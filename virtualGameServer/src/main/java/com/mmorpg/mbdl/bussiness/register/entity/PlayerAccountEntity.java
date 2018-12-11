@@ -15,22 +15,13 @@ import javax.persistence.Id;
 public class PlayerAccountEntity implements IEntity<String> {
     @Id
     private String account;
-    @Column(unique = true)
-    private Long playerId;
+
     @Column
     private String password;
 
     @Override
     public String getId() {
         return account;
-    }
-
-    public Long getPlayerId() {
-        return playerId;
-    }
-
-    public void setPlayerId(Long playerId) {
-        this.playerId = playerId;
     }
 
     public String getAccount() {

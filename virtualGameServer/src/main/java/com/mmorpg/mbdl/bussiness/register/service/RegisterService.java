@@ -30,7 +30,6 @@ public class RegisterService {
                PlayerAccountEntity playerAccountEntity = new PlayerAccountEntity();
                playerAccountEntity.setAccount(id);
                playerAccountEntity.setPassword(registerReq.getPassword());
-               playerAccountEntity.setPlayerId(idGeneratorFactory.getPlayerIdGenerator().generate());
                return playerAccountEntity;
            });
            registerResp.setSuccess(true);

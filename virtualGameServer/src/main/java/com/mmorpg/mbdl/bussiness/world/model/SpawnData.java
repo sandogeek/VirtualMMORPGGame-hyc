@@ -8,7 +8,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * @author Sando Geek
  * @since v1.0 2018/12/6
  **/
-public class MonsterSpawn {
+public class SpawnData {
     private int objectKey;
     private String name;
 

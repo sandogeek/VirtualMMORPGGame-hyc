@@ -22,7 +22,7 @@ class StorageJetCacheTest extends TestWithSpring {
         Assertions.assertThrows(DataIntegrityViolationException.class,()->{
             iStorage.create(account,(id)->{
                 PlayerAccountEntity playerAccountEntity = new PlayerAccountEntity();
-                playerAccountEntity.setPlayerId(1222L);
+                // playerAccountEntity.setPlayerId(1222L);
                 playerAccountEntity.setAccount(id);
                 playerAccountEntity.setPassword("123556");
                 return playerAccountEntity;
@@ -35,7 +35,7 @@ class StorageJetCacheTest extends TestWithSpring {
         iStorage.remove(account);
         PlayerAccountEntity playerAccountEntity1 = iStorage.create(account, (id) -> {
             PlayerAccountEntity playerAccountEntity = new PlayerAccountEntity();
-            playerAccountEntity.setPlayerId(1223L);
+            // playerAccountEntity.setPlayerId(1223L);
             playerAccountEntity.setAccount(id);
             playerAccountEntity.setPassword("123556");
             return playerAccountEntity;
@@ -50,7 +50,7 @@ class StorageJetCacheTest extends TestWithSpring {
         iStorage.remove(account);
         EntityCreator<String,PlayerAccountEntity> entityEntityCreator = (accountName) -> {
             PlayerAccountEntity playerAccountEntity = new PlayerAccountEntity();
-            playerAccountEntity.setPlayerId(1024L);
+            // playerAccountEntity.setPlayerId(1024L);
             playerAccountEntity.setAccount(accountName);
             playerAccountEntity.setPassword("123556");
             return playerAccountEntity;
@@ -82,7 +82,7 @@ class StorageJetCacheTest extends TestWithSpring {
         iStorage.remove(account);
         PlayerAccountEntity accountEntity = iStorage.getOrCreate(account, (id) -> {
             PlayerAccountEntity playerAccountEntity = new PlayerAccountEntity();
-            playerAccountEntity.setPlayerId(86L);
+            // playerAccountEntity.setPlayerId(86L);
             playerAccountEntity.setAccount(id);
             playerAccountEntity.setPassword("123556");
             return playerAccountEntity;

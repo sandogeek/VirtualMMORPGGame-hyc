@@ -25,8 +25,8 @@ public class WsSession extends AbstractSession {
     /** 临时分发器Id，用于未登录时使用 */
     private Long tempDispatcherId;
     private Long tempDispatcherIdMaxValue;
-    // 是否生成新的DelayedTask
-    private static AtomicBoolean genereteDelayedTask = new AtomicBoolean(true);
+    /** 是否生成新的DelayedTask */
+    private static AtomicBoolean generateDelayedTask = new AtomicBoolean(true);
 
     public WsSession(Channel channel) {
         super(channel.id(), ((InetSocketAddress) channel.remoteAddress()).getAddress().getHostAddress());
@@ -64,7 +64,7 @@ public class WsSession extends AbstractSession {
             return channel.writeAndFlush(abstractPacket);
         }
         ChannelFuture future = channel.write(abstractPacket);
-        if (genereteDelayedTask.compareAndSet(true,false)){
+        if (generateDelayedTask.compareAndSet(true,false)){
             // 缓冲25毫秒
             TaskDispatcher.getIntance().dispatch(new DelayedTask(null,25, TimeUnit.MILLISECONDS) {
 
@@ -75,7 +75,7 @@ public class WsSession extends AbstractSession {
 
                 @Override
                 public void execute() {
-                    genereteDelayedTask.compareAndSet(false,true);
+                    generateDelayedTask.compareAndSet(false,true);
                     channel.flush();
                 }
 
@@ -105,6 +105,7 @@ public class WsSession extends AbstractSession {
      * 设置玩家playerId
      * @param playerId 玩家id
      */
+    @Override
     public void setPlayerId(Long playerId){
         this.playerId = playerId;
     }

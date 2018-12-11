@@ -27,7 +27,7 @@ class PlayerAccountEntityServiceTest {
         playerAccountEntity.setAccount("sando"+ new Random().nextInt(300));
         playerAccountEntity.setPassword("123556");
         IdGenerator idGenerator = IdGeneratorFactory.getIntance().getPlayerIdGenerator();
-        playerAccountEntity.setPlayerId(playerId);
+        // playerAccountEntity.setPlayerId(playerId);
         for (int i=0;i<5;i++){
             try {
                 // playerAccountEntityService.saveAndFlush(playerAccountEntity);
@@ -48,7 +48,7 @@ class PlayerAccountEntityServiceTest {
         playerAccountEntity2.setAccount("sando"+ new Random().nextInt(300));
         playerAccountEntity2.setPassword("123556");
         // IdGenerator idGenerator = IdGeneratorFactory.getInstance().getPlayerIdGenerator();
-        playerAccountEntity2.setPlayerId(playerId);
+        // playerAccountEntity2.setPlayerId(playerId);
         // playerAccountEntityService.saveAndFlush(playerAccountEntity2);
         Thread.sleep(5000);
         // playerAccountEntityService.delete(playerId);

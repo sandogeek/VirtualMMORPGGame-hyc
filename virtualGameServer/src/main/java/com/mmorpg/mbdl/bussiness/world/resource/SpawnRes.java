@@ -1,6 +1,6 @@
 package com.mmorpg.mbdl.bussiness.world.resource;
 
-import com.mmorpg.mbdl.bussiness.world.model.MonsterSpawn;
+import com.mmorpg.mbdl.bussiness.world.model.SpawnData;
 import com.mmorpg.mbdl.framework.resource.annotation.Id;
 import com.mmorpg.mbdl.framework.resource.annotation.ResDef;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -14,17 +14,17 @@ import java.util.List;
  * @since v1.0 2018/12/6
  **/
 @ResDef(suffix = ".json")
-public class MonsterSpawnRes {
+public class SpawnRes {
     @Id
-    private int mapId;
-    private List<MonsterSpawn> MonsterSpawnList;
+    private int sceneId;
+    private List<SpawnData> spawnDataList;
 
-    public int getMapId() {
-        return mapId;
+    public int getSceneId() {
+        return sceneId;
     }
 
     @SuppressFBWarnings("UWF_UNWRITTEN_FIELD")
-    public List<MonsterSpawn> getMonsterSpawnList() {
-        return MonsterSpawnList;
+    public List<SpawnData> getSpawnDataList() {
+        return spawnDataList;
     }
 }
