@@ -22,6 +22,7 @@ public class WsSession extends AbstractSession {
     private Logger logger = LoggerFactory.getLogger(WsSession.class);
     private Channel channel;
     private Long playerId;
+    private String account;
     /** 临时分发器Id，用于未登录时使用 */
     private Long tempDispatcherId;
     private Long tempDispatcherIdMaxValue;
@@ -108,5 +109,15 @@ public class WsSession extends AbstractSession {
     @Override
     public void setPlayerId(Long playerId){
         this.playerId = playerId;
+    }
+
+    @Override
+    public String getAccount() {
+        return account;
+    }
+
+    @Override
+    public void setAccount(String account) {
+        this.account = account;
     }
 }

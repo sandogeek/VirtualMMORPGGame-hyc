@@ -34,7 +34,10 @@ public abstract class AbstractObject {
      * 设置对象名称
      * @param name 对象名称
      */
-    public abstract void setName(String name);
+    public AbstractObject setName(String name) {
+        this.name = name;
+        return this;
+    }
 
     @Override
     public boolean equals(Object o) {

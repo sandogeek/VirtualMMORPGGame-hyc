@@ -8,7 +8,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * @author Sando Geek
  * @since v1.0 2018/12/6
  **/
-public class SpawnData {
+public class BornData {
     private int objectKey;
     private String name;
 

@@ -79,4 +79,15 @@ public interface ISession {
      * @return 玩家id
      */
     void setPlayerId(Long playerId);
+
+    /**
+     * 获取账号
+     * @return 玩家账号
+     */
+    String getAccount();
+
+    /**
+     * 设置账号
+     */
+    void setAccount(String account);
 }

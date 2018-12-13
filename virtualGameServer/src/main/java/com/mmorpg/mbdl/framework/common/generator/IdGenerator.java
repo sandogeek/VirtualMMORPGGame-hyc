@@ -143,7 +143,7 @@ public class IdGenerator implements IIdGenerator {
     public static void main(String[] args) {
         ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("applicationContext.xml");
         IdGeneratorFactory idGeneratorFactory = ctx.getBean(IdGeneratorFactory.class);
-        IdGenerator idGenerator0 = idGeneratorFactory.getPlayerIdGenerator();
+        IdGenerator idGenerator0 = idGeneratorFactory.getRoleIdGenerator();
         Set<Long> longsConcurrent = new ConcurrentSet<>();
         ThreadFactory namedThreadFactory = new ThreadFactoryBuilder()
                 .setNameFormat("test-pool-%d").build();

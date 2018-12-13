@@ -1,7 +1,7 @@
 package com.mmorpg.mbdl.framework.storage.config.JetCache;
 
 import com.mmorpg.mbdl.TestWithSpring;
-import com.mmorpg.mbdl.bussiness.register.entity.PlayerAccountEntity;
+import com.mmorpg.mbdl.bussiness.register.entity.AccountEntity;
 import com.mmorpg.mbdl.framework.storage.core.EntityCreator;
 import com.mmorpg.mbdl.framework.storage.core.IStorage;
 import org.junit.jupiter.api.Assertions;
@@ -15,73 +15,73 @@ import org.springframework.dao.DataIntegrityViolationException;
 class StorageJetCacheTest extends TestWithSpring {
     private static final Logger logger = LoggerFactory.getLogger(StorageJetCache.class);
     @Autowired
-    IStorage<String, PlayerAccountEntity> iStorage;
+    IStorage<String, AccountEntity> iStorage;
     @Test
     void create() {
         String account = "sandoTestCreate";
         Assertions.assertThrows(DataIntegrityViolationException.class,()->{
             iStorage.create(account,(id)->{
-                PlayerAccountEntity playerAccountEntity = new PlayerAccountEntity();
-                // playerAccountEntity.setPlayerId(1222L);
-                playerAccountEntity.setAccount(id);
-                playerAccountEntity.setPassword("123556");
-                return playerAccountEntity;
+                AccountEntity accountEntity = new AccountEntity();
+                // accountEntity.setPlayerId(1222L);
+                accountEntity.setAccount(id);
+                accountEntity.setPassword("123556");
+                return accountEntity;
             });
         });
     }
 
-    PlayerAccountEntity createNotExists(){
+    AccountEntity createNotExists(){
         String account = "createNotExsist";
         iStorage.remove(account);
-        PlayerAccountEntity playerAccountEntity1 = iStorage.create(account, (id) -> {
-            PlayerAccountEntity playerAccountEntity = new PlayerAccountEntity();
-            // playerAccountEntity.setPlayerId(1223L);
-            playerAccountEntity.setAccount(id);
-            playerAccountEntity.setPassword("123556");
-            return playerAccountEntity;
+        AccountEntity accountEntity1 = iStorage.create(account, (id) -> {
+            AccountEntity accountEntity = new AccountEntity();
+            // accountEntity.setPlayerId(1223L);
+            accountEntity.setAccount(id);
+            accountEntity.setPassword("123556");
+            return accountEntity;
         });
-        Assertions.assertEquals(account,playerAccountEntity1.getAccount());
-        return playerAccountEntity1;
+        Assertions.assertEquals(account, accountEntity1.getAccount());
+        return accountEntity1;
     }
 
     @Test
     void createWithUniqueConfilict(){
         String account = "createWithUniqueConfilict";
         iStorage.remove(account);
-        EntityCreator<String,PlayerAccountEntity> entityEntityCreator = (accountName) -> {
-            PlayerAccountEntity playerAccountEntity = new PlayerAccountEntity();
-            // playerAccountEntity.setPlayerId(1024L);
-            playerAccountEntity.setAccount(accountName);
-            playerAccountEntity.setPassword("123556");
-            return playerAccountEntity;
+        EntityCreator<String, AccountEntity> entityEntityCreator = (accountName) -> {
+            AccountEntity accountEntity = new AccountEntity();
+            // accountEntity.setPlayerId(1024L);
+            accountEntity.setAccount(accountName);
+            accountEntity.setPassword("123556");
+            return accountEntity;
         };
-        PlayerAccountEntity playerAccountEntity1 = iStorage.create(account, entityEntityCreator);
+        AccountEntity accountEntity1 = iStorage.create(account, entityEntityCreator);
         Assertions.assertThrows(DataIntegrityViolationException.class,()->{
-            PlayerAccountEntity playerAccountEntity2 = iStorage.create(account +1, entityEntityCreator);
+            AccountEntity accountEntity2 = iStorage.create(account +1, entityEntityCreator);
         });
     }
 
     @Test
     void update() {
-        PlayerAccountEntity playerAccountEntity = createNotExists();
-        playerAccountEntity.setPassword("passWordUpdate");
-        iStorage.update(playerAccountEntity);
-        Assertions.assertEquals("passWordUpdate",iStorage.get(playerAccountEntity.getAccount()).getPassword());
+        AccountEntity accountEntity = createNotExists();
+        accountEntity.setPassword("passWordUpdate");
+        iStorage.update(accountEntity);
+        Assertions.assertEquals("passWordUpdate",iStorage.get(accountEntity.getAccount()).getPassword());
     }
 
     @Test
     void get() {
         String account = "createNotExsist";
-        PlayerAccountEntity playerAccountEntity = createNotExists();
-        Assertions.assertEquals(playerAccountEntity,iStorage.get(account));
+        AccountEntity accountEntity = createNotExists();
+        Assertions.assertEquals(accountEntity,iStorage.get(account));
     }
 
     @Test
     void getOrCreate() {
         String account = "getOrCreate";
         iStorage.remove(account);
-        PlayerAccountEntity accountEntity = iStorage.getOrCreate(account, (id) -> {
-            PlayerAccountEntity playerAccountEntity = new PlayerAccountEntity();
+        AccountEntity accountEntity = iStorage.getOrCreate(account, (id) -> {
+            AccountEntity playerAccountEntity = new AccountEntity();
             // playerAccountEntity.setPlayerId(86L);
             playerAccountEntity.setAccount(id);
             playerAccountEntity.setPassword("123556");

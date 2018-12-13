@@ -1,6 +1,6 @@
 package com.mmorpg.mbdl.framework.storage.core;
 
-import com.mmorpg.mbdl.bussiness.register.entity.PlayerAccountEntity;
+import com.mmorpg.mbdl.bussiness.register.entity.AccountEntity;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
@@ -16,19 +16,19 @@ import java.io.IOException;
 class StorageLayringCacheTest {
     private static final Logger logger = LoggerFactory.getLogger(StorageLayringCacheTest.class);
     @Autowired
-    IStorage<String, PlayerAccountEntity> iStorage;
+    IStorage<String, AccountEntity> iStorage;
 
     @Test
     void create() throws IOException {
-        // PlayerAccountEntity fromCache = iStorage.getFromCache(1222L, PlayerAccountEntity.class);
+        // AccountEntity fromCache = iStorage.getFromCache(1222L, AccountEntity.class);
         // iStorage.create(1222L,(id)->{
-        //     PlayerAccountEntity playerAccountEntity = new PlayerAccountEntity();
+        //     AccountEntity playerAccountEntity = new AccountEntity();
         //     playerAccountEntity.setPlayerId(id);
         //     playerAccountEntity.setAccount("sando"+ new Random().nextInt(300));
         //     playerAccountEntity.setPassword("123556");
         //     return playerAccountEntity;
         // });
-        // PlayerAccountEntity fromCache1 = iStorage.getFromCache(1222L, PlayerAccountEntity.class);
+        // AccountEntity fromCache1 = iStorage.getFromCache(1222L, AccountEntity.class);
         // System.in.read();
         // logger.info("zenn");
 

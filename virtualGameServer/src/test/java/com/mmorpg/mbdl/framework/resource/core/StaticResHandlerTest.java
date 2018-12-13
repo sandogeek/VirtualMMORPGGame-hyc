@@ -4,7 +4,7 @@ import com.mmorpg.mbdl.TestWithSpring;
 import com.mmorpg.mbdl.bussiness.common.GlobalSettingRes;
 import com.mmorpg.mbdl.bussiness.common.error.resource.ErrorTipsRes;
 import com.mmorpg.mbdl.bussiness.item.resource.ItemRes;
-import com.mmorpg.mbdl.bussiness.world.resource.SpawnRes;
+import com.mmorpg.mbdl.bussiness.world.resource.BornRes;
 import com.mmorpg.mbdl.framework.resource.exposed.IStaticRes;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -21,7 +21,7 @@ class StaticResHandlerTest extends TestWithSpring {
     @Autowired
     private IStaticRes<String, GlobalSettingRes> globalSettingResIStaticRes;
     @Autowired
-    private IStaticRes<Integer, SpawnRes> monsterSpawnResIStaticRes;
+    private IStaticRes<Integer, BornRes> monsterSpawnResIStaticRes;
 
     @Test
     void 静态资源注入测试() {
@@ -29,7 +29,7 @@ class StaticResHandlerTest extends TestWithSpring {
         Assertions.assertNotNull(itemReses);
         Assertions.assertNotNull(globalSettingResIStaticRes);
         Assertions.assertNotNull(monsterSpawnResIStaticRes);
-        logger.debug("{}", monsterSpawnResIStaticRes.get(1001).getSpawnDataList());
+        logger.debug("{}", monsterSpawnResIStaticRes.get(1001).getBornDataList());
     }
 
 }

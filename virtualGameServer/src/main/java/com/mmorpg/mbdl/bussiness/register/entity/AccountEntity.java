@@ -12,7 +12,7 @@ import javax.persistence.Id;
  */
 @Entity
 @JetCacheConfig
-public class PlayerAccountEntity implements IEntity<String> {
+public class AccountEntity implements IEntity<String> {
     @Id
     private String account;
 

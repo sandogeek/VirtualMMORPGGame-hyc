@@ -10,6 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * AbstractPacket包分发处理器，用于将AbstractPacket对象赋值给相应模块对应的处理方法的形参
  * (因为是Inbound所以只有请求包能到达这里)
@@ -44,7 +46,9 @@ public class AbstractPacketDispacherHandler extends SimpleChannelInboundHandler<
                 return;
             }
         }
-        TaskDispatcher.getIntance().dispatch(new HandleReqTask(session.selectDispatcherId(),packetMethodDifinition, session,abstractPacket),executeParallel);
+        TaskDispatcher.getIntance().dispatch(
+                new HandleReqTask(session.selectDispatcherId(),packetMethodDifinition, session,abstractPacket)
+                        .setMaxExecute(TimeUnit.NANOSECONDS.convert(30,TimeUnit.MILLISECONDS)),executeParallel);
         // TaskExecutorGroup.addTask(new HandleReqTask(packetMethodDifinition,session,abstractPacket));
     }
 

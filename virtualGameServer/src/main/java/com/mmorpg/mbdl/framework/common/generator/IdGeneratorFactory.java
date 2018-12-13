@@ -71,10 +71,10 @@ public class IdGeneratorFactory {
     }
 
     /**
-     * 获取玩家IdGenerator
+     * 获取角色IdGenerator
      * @return IdGenerator
      */
-    public IdGenerator getPlayerIdGenerator(){
+    public IdGenerator getRoleIdGenerator(){
         return playerInstanceIdGenerators[arrayIndexOfPlayer.updateAndGet(n -> (n+1)%maxPlayerInstance)];
     }
 

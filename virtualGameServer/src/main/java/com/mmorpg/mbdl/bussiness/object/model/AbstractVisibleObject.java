@@ -16,7 +16,8 @@ public abstract class AbstractVisibleObject extends AbstractObject {
         return mapId;
     }
 
-    public void setMapId(int mapId) {
+    public AbstractVisibleObject setMapId(int mapId) {
         this.mapId = mapId;
+        return this;
     }
 }

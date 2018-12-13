@@ -1,6 +1,6 @@
 package com.mmorpg.mbdl.bussiness.register.dao;
 
-import com.mmorpg.mbdl.bussiness.register.entity.PlayerAccountEntity;
+import com.mmorpg.mbdl.bussiness.register.entity.AccountEntity;
 import com.mmorpg.mbdl.framework.storage.core.IStorage;
 
 /**
@@ -9,5 +9,5 @@ import com.mmorpg.mbdl.framework.storage.core.IStorage;
  * @author Sando Geek
  * @since v1.0 2018/12/7
  **/
-public interface PlayerAccountEntityDao extends IStorage<String, PlayerAccountEntity> {
+public interface PlayerAccountEntityDao extends IStorage<String, AccountEntity> {
 }

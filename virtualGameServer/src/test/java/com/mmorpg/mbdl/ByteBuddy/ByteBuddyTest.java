@@ -3,7 +3,7 @@ package com.mmorpg.mbdl.ByteBuddy;
 // import com.mmorpg.mbdl.bussiness.register.cache.PlayerAccountEntityService;
 
 import com.mmorpg.mbdl.ByteBuddy.foo.Bar;
-import com.mmorpg.mbdl.bussiness.register.entity.PlayerAccountEntity;
+import com.mmorpg.mbdl.bussiness.register.entity.AccountEntity;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.NamingStrategy;
 import net.bytebuddy.description.type.TypeDescription;
@@ -121,10 +121,10 @@ public class ByteBuddyTest {
     public void genericSubClassTest(){
         //泛型类型需要这么声明参数类型
         TypeDescription.Generic genericSuperClass =
-                TypeDescription.Generic.Builder.parameterizedType(JpaRepository.class, PlayerAccountEntity.class,Long.class).build();
+                TypeDescription.Generic.Builder.parameterizedType(JpaRepository.class, AccountEntity.class,Long.class).build();
         // //new ByteBuddy().subclass(Repository.class) //简单非泛型类可以这么做
         // DynamicType.Unloaded<?> unloadedType = new ByteBuddy().makeInterface(genericSuperClass)
-        //         .name(PlayerAccountEntityService.class.getPackage().getName().concat(".dao.").concat(PlayerAccountEntity.class.getSimpleName()+"Repository"))
+        //         .name(PlayerAccountEntityService.class.getPackage().getName().concat(".dao.").concat(AccountEntity.class.getSimpleName()+"Repository"))
         //         .method(ElementMatchers.named("findOne"))  //ElementMatchers 提供了多种方式找到方法
         //         //.intercept(FixedValue.value("Yanbin"))   //最简单的方式就是返回一个固定值
         //         .intercept(MethodDelegation.to(FindOneInterceptor.class)) //使用 FindOneInterCeptor 中的实现
@@ -146,9 +146,9 @@ public class ByteBuddyTest {
     @Test
     public void loadClass() throws IOException {
         // TypeDescription.Generic genericSuperClass =
-        //         TypeDescription.Generic.Builder.parameterizedType(IStorage.class, Long.class, PlayerAccountEntity.class).build();
+        //         TypeDescription.Generic.Builder.parameterizedType(IStorage.class, Long.class, AccountEntity.class).build();
         // String packageName = PlayerAccountEntityService.class.getPackage().getName();
-        // String classFullName = packageName.substring(0,packageName.lastIndexOf(".")).concat(".dao.").concat(PlayerAccountEntity.class.getSimpleName() + "Repository");
+        // String classFullName = packageName.substring(0,packageName.lastIndexOf(".")).concat(".dao.").concat(AccountEntity.class.getSimpleName() + "Repository");
         // DynamicType.Unloaded<?> type = new ByteBuddy()
         //         .makeInterface(genericSuperClass)
         //         .name(classFullName)

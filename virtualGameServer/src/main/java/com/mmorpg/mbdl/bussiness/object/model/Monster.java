@@ -7,8 +7,5 @@ package com.mmorpg.mbdl.bussiness.object.model;
  * @since v1.0 2018/12/11
  **/
 public class Monster extends AbstractCreature {
-    @Override
-    public void setName(String name) {
 
-    }
 }

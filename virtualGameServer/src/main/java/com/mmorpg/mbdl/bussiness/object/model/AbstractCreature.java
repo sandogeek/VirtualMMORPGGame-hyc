@@ -15,4 +15,22 @@ public abstract class AbstractCreature extends AbstractVisibleObject {
      * 蓝量
      */
     private long mp;
+
+    public long getHp() {
+        return hp;
+    }
+
+    public AbstractCreature setHp(long hp) {
+        this.hp = hp;
+        return this;
+    }
+
+    public long getMp() {
+        return mp;
+    }
+
+    public AbstractCreature setMp(long mp) {
+        this.mp = mp;
+        return this;
+    }
 }

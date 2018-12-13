@@ -1,6 +1,6 @@
 package com.mmorpg.mbdl.bussiness.register.service;
 
-import com.mmorpg.mbdl.bussiness.register.entity.PlayerAccountEntity;
+import com.mmorpg.mbdl.bussiness.register.entity.AccountEntity;
 import com.mmorpg.mbdl.bussiness.register.packet.RegisterReq;
 import com.mmorpg.mbdl.bussiness.register.packet.RegisterResp;
 import com.mmorpg.mbdl.framework.common.generator.IdGeneratorFactory;
@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class RegisterService {
     @Autowired
-    private IStorage<String, PlayerAccountEntity> playerAccountEntityIStorage;
+    private IStorage<String, AccountEntity> playerAccountEntityIStorage;
     @Autowired
     private IdGeneratorFactory idGeneratorFactory;
 
@@ -27,10 +27,10 @@ public class RegisterService {
            registerResp.setSuccess(false);
        }else {
            playerAccountEntityIStorage.create(registerReq.getAccount(),(id)->{
-               PlayerAccountEntity playerAccountEntity = new PlayerAccountEntity();
-               playerAccountEntity.setAccount(id);
-               playerAccountEntity.setPassword(registerReq.getPassword());
-               return playerAccountEntity;
+               AccountEntity accountEntity = new AccountEntity();
+               accountEntity.setAccount(id);
+               accountEntity.setPassword(registerReq.getPassword());
+               return accountEntity;
            });
            registerResp.setSuccess(true);
        }

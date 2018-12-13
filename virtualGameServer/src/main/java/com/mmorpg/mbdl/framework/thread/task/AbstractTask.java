@@ -140,9 +140,11 @@ public abstract class AbstractTask implements Runnable {
         return maxExecute;
     }
 
-    public void setMaxExecute(long maxExecute) {
+    public AbstractTask setMaxExecute(long maxExecute) {
         this.maxExecute = maxExecute;
+        return this;
     }
+
     /**
      * 使用的logger,可以为不同的任务定制不同的logger
      * @return
