@@ -28,6 +28,11 @@ public enum RoleType {
         this.code = code;
         this.desc = desc;
     }
+
+    public byte getCode() {
+        return code;
+    }
+
     public static RoleType getRoleTypeByCode(byte code){
         return Arrays.stream(values()).filter(roleType -> roleType.code == code).findAny().get();
     }

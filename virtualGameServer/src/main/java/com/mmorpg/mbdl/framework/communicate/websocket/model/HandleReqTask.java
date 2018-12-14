@@ -16,7 +16,7 @@ public class HandleReqTask extends Task {
     public HandleReqTask(Serializable dispatcherId,PacketMethodDifinition packetMethodDifinition, ISession session, AbstractPacket abstractPacket){
         super(dispatcherId);
         this.setISession(session);
-        this.setPacketMethodDifinition(packetMethodDifinition);
+        this.setPacketMethodDefinition(packetMethodDifinition);
         this.setAbstractPacket(abstractPacket);
         // 根据方法注解决定是否打印日志
         this.setLogOrNot(packetMethodDifinition.getPacketMethodAnno().logOrNot());
@@ -51,7 +51,7 @@ public class HandleReqTask extends Task {
         return packetMethodDifinition;
     }
 
-    public void setPacketMethodDifinition(PacketMethodDifinition packetMethodDifinition) {
+    public void setPacketMethodDefinition(PacketMethodDifinition packetMethodDifinition) {
         this.packetMethodDifinition = packetMethodDifinition;
     }
 

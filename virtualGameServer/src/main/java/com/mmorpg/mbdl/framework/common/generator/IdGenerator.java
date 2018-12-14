@@ -30,7 +30,7 @@ public class IdGenerator implements IIdGenerator {
     private static final long generatorIdBits = 4L;
     /** 最大Generator id量结果是15 */
     private static final long maxGeneratorId = ~(-1L << generatorIdBits);
-    /** 数据标识id所占的位数 */
+    /** 数据中心标识id所占的位数 */
     private static final long datacenterIdBits = 5L;
     /** 支持的最大数据标识id，结果是31 */
     static final long maxDatacenterId = ~(-1L << datacenterIdBits);
@@ -52,7 +52,17 @@ public class IdGenerator implements IIdGenerator {
     /** 生成序列的掩码，512-1 */
     private static final long sequenceMask = ~(-1L << sequenceBits);
 
+    public static long getDatacenterIdBits() {
+        return datacenterIdBits;
+    }
 
+    public static long getServerIdBits() {
+        return serverIdBits;
+    }
+
+    public static long getSequenceBits() {
+        return sequenceBits;
+    }
 
     /** 毫秒内序列号(0~511) */
     private long sequence = 0L;
