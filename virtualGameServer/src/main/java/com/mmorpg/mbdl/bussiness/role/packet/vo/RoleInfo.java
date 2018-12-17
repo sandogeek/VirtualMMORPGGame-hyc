@@ -15,5 +15,32 @@ public class RoleInfo {
     @Protobuf(required = true,description = "角色等级")
     private short level;
     @Protobuf(required = true,description = "角色类型")
-    private RoleType roleTypeCode;
+    private RoleType roleType;
+
+    public String getName() {
+        return name;
+    }
+
+    public RoleInfo setName(String name) {
+        this.name = name;
+        return this;
+    }
+
+    public short getLevel() {
+        return level;
+    }
+
+    public RoleInfo setLevel(short level) {
+        this.level = level;
+        return this;
+    }
+
+    public RoleType getRoleType() {
+        return roleType;
+    }
+
+    public RoleInfo setRoleType(RoleType roleType) {
+        this.roleType = roleType;
+        return this;
+    }
 }

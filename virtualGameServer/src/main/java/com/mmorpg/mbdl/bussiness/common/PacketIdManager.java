@@ -39,6 +39,9 @@ public class PacketIdManager {
     public static final short REGISTER_RESP = 10202;
 
     public static final short GET_ROLE_LIST_REQ = 10301;
+    public static final short GET_ROLE_LIST_RESP = 10302;
+    public static final short ADD_ROLE_REQ = 10303;
+    public static final short ADD_ROLE_RESP = 10304;
 
     private static PacketIdManager self;
     public static PacketIdManager getInstance(){

@@ -3,6 +3,8 @@ package com.mmorpg.mbdl.bussiness.role.dao;
 import com.mmorpg.mbdl.bussiness.role.entity.RoleEntity;
 import com.mmorpg.mbdl.framework.storage.core.IStorage;
 
+import java.util.List;
+
 /**
  * 角色实体dao
  *
@@ -15,7 +17,7 @@ public interface RoleEntityDao extends IStorage<Long, RoleEntity> {
      * @param account 账号
      * @return 角色实体列表
      */
-    RoleEntity findByAccount(String account);
+    List<RoleEntity> findAllByAccount(String account);
 
     /**
      * 同服角色名称不能相同

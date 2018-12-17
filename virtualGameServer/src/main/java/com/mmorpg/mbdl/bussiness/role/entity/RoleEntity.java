@@ -32,6 +32,8 @@ public class RoleEntity implements IEntity<Long> {
     @Column(nullable = false)
     private String name;
     @Column(nullable = false)
+    private short level;
+    @Column(nullable = false)
     private int serverToken;
 
     @Column(nullable = false,columnDefinition = "tinyint(1)")
@@ -53,6 +55,15 @@ public class RoleEntity implements IEntity<Long> {
 
     public RoleEntity setRoleId(Long roleId) {
         this.roleId = roleId;
+        return this;
+    }
+
+    public short getLevel() {
+        return level;
+    }
+
+    public RoleEntity setLevel(short level) {
+        this.level = level;
         return this;
     }
 
@@ -82,6 +93,8 @@ public class RoleEntity implements IEntity<Long> {
         this.serverToken = serverToken;
         return this;
     }
+
+
 
     public byte getRoleTypeCode() {
         return roleTypeCode;
