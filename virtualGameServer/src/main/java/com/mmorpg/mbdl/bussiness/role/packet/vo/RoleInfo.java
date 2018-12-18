@@ -13,7 +13,7 @@ public class RoleInfo {
     @Protobuf(required = true,description = "角色名称")
     private String name;
     @Protobuf(required = true,description = "角色等级")
-    private short level;
+    private int level;
     @Protobuf(required = true,description = "角色类型")
     private RoleType roleType;
 
@@ -26,7 +26,7 @@ public class RoleInfo {
         return this;
     }
 
-    public short getLevel() {
+    public int getLevel() {
         return level;
     }
 

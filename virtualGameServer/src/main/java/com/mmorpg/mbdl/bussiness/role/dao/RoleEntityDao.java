@@ -25,5 +25,5 @@ public interface RoleEntityDao extends IStorage<Long, RoleEntity> {
      * @param serverId 服务器Id
      * @return 角色实体列表
      */
-    RoleEntity findByNameAndServerToken(String name,int serverId);
+    RoleEntity findByNameAndServerToken(String name,int serverToken);
 }

@@ -77,17 +77,15 @@ public class StorageLayeringCache<PK extends Serializable &Comparable<PK>,E exte
 
     /**
      * 因为调用自身的saveAndFlush时，aop无法完成切面增强，所以这里必须加上@Transactional
-     * @param id 主键
-     * @param entityCreator 实体创建器
+     * @param entity 待插入的实体
      * @return
      */
     @Override
     @Transactional(rollbackFor = {Exception.class})
-    public E create(PK id, EntityCreator<PK, E> entityCreator) {
-        E entity = entityCreator.create(id);
+    public E create(E entity) {
         Cache cache = getCache();
         E entityAfterSave = this.saveAndFlush(entity);
-        cache.put(id,entity);
+        cache.put(entity.getId(),entity);
         return entityAfterSave;
     }
 

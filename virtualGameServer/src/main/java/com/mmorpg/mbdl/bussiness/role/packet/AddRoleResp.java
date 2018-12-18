@@ -19,6 +19,10 @@ public class AddRoleResp extends AbstractPacket {
     @Protobuf(description = "结果")
     private boolean result;
 
+    public AddRoleResp setResult(boolean result) {
+        this.result = result;
+        return this;
+    }
 
     @Override
     public short getPacketId() {

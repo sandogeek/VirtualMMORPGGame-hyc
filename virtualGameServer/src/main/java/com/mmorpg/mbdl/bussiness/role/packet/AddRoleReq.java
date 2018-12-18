@@ -21,6 +21,13 @@ public class AddRoleReq extends AbstractPacket {
     @Protobuf(description = "角色类型",required = true)
     private RoleType roleType;
 
+    public String getRoleName() {
+        return roleName;
+    }
+
+    public RoleType getRoleType() {
+        return roleType;
+    }
 
     @Override
     public short getPacketId() {

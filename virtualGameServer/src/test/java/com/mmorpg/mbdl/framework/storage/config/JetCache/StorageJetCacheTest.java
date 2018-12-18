@@ -2,7 +2,6 @@ package com.mmorpg.mbdl.framework.storage.config.JetCache;
 
 import com.mmorpg.mbdl.TestWithSpring;
 import com.mmorpg.mbdl.bussiness.register.entity.AccountEntity;
-import com.mmorpg.mbdl.framework.storage.core.EntityCreator;
 import com.mmorpg.mbdl.framework.storage.core.IStorage;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -19,27 +18,23 @@ class StorageJetCacheTest extends TestWithSpring {
     @Test
     void create() {
         String account = "sandoTestCreate";
+        AccountEntity accountEntity = new AccountEntity();
+        // accountEntity.setPlayerId(1222L);
+        accountEntity.setAccount(account);
+        accountEntity.setPassword("123556");
         Assertions.assertThrows(DataIntegrityViolationException.class,()->{
-            iStorage.create(account,(id)->{
-                AccountEntity accountEntity = new AccountEntity();
-                // accountEntity.setPlayerId(1222L);
-                accountEntity.setAccount(id);
-                accountEntity.setPassword("123556");
-                return accountEntity;
-            });
+            iStorage.create(accountEntity);
         });
     }
 
     AccountEntity createNotExists(){
         String account = "createNotExsist";
         iStorage.remove(account);
-        AccountEntity accountEntity1 = iStorage.create(account, (id) -> {
-            AccountEntity accountEntity = new AccountEntity();
-            // accountEntity.setPlayerId(1223L);
-            accountEntity.setAccount(id);
-            accountEntity.setPassword("123556");
-            return accountEntity;
-        });
+        AccountEntity accountEntity = new AccountEntity();
+        // accountEntity.setPlayerId(1223L);
+        accountEntity.setAccount(account);
+        accountEntity.setPassword("123556");
+        AccountEntity accountEntity1 = iStorage.create(accountEntity);
         Assertions.assertEquals(account, accountEntity1.getAccount());
         return accountEntity1;
     }
@@ -48,16 +43,19 @@ class StorageJetCacheTest extends TestWithSpring {
     void createWithUniqueConfilict(){
         String account = "createWithUniqueConfilict";
         iStorage.remove(account);
-        EntityCreator<String, AccountEntity> entityEntityCreator = (accountName) -> {
-            AccountEntity accountEntity = new AccountEntity();
-            // accountEntity.setPlayerId(1024L);
-            accountEntity.setAccount(accountName);
-            accountEntity.setPassword("123556");
-            return accountEntity;
-        };
-        AccountEntity accountEntity1 = iStorage.create(account, entityEntityCreator);
+        AccountEntity accountEntity = new AccountEntity();
+        // accountEntity.setPlayerId(1024L);
+        accountEntity.setAccount(account);
+        accountEntity.setPassword("123556");
+        iStorage.create(accountEntity);
+
+        AccountEntity accountEntity2 = new AccountEntity();
+        // accountEntity.setPlayerId(1024L);
+        accountEntity.setAccount(account+1);
+        accountEntity.setPassword("123556");
+
         Assertions.assertThrows(DataIntegrityViolationException.class,()->{
-            AccountEntity accountEntity2 = iStorage.create(account +1, entityEntityCreator);
+            iStorage.create(accountEntity2);
         });
     }
 

@@ -32,7 +32,9 @@ public class RoleEntity implements IEntity<Long> {
     @Column(nullable = false)
     private String name;
     @Column(nullable = false)
-    private short level;
+    private short level = 0;
+    @Column(nullable = false)
+    private long exp = 0;
     @Column(nullable = false)
     private int serverToken;
 
@@ -55,6 +57,15 @@ public class RoleEntity implements IEntity<Long> {
 
     public RoleEntity setRoleId(Long roleId) {
         this.roleId = roleId;
+        return this;
+    }
+
+    public long getExp() {
+        return exp;
+    }
+
+    public RoleEntity setExp(long exp) {
+        this.exp = exp;
         return this;
     }
 
@@ -92,12 +103,6 @@ public class RoleEntity implements IEntity<Long> {
     public RoleEntity setServerToken(int serverToken) {
         this.serverToken = serverToken;
         return this;
-    }
-
-
-
-    public byte getRoleTypeCode() {
-        return roleTypeCode;
     }
 
     public RoleEntity setRoleTypeCode(byte roleTypeCode) {

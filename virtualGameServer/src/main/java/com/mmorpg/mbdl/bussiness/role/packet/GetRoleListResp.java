@@ -7,6 +7,7 @@ import com.mmorpg.mbdl.framework.communicate.websocket.annotation.ProtoDesc;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.AbstractPacket;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -18,8 +19,8 @@ import java.util.List;
 @Component
 @ProtoDesc(description = "获取角色列表响应")
 public class GetRoleListResp extends AbstractPacket {
-    @Protobuf(description = "角色列表信息")
-    private List<RoleInfo> roleInfoList;
+    @Protobuf(description = "角色列表信息",required = true)
+    private List<RoleInfo> roleInfoList = new ArrayList<>(3);
 
     public List<RoleInfo> getRoleInfoList() {
         return roleInfoList;

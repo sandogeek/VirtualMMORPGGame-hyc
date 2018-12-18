@@ -18,11 +18,10 @@ import java.io.Serializable;
 public interface IStorage<PK extends Serializable&Comparable<PK>,E extends IEntity<PK>> extends JpaRepository<E, PK> {
     /**
      * 用jpa创建一个实体，并将实体放入缓存和数据库
-     * @param id 主键
-     * @param entityCreator 实体创建器
+     * @param entity 需要创建的实体
      * @return 实体
      */
-    E create(PK id, EntityCreator<PK,E> entityCreator);
+    E create(E entity);
 
     /**
      * 根据主键id获取一个实体（同步）

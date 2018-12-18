@@ -1,6 +1,7 @@
 package com.mmorpg.mbdl.bussiness.role.facade;
 
 import com.mmorpg.mbdl.bussiness.role.packet.AddRoleReq;
+import com.mmorpg.mbdl.bussiness.role.packet.AddRoleResp;
 import com.mmorpg.mbdl.bussiness.role.packet.GetRoleListReq;
 import com.mmorpg.mbdl.bussiness.role.packet.GetRoleListResp;
 import com.mmorpg.mbdl.bussiness.role.service.RoleService;
@@ -25,8 +26,9 @@ public class RoleFacade {
     @Autowired
     private RoleService roleService;
 
-    public void handleAddRoleReq(ISession session, AddRoleReq addRoleReq) {
-
+    @PacketMethod(state = SessionState.LOGINED)
+    public AddRoleResp handleAddRoleReq(ISession session, AddRoleReq addRoleReq) {
+        return roleService.handleAddRoleReq(session,addRoleReq);
     }
     @PacketMethod(state = SessionState.LOGINED)
     public GetRoleListResp handleGetRoleListReq(ISession session, GetRoleListReq getRoleListReq) {

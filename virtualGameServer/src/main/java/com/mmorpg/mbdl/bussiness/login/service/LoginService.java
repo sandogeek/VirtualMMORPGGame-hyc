@@ -28,9 +28,11 @@ public class LoginService {
         if (accountEntity == null) {
             loginResultResp.setResultType(LoginResultType.FAILURE);
         } else if (loginAuthReq.getPassword().equals(accountEntity.getPassword())){
-            loginResultResp.setResultType(LoginResultType.SUCESS);
+            loginResultResp.setResultType(LoginResultType.SUCCESS);
             session.setAccount(accountEntity.getAccount());
             session.setState(SessionState.LOGINED);
+        } else {
+            loginResultResp.setResultType(LoginResultType.FAILURE);
         }
         // String message = String.format("协议[%s-%s]分发成功：帐号：%s,密码：%s",req.getPacketId(),req.getClass().getSimpleName(),req.getAccount(),req.getPassword());
         return loginResultResp;

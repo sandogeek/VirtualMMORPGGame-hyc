@@ -39,15 +39,14 @@ public class StorageJetCache <PK extends Serializable &Comparable<PK>,E extends 
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public E create(PK id, EntityCreator<PK, E> entityCreator) {
-        Preconditions.checkNotNull(id,"id不能为null");
-        CacheGetResult<E> cacheGetResult = cache.GET(id);
+    public E create(E entity) {
+        Preconditions.checkNotNull(entity,"entity不能为null");
+        CacheGetResult<E> cacheGetResult = cache.GET(entity.getId());
         if (cacheGetResult.isSuccess()){
-            E entity = cacheGetResult.getValue();
+            E entityFromCache = cacheGetResult.getValue();
             // 缓存中缓存了其null值，说明数据库中没有，直接存库
-            if (entity == null) {
-                E entityCreated = entityCreator.create(id);
-                return insertOrUpdate(entityCreated);
+            if (entityFromCache == null) {
+                return insertOrUpdate(entity);
             }
             // 缓存中有，说明数据库中也有，那么不应该创建，抛出异常
             else {
@@ -56,11 +55,10 @@ public class StorageJetCache <PK extends Serializable &Comparable<PK>,E extends 
         }
         // 缓存中没有成功获取就查数据库
         else {
-            if (exists(id)){
+            if (exists(entity.getId())){
                 throw new EntityExistsException("数据库中已存在该实体，考虑使用update?");
             }else {
-                E entityCreated = entityCreator.create(id);
-                return insertOrUpdate(entityCreated);
+                return insertOrUpdate(entity);
             }
         }
     }
