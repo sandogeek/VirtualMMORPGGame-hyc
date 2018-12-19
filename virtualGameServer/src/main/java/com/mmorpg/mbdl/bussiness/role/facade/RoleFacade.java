@@ -1,9 +1,6 @@
 package com.mmorpg.mbdl.bussiness.role.facade;
 
-import com.mmorpg.mbdl.bussiness.role.packet.AddRoleReq;
-import com.mmorpg.mbdl.bussiness.role.packet.AddRoleResp;
-import com.mmorpg.mbdl.bussiness.role.packet.GetRoleListReq;
-import com.mmorpg.mbdl.bussiness.role.packet.GetRoleListResp;
+import com.mmorpg.mbdl.bussiness.role.packet.*;
 import com.mmorpg.mbdl.bussiness.role.service.RoleService;
 import com.mmorpg.mbdl.framework.communicate.websocket.annotation.PacketHandler;
 import com.mmorpg.mbdl.framework.communicate.websocket.annotation.PacketMethod;
@@ -27,11 +24,18 @@ public class RoleFacade {
     private RoleService roleService;
 
     @PacketMethod(state = SessionState.LOGINED)
-    public AddRoleResp handleAddRoleReq(ISession session, AddRoleReq addRoleReq) {
-        return roleService.handleAddRoleReq(session,addRoleReq);
-    }
-    @PacketMethod(state = SessionState.LOGINED)
     public GetRoleListResp handleGetRoleListReq(ISession session, GetRoleListReq getRoleListReq) {
         return roleService.handleGetRoleListReq(session,getRoleListReq);
     }
+
+    @PacketMethod(state = SessionState.LOGINED)
+    public AddRoleResp handleAddRoleReq(ISession session, AddRoleReq addRoleReq) {
+        return roleService.handleAddRoleReq(session,addRoleReq);
+    }
+
+    @PacketMethod(state = SessionState.LOGINED)
+    public DeleteRoleResp handleDeleteRoleReq(ISession session, DeleteRoleReq deleteRoleReq) {
+        return roleService.handleDeleteRoleReq(session,deleteRoleReq);
+    }
+
 }

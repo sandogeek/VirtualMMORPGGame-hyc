@@ -42,10 +42,21 @@ public class RoleEntity implements IEntity<Long> {
     private byte roleTypeCode;
     @Transient
     private RoleType roleType;
+    @Column(nullable = false)
+    private int mapId;
 
     @Override
     public Long getId() {
         return roleId;
+    }
+
+    public int getMapId() {
+        return mapId;
+    }
+
+    public RoleEntity setMapId(int mapId) {
+        this.mapId = mapId;
+        return this;
     }
 
     public RoleType getRoleType() {

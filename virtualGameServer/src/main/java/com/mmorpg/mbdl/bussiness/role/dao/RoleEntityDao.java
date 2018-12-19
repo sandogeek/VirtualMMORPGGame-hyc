@@ -22,7 +22,7 @@ public interface RoleEntityDao extends IStorage<Long, RoleEntity> {
     /**
      * 同服角色名称不能相同
      * @param name 角色名称
-     * @param serverId 服务器Id
+     * @param serverToken 服务器Id
      * @return 角色实体列表
      */
     RoleEntity findByNameAndServerToken(String name,int serverToken);

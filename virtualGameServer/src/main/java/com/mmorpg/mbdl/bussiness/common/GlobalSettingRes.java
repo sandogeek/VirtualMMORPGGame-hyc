@@ -17,4 +17,12 @@ public class GlobalSettingRes {
     private String code;
     @JsonProperty("Value")
     private int value;
+
+    public String getCode() {
+        return code;
+    }
+
+    public int getValue() {
+        return value;
+    }
 }

@@ -1,20 +1,20 @@
 package com.mmorpg.mbdl.bussiness.role.service;
 
+import com.mmorpg.mbdl.bussiness.common.GlobalSettingRes;
 import com.mmorpg.mbdl.bussiness.role.dao.RoleEntityDao;
 import com.mmorpg.mbdl.bussiness.role.entity.RoleEntity;
 import com.mmorpg.mbdl.bussiness.role.model.RoleType;
-import com.mmorpg.mbdl.bussiness.role.packet.AddRoleReq;
-import com.mmorpg.mbdl.bussiness.role.packet.AddRoleResp;
-import com.mmorpg.mbdl.bussiness.role.packet.GetRoleListReq;
-import com.mmorpg.mbdl.bussiness.role.packet.GetRoleListResp;
+import com.mmorpg.mbdl.bussiness.role.packet.*;
 import com.mmorpg.mbdl.bussiness.role.packet.vo.RoleInfo;
 import com.mmorpg.mbdl.framework.common.generator.IdGeneratorFactory;
 import com.mmorpg.mbdl.framework.common.utils.CommonUtils;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.ISession;
+import com.mmorpg.mbdl.framework.resource.exposed.IStaticRes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * 角色服务
@@ -26,6 +26,11 @@ import java.util.List;
 public class RoleService {
     @Autowired
     private RoleEntityDao roleEntityDao;
+    @Autowired
+    private IStaticRes<String, GlobalSettingRes> globalSettingResIStaticRes;
+    /**
+     * 由数据中心和服务器id确定
+     */
     private final int serverToken = CommonUtils.getSeverTokenById(IdGeneratorFactory.getIntance().getRoleIdGenerator().generate());
     private final int maxRoleSize = RoleType.values().length;
 
@@ -42,9 +47,14 @@ public class RoleService {
                     .setName(addRoleReq.getRoleName())
                     .setRoleId(IdGeneratorFactory.getIntance().getRoleIdGenerator().generate())
                     .setRoleTypeCode(addRoleReq.getRoleType().getCode())
+                    .setMapId(globalSettingResIStaticRes.get("InitMapId").getValue())
                     .setServerToken(serverToken);
             roleEntityDao.create(roleEntityToCreate);
+            RoleInfo roleInfo = new RoleInfo().setName(roleEntityToCreate.getName())
+                    .setRoleType(roleEntityToCreate.getRoleType())
+                    .setLevel(roleEntityToCreate.getLevel());
             addRoleResp.setResult(true);
+            addRoleResp.setRoleInfo(roleInfo);
         }
         return addRoleResp;
     }
@@ -61,5 +71,18 @@ public class RoleService {
             roleInfoList.add(roleInfo);
         });
         return roleListResp;
+    }
+
+    public DeleteRoleResp handleDeleteRoleReq(ISession session, DeleteRoleReq deleteRoleReq) {
+        DeleteRoleResp deleteRoleResp = new DeleteRoleResp().setResult(false);
+        List<RoleEntity> roleEntities = roleEntityDao.findAllByAccount(session.getAccount());
+        Optional<RoleEntity> entityOptional = roleEntities.stream().filter(roleEntity -> roleEntity.getName().equals(deleteRoleReq.getRoleName()))
+                .findAny();
+        entityOptional.ifPresent(roleEntity -> {
+            roleEntityDao.remove(roleEntity.getId());
+            deleteRoleResp.setNameDelete(roleEntity.getName());
+            deleteRoleResp.setResult(true);
+        });
+        return deleteRoleResp;
     }
 }
