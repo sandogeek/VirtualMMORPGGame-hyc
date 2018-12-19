@@ -1,7 +1,7 @@
 package com.mmorpg.mbdl.framework.storage.core;
 
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.NoRepositoryBean;
+import org.springframework.data.repository.Repository;
 
 import java.io.Serializable;
 
@@ -15,7 +15,7 @@ import java.io.Serializable;
  * @author sando
  */
 @NoRepositoryBean
-public interface IStorage<PK extends Serializable&Comparable<PK>,E extends IEntity<PK>> extends JpaRepository<E, PK> {
+public interface IStorage<PK extends Serializable&Comparable<PK>,E extends IEntity<PK>> extends Repository<E, PK> {
     /**
      * 用jpa创建一个实体，并将实体放入缓存和数据库
      * @param entity 需要创建的实体
