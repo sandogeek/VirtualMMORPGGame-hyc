@@ -38,4 +38,9 @@ public class RoleFacade {
         return roleService.handleDeleteRoleReq(session,deleteRoleReq);
     }
 
+    @PacketMethod(state = SessionState.LOGINED)
+    public ChooseRoleResp handleChooseRoleReq(ISession session, ChooseRoleReq chooseRoleReq) {
+        return roleService.handleChooseRoleReq(session,chooseRoleReq);
+    }
+
 }

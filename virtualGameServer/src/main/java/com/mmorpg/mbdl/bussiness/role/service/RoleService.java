@@ -34,10 +34,11 @@ public class RoleService {
     private final int serverToken = CommonUtils.getSeverTokenById(IdGeneratorFactory.getIntance().getRoleIdGenerator().generate());
     private final int maxRoleSize = RoleType.values().length;
 
+
     public AddRoleResp handleAddRoleReq(ISession session, AddRoleReq addRoleReq) {
         AddRoleResp addRoleResp = new AddRoleResp().setResult(false);
         RoleEntity roleEntity = roleEntityDao.findByNameAndServerToken(addRoleReq.getRoleName(), serverToken);
-        if (roleEntity != null){
+        if (roleEntity != null) {
             return addRoleResp.setResult(false);
         }
         List<RoleEntity> roleEntities = roleEntityDao.findAllByAccount(session.getAccount());
@@ -84,5 +85,10 @@ public class RoleService {
             deleteRoleResp.setResult(true);
         });
         return deleteRoleResp;
+    }
+
+    public ChooseRoleResp handleChooseRoleReq(ISession session, ChooseRoleReq chooseRoleReq) {
+        ChooseRoleResp chooseRoleResp = new ChooseRoleResp().setResult(false);
+        return chooseRoleResp;
     }
 }

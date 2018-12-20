@@ -15,6 +15,11 @@ import java.util.Set;
  */
 public class PacketMethodDifinition {
     private static final Logger logger = LoggerFactory.getLogger(PacketMethodDifinition.class);
+    private static PacketMethod packetMethodAnnoStatic;
+    static {
+        Set<Method> methods = ReflectionUtils.getAllMethods(PacketMethodDifinition.class,ReflectionUtils.withAnnotation(PacketMethod.class));
+        packetMethodAnnoStatic =((Method)methods.toArray()[0]).getAnnotation(PacketMethod.class);
+    }
     private Object bean;
     private Method method;
     private MethodAccess methodAccess;
@@ -81,9 +86,7 @@ public class PacketMethodDifinition {
 
     public void setPacketMethodAnno(PacketMethod packetMethodAnno) {
         if (packetMethodAnno == null){
-            Set<Method> methods = ReflectionUtils.getAllMethods(PacketMethodDifinition.class,ReflectionUtils.withAnnotation(PacketMethod.class));
-            PacketMethod packetMethodAnn = ((Method)methods.toArray()[0]).getAnnotation(PacketMethod.class);
-            this.packetMethodAnno = packetMethodAnn;
+            this.packetMethodAnno = packetMethodAnnoStatic;
             return;
         }
         this.packetMethodAnno = packetMethodAnno;
