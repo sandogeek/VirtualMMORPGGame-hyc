@@ -19,7 +19,7 @@ class StorageJetCacheTest extends TestWithSpring {
     void create() {
         String account = "sandoTestCreate";
         AccountEntity accountEntity = new AccountEntity();
-        // accountEntity.setPlayerId(1222L);
+        // accountEntity.setRoleId(1222L);
         accountEntity.setAccount(account);
         accountEntity.setPassword("123556");
         Assertions.assertThrows(DataIntegrityViolationException.class,()->{
@@ -31,7 +31,7 @@ class StorageJetCacheTest extends TestWithSpring {
         String account = "createNotExsist";
         iStorage.remove(account);
         AccountEntity accountEntity = new AccountEntity();
-        // accountEntity.setPlayerId(1223L);
+        // accountEntity.setRoleId(1223L);
         accountEntity.setAccount(account);
         accountEntity.setPassword("123556");
         AccountEntity accountEntity1 = iStorage.create(accountEntity);
@@ -44,13 +44,13 @@ class StorageJetCacheTest extends TestWithSpring {
         String account = "createWithUniqueConfilict";
         iStorage.remove(account);
         AccountEntity accountEntity = new AccountEntity();
-        // accountEntity.setPlayerId(1024L);
+        // accountEntity.setRoleId(1024L);
         accountEntity.setAccount(account);
         accountEntity.setPassword("123556");
         iStorage.create(accountEntity);
 
         AccountEntity accountEntity2 = new AccountEntity();
-        // accountEntity.setPlayerId(1024L);
+        // accountEntity.setRoleId(1024L);
         accountEntity.setAccount(account+1);
         accountEntity.setPassword("123556");
 
@@ -80,7 +80,7 @@ class StorageJetCacheTest extends TestWithSpring {
         iStorage.remove(account);
         AccountEntity accountEntity = iStorage.getOrCreate(account, (id) -> {
             AccountEntity playerAccountEntity = new AccountEntity();
-            // playerAccountEntity.setPlayerId(86L);
+            // playerAccountEntity.setRoleId(86L);
             playerAccountEntity.setAccount(id);
             playerAccountEntity.setPassword("123556");
             return playerAccountEntity;

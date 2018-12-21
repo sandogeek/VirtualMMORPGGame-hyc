@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class WsSession extends AbstractSession {
     private Logger logger = LoggerFactory.getLogger(WsSession.class);
     private Channel channel;
-    private Long playerId;
+    private Long roleId;
     private String account;
     /** 临时分发器Id，用于未登录时使用 */
     private Long tempDispatcherId;
@@ -36,14 +36,14 @@ public class WsSession extends AbstractSession {
 
     @Override
     public Serializable selectDispatcherId(){
-        if (playerId==null){
+        if (roleId ==null){
             if (tempDispatcherId ==null){
                 // -1 到 -16
                 tempDispatcherId = getId().hashCode()% tempDispatcherIdMaxValue - tempDispatcherIdMaxValue;
             }
             return tempDispatcherId;
         }
-        return playerId;
+        return roleId;
     }
 
     public void setTempDispatcherIdMaxValue(Long tempDispatcherIdMaxValue) {
@@ -58,7 +58,7 @@ public class WsSession extends AbstractSession {
     @Override
     public ChannelFuture sendPacket(AbstractPacket abstractPacket,boolean flushNow){
         if (!channel.isActive()) {
-            logger.warn("发包失败：发包时channel={}已inActive, playerId={}", channel, playerId);
+            logger.warn("发包失败：发包时channel={}已inActive, roleId={}", channel, roleId);
             return null;
         }
         if (flushNow){
@@ -98,17 +98,17 @@ public class WsSession extends AbstractSession {
     }
 
     @Override
-    public Long getPlayerId() {
-        return playerId;
+    public Long getRoleId() {
+        return roleId;
     }
 
     /**
      * 设置玩家playerId
-     * @param playerId 玩家id
+     * @param roleId 玩家id
      */
     @Override
-    public void setPlayerId(Long playerId){
-        this.playerId = playerId;
+    public void setRoleId(Long roleId){
+        this.roleId = roleId;
     }
 
     @Override

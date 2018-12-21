@@ -27,7 +27,7 @@ class AccountEntityServiceTest {
         accountEntity.setAccount("sando"+ new Random().nextInt(300));
         accountEntity.setPassword("123556");
         IdGenerator idGenerator = IdGeneratorFactory.getIntance().getRoleIdGenerator();
-        // accountEntity.setPlayerId(playerId);
+        // accountEntity.setRoleId(playerId);
         for (int i=0;i<5;i++){
             try {
                 // playerAccountEntityService.saveAndFlush(accountEntity);
@@ -38,7 +38,7 @@ class AccountEntityServiceTest {
         }
 
         // AccountEntity playerAccountEntity1 = playerAccountEntityService.get(playerId);
-        // Assert.assertEquals(new Long(playerId), playerAccountEntity1.getPlayerId());
+        // Assert.assertEquals(new Long(playerId), playerAccountEntity1.getRoleId());
     }
 
     @Test
@@ -48,7 +48,7 @@ class AccountEntityServiceTest {
         accountEntity2.setAccount("sando"+ new Random().nextInt(300));
         accountEntity2.setPassword("123556");
         // IdGenerator idGenerator = IdGeneratorFactory.getInstance().getRoleIdGenerator();
-        // accountEntity2.setPlayerId(playerId);
+        // accountEntity2.setRoleId(playerId);
         // playerAccountEntityService.saveAndFlush(accountEntity2);
         Thread.sleep(5000);
         // playerAccountEntityService.delete(playerId);

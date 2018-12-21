@@ -68,7 +68,7 @@ public class StaticResHandler implements BeanFactoryPostProcessor {
             return worker;
         };
 
-        String threadSize = SpringPropertiesUtil.getProperty("sever.config.static.res.load.thread.size");
+        String threadSize = SpringPropertiesUtil.getProperty("server.config.static.res.load.thread.size");
         forkJoinPool = new ForkJoinPool(Integer.parseInt(threadSize), factory, null, false);
     }
 
@@ -95,9 +95,9 @@ public class StaticResHandler implements BeanFactoryPostProcessor {
         AbstractMetadataReaderPostProcessor.setBeanFactory(beanFactory);
         EnhanceStarter.init();
 
-        String suffix = SpringPropertiesUtil.getProperty("sever.config.static.res.load.suffix");
+        String suffix = SpringPropertiesUtil.getProperty("server.config.static.res.load.suffix");
         this.suffix = StringUtils.isEmpty(suffix)?".xlsx":suffix;
-        this.packageToScan = SpringPropertiesUtil.getProperty("sever.config.static.res.load.package.scan");
+        this.packageToScan = SpringPropertiesUtil.getProperty("server.config.static.res.load.package.scan");
         Preconditions.checkNotNull(packageToScan,"静态资源包扫描路径不能为空");
 
         classesScan(packageToScan,beanFactory);

@@ -72,13 +72,13 @@ public interface ISession {
      * 获取玩家id
      * @return 玩家id
      */
-    Long getPlayerId();
+    Long getRoleId();
 
     /**
      * 设置玩家id
      * @return 玩家id
      */
-    void setPlayerId(Long playerId);
+    void setRoleId(Long roleId);
 
     /**
      * 获取账号

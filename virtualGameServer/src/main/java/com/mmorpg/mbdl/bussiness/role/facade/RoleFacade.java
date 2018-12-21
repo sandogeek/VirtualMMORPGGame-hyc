@@ -1,11 +1,13 @@
 package com.mmorpg.mbdl.bussiness.role.facade;
 
+import com.google.common.eventbus.Subscribe;
 import com.mmorpg.mbdl.bussiness.role.packet.*;
 import com.mmorpg.mbdl.bussiness.role.service.RoleService;
 import com.mmorpg.mbdl.framework.communicate.websocket.annotation.PacketHandler;
 import com.mmorpg.mbdl.framework.communicate.websocket.annotation.PacketMethod;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.ISession;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.SessionState;
+import com.mmorpg.mbdl.framework.event.preset.SessionCloseEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,5 +44,8 @@ public class RoleFacade {
     public ChooseRoleResp handleChooseRoleReq(ISession session, ChooseRoleReq chooseRoleReq) {
         return roleService.handleChooseRoleReq(session,chooseRoleReq);
     }
-
+    @Subscribe
+    public void handleSessionClose(SessionCloseEvent sessionCloseEvent){
+        roleService.handleSessionClose(sessionCloseEvent);
+    }
 }

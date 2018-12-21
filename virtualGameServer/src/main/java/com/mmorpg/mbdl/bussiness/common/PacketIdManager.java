@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * websocket frame的id
+ * 玩家Id管理器
  * TODO 通过注解定义Req、Resp后，这个类使用枚举的方式配置
  * @author sando
  */
@@ -23,21 +23,23 @@ import java.util.Set;
 public class PacketIdManager {
     private static final Logger logger= LoggerFactory.getLogger(PacketIdManager.class);
     private BiMap<Short,Class<? extends AbstractPacket>> packetId2AbstractPacket = HashBiMap.create();
-    // <packetId->protobuf编解码代理对象>
+    /**
+     * <packetId->protobuf编解码代理对象>
+      */
     private Map<Short, Codec> packetId2Codec = new HashMap<>();
 
     public static final short PING_HEART_BEAT = 1001;
     public static final short PONG_HEART_BEAT = 1002;
-
+    // login
     public static final short LOGIN_AUTH_REQ = 10001;
     public static final short LOGIN_RESULT_RESP = 10002;
-
+    // chat
     public static final short CHAT_REQ = 10101;
     public static final short CHAT_RESP = 10102;
-
+    // register
     public static final short REGISTER_REQ = 10201;
     public static final short REGISTER_RESP = 10202;
-
+    // role
     public static final short GET_ROLE_LIST_REQ = 10301;
     public static final short GET_ROLE_LIST_RESP = 10302;
     public static final short ADD_ROLE_REQ = 10303;
@@ -46,6 +48,10 @@ public class PacketIdManager {
     public static final short DELETE_ROLE_RESP = 10306;
     public static final short CHOOSE_ROLE_REQ = 10307;
     public static final short CHOOSE_ROLE_RESP = 10308;
+    // world
+    public static final short FIRST_ENTER_SCENE_RESP = 10401;
+    // object
+    public static final short ROLE_UI_INFO_RESP = 10401;
 
     private static PacketIdManager self;
     public static PacketIdManager getInstance(){

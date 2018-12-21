@@ -6,31 +6,31 @@ package com.mmorpg.mbdl.bussiness.object.model;
  * @author Sando Geek
  * @since v1.0 2018/12/11
  **/
-public abstract class AbstractCreature extends AbstractVisibleObject {
+public abstract class AbstractCreature extends AbstractVisibleSceneObject {
     /**
-     * 血量
+     * 当前血量
      */
-    private long hp;
+    private long currentHp;
     /**
-     * 蓝量
+     * 当前蓝量
      */
-    private long mp;
+    private long currentMp;
 
-    public long getHp() {
-        return hp;
+    public long getCurrentHp() {
+        return currentHp;
     }
 
-    public AbstractCreature setHp(long hp) {
-        this.hp = hp;
+    public AbstractCreature setCurrentHp(long currentHp) {
+        this.currentHp = currentHp;
         return this;
     }
 
-    public long getMp() {
-        return mp;
+    public long getCurrentMp() {
+        return currentMp;
     }
 
-    public AbstractCreature setMp(long mp) {
-        this.mp = mp;
+    public AbstractCreature setCurrentMp(long currentMp) {
+        this.currentMp = currentMp;
         return this;
     }
 }

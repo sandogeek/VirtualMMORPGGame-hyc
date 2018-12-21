@@ -25,6 +25,9 @@ public class TaskQueue {
 
     /**
      * 往任务队列提交一个需要串行执行的任务(加到队尾)
+     * TODO 返回CustomScheduledFuture来避免串行任务ScheduledFuture丢失的问题，CustomScheduledFuture内部包含一个
+     * 真正的ScheduledFuture，任务加到线程池时赋值（所以任务内部需要有字段CustomScheduledFuture，在{@link TaskQueue#andThen}
+     * 获取并给真正的ScheduledFuture赋值）
      * @return
      */
     public ScheduledFuture<?> submit(AbstractTask abstractTask){

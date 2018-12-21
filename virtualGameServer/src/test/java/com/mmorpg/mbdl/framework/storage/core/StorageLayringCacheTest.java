@@ -23,7 +23,7 @@ class StorageLayringCacheTest {
         // AccountEntity fromCache = iStorage.getFromCache(1222L, AccountEntity.class);
         // iStorage.create(1222L,(id)->{
         //     AccountEntity playerAccountEntity = new AccountEntity();
-        //     playerAccountEntity.setPlayerId(id);
+        //     playerAccountEntity.setRoleId(id);
         //     playerAccountEntity.setAccount("sando"+ new Random().nextInt(300));
         //     playerAccountEntity.setPassword("123556");
         //     return playerAccountEntity;

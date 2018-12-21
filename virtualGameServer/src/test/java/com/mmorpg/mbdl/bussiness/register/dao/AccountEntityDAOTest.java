@@ -22,7 +22,7 @@ class AccountEntityDAOTest {
         accountEntity.setAccount("sando3");
         accountEntity.setPassword("123456");
         IdGenerator idGenerator = IdGeneratorFactory.getIntance().getRoleIdGenerator();
-        // accountEntity.setPlayerId(idGenerator.generate());
+        // accountEntity.setRoleId(idGenerator.generate());
         playerAccountEntityDAO.save(accountEntity);
     }
 }

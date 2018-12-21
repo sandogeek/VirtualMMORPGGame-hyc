@@ -21,6 +21,7 @@ public interface RoleEntityDao extends IStorage<Long, RoleEntity> {
 
     /**
      * 同服角色名称不能相同
+     * TODO 避免同一个RoleEntity内存中有两份，在RoleManager中创建另一个缓存用来存储name serverToken -> RoleEntity
      * @param name 角色名称
      * @param serverToken 服务器Id
      * @return 角色实体列表

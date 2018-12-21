@@ -3,12 +3,12 @@ package com.mmorpg.mbdl.bussiness.object.model;
 import java.util.Objects;
 
 /**
- * 唯一对象
+ * 场景对象
  *
  * @author Sando Geek
  * @since v1.0 2018/12/11
  **/
-public abstract class AbstractObject {
+public abstract class AbstractSceneObject {
     /**
      * 唯一id
      */
@@ -34,7 +34,7 @@ public abstract class AbstractObject {
      * 设置对象名称
      * @param name 对象名称
      */
-    public AbstractObject setName(String name) {
+    public AbstractSceneObject setName(String name) {
         this.name = name;
         return this;
     }
@@ -47,7 +47,7 @@ public abstract class AbstractObject {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        AbstractObject that = (AbstractObject) o;
+        AbstractSceneObject that = (AbstractSceneObject) o;
         return Objects.equals(objectId, that.objectId);
     }
 

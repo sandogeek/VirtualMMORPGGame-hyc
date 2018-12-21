@@ -10,6 +10,7 @@ import com.alicp.jetcache.support.FastjsonKeyConvertor;
 import com.alicp.jetcache.support.KryoValueDecoder;
 import com.alicp.jetcache.support.KryoValueEncoder;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
@@ -33,6 +34,9 @@ import java.util.concurrent.TimeUnit;
 // @EnableMethodCache(basePackages = "com.mmorpg.mbdl")
 // @EnableCreateCacheAnnotation
 public class JetCacheConfiguration {
+    @Value("${jetcache.statIntervalMinutes}")
+    private int statIntervalMinutes = 0;
+
     @Bean
     JetCacheBeanPostProcessor jetCacheBeanPostProcessor(){
         return  new JetCacheBeanPostProcessor();
@@ -77,6 +81,7 @@ public class JetCacheConfiguration {
         globalCacheConfig.setRemoteCacheBuilders(remoteBuilders);
         globalCacheConfig.setStatIntervalMinutes(15);
         globalCacheConfig.setAreaInCacheName(false);
+        globalCacheConfig.setStatIntervalMinutes(statIntervalMinutes);
 
         return globalCacheConfig;
     }

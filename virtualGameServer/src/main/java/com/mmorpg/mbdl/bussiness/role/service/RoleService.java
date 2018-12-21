@@ -1,15 +1,14 @@
 package com.mmorpg.mbdl.bussiness.role.service;
 
-import com.mmorpg.mbdl.bussiness.common.GlobalSettingRes;
-import com.mmorpg.mbdl.bussiness.role.dao.RoleEntityDao;
 import com.mmorpg.mbdl.bussiness.role.entity.RoleEntity;
-import com.mmorpg.mbdl.bussiness.role.model.RoleType;
+import com.mmorpg.mbdl.bussiness.role.manager.RoleManager;
 import com.mmorpg.mbdl.bussiness.role.packet.*;
 import com.mmorpg.mbdl.bussiness.role.packet.vo.RoleInfo;
-import com.mmorpg.mbdl.framework.common.generator.IdGeneratorFactory;
-import com.mmorpg.mbdl.framework.common.utils.CommonUtils;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.ISession;
-import com.mmorpg.mbdl.framework.resource.exposed.IStaticRes;
+import com.mmorpg.mbdl.framework.communicate.websocket.model.SessionState;
+import com.mmorpg.mbdl.framework.event.preset.SessionCloseEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -24,36 +23,21 @@ import java.util.Optional;
  **/
 @Component
 public class RoleService {
+    private static Logger logger = LoggerFactory.getLogger(RoleService.class);
     @Autowired
-    private RoleEntityDao roleEntityDao;
-    @Autowired
-    private IStaticRes<String, GlobalSettingRes> globalSettingResIStaticRes;
-    /**
-     * 由数据中心和服务器id确定
-     */
-    private final int serverToken = CommonUtils.getSeverTokenById(IdGeneratorFactory.getIntance().getRoleIdGenerator().generate());
-    private final int maxRoleSize = RoleType.values().length;
+    private RoleManager roleManager;
 
 
     public AddRoleResp handleAddRoleReq(ISession session, AddRoleReq addRoleReq) {
         AddRoleResp addRoleResp = new AddRoleResp().setResult(false);
-        RoleEntity roleEntity = roleEntityDao.findByNameAndServerToken(addRoleReq.getRoleName(), serverToken);
-        if (roleEntity != null) {
-            return addRoleResp.setResult(false);
+        if (roleManager.isExist(addRoleReq)){
+            return addRoleResp;
         }
-        List<RoleEntity> roleEntities = roleEntityDao.findAllByAccount(session.getAccount());
-        if (roleEntities.size()< maxRoleSize) {
-            RoleEntity roleEntityToCreate = new RoleEntity();
-            roleEntityToCreate.setAccount(session.getAccount())
-                    .setName(addRoleReq.getRoleName())
-                    .setRoleId(IdGeneratorFactory.getIntance().getRoleIdGenerator().generate())
-                    .setRoleTypeCode(addRoleReq.getRoleType().getCode())
-                    .setMapId(globalSettingResIStaticRes.get("InitMapId").getValue())
-                    .setServerToken(serverToken);
-            roleEntityDao.create(roleEntityToCreate);
-            RoleInfo roleInfo = new RoleInfo().setName(roleEntityToCreate.getName())
-                    .setRoleType(roleEntityToCreate.getRoleType())
-                    .setLevel(roleEntityToCreate.getLevel());
+        if (roleManager.canCreateRole(session.getAccount())){
+            RoleEntity roleEntity = roleManager.createRoleEntity(session, addRoleReq);
+            RoleInfo roleInfo = new RoleInfo().setName(roleEntity.getName())
+                    .setRoleType(roleEntity.getRoleType())
+                    .setLevel(roleEntity.getLevel());
             addRoleResp.setResult(true);
             addRoleResp.setRoleInfo(roleInfo);
         }
@@ -61,7 +45,7 @@ public class RoleService {
     }
 
     public GetRoleListResp handleGetRoleListReq(ISession session, GetRoleListReq getRoleListReq) {
-        List<RoleEntity> roleEntities = roleEntityDao.findAllByAccount(session.getAccount());
+        List<RoleEntity> roleEntities = roleManager.getRoleEntityList(session.getAccount());
         GetRoleListResp roleListResp = new GetRoleListResp();
         List<RoleInfo> roleInfoList = roleListResp.getRoleInfoList();
         roleEntities.stream().forEach(roleEntity -> {
@@ -76,11 +60,11 @@ public class RoleService {
 
     public DeleteRoleResp handleDeleteRoleReq(ISession session, DeleteRoleReq deleteRoleReq) {
         DeleteRoleResp deleteRoleResp = new DeleteRoleResp().setResult(false);
-        List<RoleEntity> roleEntities = roleEntityDao.findAllByAccount(session.getAccount());
+        List<RoleEntity> roleEntities = roleManager.getRoleEntityList(session.getAccount());
         Optional<RoleEntity> entityOptional = roleEntities.stream().filter(roleEntity -> roleEntity.getName().equals(deleteRoleReq.getRoleName()))
                 .findAny();
         entityOptional.ifPresent(roleEntity -> {
-            roleEntityDao.remove(roleEntity.getId());
+            roleManager.removeRoleEntity(roleEntity.getId());
             deleteRoleResp.setNameDelete(roleEntity.getName());
             deleteRoleResp.setResult(true);
         });
@@ -89,6 +73,19 @@ public class RoleService {
 
     public ChooseRoleResp handleChooseRoleReq(ISession session, ChooseRoleReq chooseRoleReq) {
         ChooseRoleResp chooseRoleResp = new ChooseRoleResp().setResult(false);
+        RoleEntity roleEntity = roleManager.findByNameAndServerToken(chooseRoleReq.getName());
+        boolean success = roleManager.initRole(session, roleEntity);
+        chooseRoleResp.setResult(success);
+        session.setRoleId(roleEntity.getId());
+        session.setState(SessionState.GAMEING);
         return chooseRoleResp;
+    }
+
+    /**
+     * 处理session关闭事件
+     * @param sessionCloseEvent
+     */
+    public void handleSessionClose(SessionCloseEvent sessionCloseEvent) {
+        roleManager.removeRoleBySession(sessionCloseEvent.getSession());
     }
 }

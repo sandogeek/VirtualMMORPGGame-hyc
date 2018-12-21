@@ -33,7 +33,7 @@ public class ChatFacade {
             @Override
             public void execute() {
                 // 根据不同的频道，获取该频道所有的人的Set，通过循环这个Set,把消息发出去
-                // for (Player player:
+                // for (Role player:
                 //      ) {
                 //    player.sendPacket(chatResp);
                 // }
