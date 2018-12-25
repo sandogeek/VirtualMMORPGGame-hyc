@@ -1,5 +1,6 @@
 package com.mmorpg.mbdl.bussiness.object.model;
 
+import com.mmorpg.mbdl.bussiness.object.packet.RoleUiInfoResp;
 import com.mmorpg.mbdl.bussiness.role.entity.RoleEntity;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.AbstractPacket;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.ISession;
@@ -20,7 +21,11 @@ public class Role extends AbstractCreature {
 
     @Override
     public AbstractPacket getUiInfoResp(Role witness) {
-        return null;
+        return new RoleUiInfoResp()
+                .setRoleId(roleEntity.getId())
+                .setName(roleEntity.getName())
+                .setLevel(roleEntity.getLevel())
+                .setRoleType(roleEntity.getRoleType());
     }
 
     public RoleEntity getRoleEntity() {
@@ -60,6 +65,4 @@ public class Role extends AbstractCreature {
     public ChannelFuture sendPacket(AbstractPacket abstractPacket,boolean flushNow){
         return session.sendPacket(abstractPacket,flushNow);
     }
-
-
 }

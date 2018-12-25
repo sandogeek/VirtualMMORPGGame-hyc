@@ -132,6 +132,13 @@ public class RoleManager {
     }
 
     /**
+     * 通过session获取role
+     * @param session
+     */
+    public Role getRoleBySession(ISession session) {
+        return session2Role.get(session);
+    }
+    /**
      * 删除角色实体
      * @param id 角色id
      */

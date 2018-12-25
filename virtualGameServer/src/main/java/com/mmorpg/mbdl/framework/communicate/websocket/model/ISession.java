@@ -1,5 +1,6 @@
 package com.mmorpg.mbdl.framework.communicate.websocket.model;
 
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelId;
 
@@ -69,14 +70,20 @@ public interface ISession {
 
     // String getUid(); java.rmi.server.UID
     /**
-     * 获取玩家id
-     * @return 玩家id
+     * 获取角色id
+     * @return 角色id
      */
     Long getRoleId();
 
     /**
-     * 设置玩家id
-     * @return 玩家id
+     * 获取Channel
+     * @return Channel
+     */
+    Channel getChannel();
+
+    /**
+     * 设置角色id
+     * @param roleId 角色id
      */
     void setRoleId(Long roleId);
 

@@ -1,9 +1,11 @@
 package com.mmorpg.mbdl.bussiness.role.service;
 
+import com.mmorpg.mbdl.bussiness.object.model.Role;
 import com.mmorpg.mbdl.bussiness.role.entity.RoleEntity;
 import com.mmorpg.mbdl.bussiness.role.manager.RoleManager;
 import com.mmorpg.mbdl.bussiness.role.packet.*;
 import com.mmorpg.mbdl.bussiness.role.packet.vo.RoleInfo;
+import com.mmorpg.mbdl.bussiness.world.manager.SceneManager;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.ISession;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.SessionState;
 import com.mmorpg.mbdl.framework.event.preset.SessionCloseEvent;
@@ -86,6 +88,13 @@ public class RoleService {
      * @param sessionCloseEvent
      */
     public void handleSessionClose(SessionCloseEvent sessionCloseEvent) {
-        roleManager.removeRoleBySession(sessionCloseEvent.getSession());
+        ISession session = sessionCloseEvent.getSession();
+        Role role = roleManager.getRoleBySession(session);
+        if (role == null){
+            return;
+        }
+        int sceneId = role.getSceneId();
+        SceneManager.getInstance().getSceneBySceneId(sceneId).disappearInScene(role);
+        roleManager.removeRoleBySession(session);
     }
 }

@@ -27,7 +27,7 @@ public class WsSession extends AbstractSession {
     private Long tempDispatcherId;
     private Long tempDispatcherIdMaxValue;
     /** 是否生成新的DelayedTask */
-    private static AtomicBoolean generateDelayedTask = new AtomicBoolean(true);
+    private AtomicBoolean generateDelayedTask = new AtomicBoolean(true);
 
     public WsSession(Channel channel) {
         super(channel.id(), ((InetSocketAddress) channel.remoteAddress()).getAddress().getHostAddress());
@@ -87,6 +87,11 @@ public class WsSession extends AbstractSession {
             },true);
         }
         return future;
+    }
+
+    @Override
+    public Channel getChannel() {
+        return channel;
     }
 
     @Override

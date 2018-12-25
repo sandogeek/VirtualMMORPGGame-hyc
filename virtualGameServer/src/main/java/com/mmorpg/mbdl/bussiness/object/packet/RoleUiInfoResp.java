@@ -16,12 +16,34 @@ import org.springframework.stereotype.Component;
 @Component
 @ProtoDesc(description = "角色UI信息响应包")
 public class RoleUiInfoResp extends AbstractPacket {
+    @Protobuf(required = true,description = "角色id")
+    private long roleId;
     @Protobuf(required = true,description = "角色名称")
     private String name;
     @Protobuf(required = true,description = "角色等级")
     private int level;
     @Protobuf(required = true,description = "角色类型")
     private RoleType roleType;
+
+    public RoleUiInfoResp setRoleId(long roleId) {
+        this.roleId = roleId;
+        return this;
+    }
+
+    public RoleUiInfoResp setName(String name) {
+        this.name = name;
+        return this;
+    }
+
+    public RoleUiInfoResp setLevel(int level) {
+        this.level = level;
+        return this;
+    }
+
+    public RoleUiInfoResp setRoleType(RoleType roleType) {
+        this.roleType = roleType;
+        return this;
+    }
 
     @Override
     public short getPacketId() {

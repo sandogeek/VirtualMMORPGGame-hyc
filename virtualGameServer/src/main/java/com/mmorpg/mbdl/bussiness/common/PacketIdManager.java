@@ -50,8 +50,10 @@ public class PacketIdManager {
     public static final short CHOOSE_ROLE_RESP = 10308;
     // world
     public static final short FIRST_ENTER_SCENE_RESP = 10401;
+    public static final short OBJECT_DISAPPEAR_RESP = 10402;
+    public static final short ENTER_WORLD_REQ = 10403;
     // object
-    public static final short ROLE_UI_INFO_RESP = 10401;
+    public static final short ROLE_UI_INFO_RESP = 10501;
 
     private static PacketIdManager self;
     public static PacketIdManager getInstance(){

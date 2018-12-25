@@ -1,5 +1,6 @@
 package com.mmorpg.mbdl.bussiness.world.manager;
 
+import com.mmorpg.mbdl.bussiness.object.model.AbstractVisibleSceneObject;
 import com.mmorpg.mbdl.bussiness.world.resource.SceneRes;
 import com.mmorpg.mbdl.bussiness.world.scene.Scene;
 import com.mmorpg.mbdl.framework.resource.exposed.IStaticRes;
@@ -41,5 +42,16 @@ public class SceneManager {
 
     public Scene getSceneBySceneId(int sceneId){
         return sceneId2SceneMap.get(sceneId);
+    }
+
+    /**
+     * 将可见物切换到场景id为sceneId的场景
+     * @param visibleSceneObject 可见物
+     * @param sceneId 场景id
+     */
+    public void switchToSceneId(AbstractVisibleSceneObject visibleSceneObject,int sceneId){
+        getSceneBySceneId(visibleSceneObject.getSceneId()).disappearInScene(visibleSceneObject);
+        visibleSceneObject.setSceneId(sceneId);
+        getSceneBySceneId(sceneId).appearInScene(visibleSceneObject);
     }
 }

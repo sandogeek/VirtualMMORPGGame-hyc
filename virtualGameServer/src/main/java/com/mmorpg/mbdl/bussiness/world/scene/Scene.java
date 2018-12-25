@@ -2,7 +2,7 @@ package com.mmorpg.mbdl.bussiness.world.scene;
 
 import com.mmorpg.mbdl.bussiness.object.model.AbstractVisibleSceneObject;
 import com.mmorpg.mbdl.bussiness.object.model.Role;
-import com.mmorpg.mbdl.bussiness.world.packet.FirstEnterSceneResp;
+import com.mmorpg.mbdl.bussiness.world.packet.ObjectDisappearResp;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.AbstractPacket;
 
 import java.util.Map;
@@ -37,16 +37,14 @@ public class Scene {
         // 让角色自身看到所有可见物
         if (visibleSceneObject instanceof Role) {
             Role self = (Role)visibleSceneObject;
-            FirstEnterSceneResp firstEnterSceneResp = new FirstEnterSceneResp();
             for (AbstractVisibleSceneObject visibleObject : objectId2VisibleObject.values()) {
                 AbstractPacket uiInfoResp = visibleObject.getUiInfoResp(self);
                 if (uiInfoResp== null){
                     continue;
                 }
-                firstEnterSceneResp.getAbstractPacketList().add(uiInfoResp);
+                self.sendPacket(uiInfoResp);
             }
-            firstEnterSceneResp.setRoleUiInfo(self.getUiInfoResp(self));
-            self.sendPacket(firstEnterSceneResp);
+            self.sendPacket(self.getUiInfoResp(self));
             objId2Role.put(self.getRoleId(),self);
         }
         objectId2VisibleObject.put(visibleSceneObject.getObjectId(),visibleSceneObject);
@@ -57,7 +55,13 @@ public class Scene {
      * @param visibleSceneObject 消失在场景的可见物
      */
     public void disappearInScene(AbstractVisibleSceneObject visibleSceneObject) {
-
+        // 玩家不需要看到自己消失，先移除自己再发包，避免下线时发包失败
+        if (visibleSceneObject instanceof Role){
+            Role role = (Role) visibleSceneObject;
+            objId2Role.remove(role.getRoleId());
+        }
+        objId2Role.values().forEach(role -> role.sendPacket(new ObjectDisappearResp().setId(visibleSceneObject.getObjectId())));
+        objectId2VisibleObject.remove(visibleSceneObject.getObjectId());
     }
 
     public int getSceneId() {
