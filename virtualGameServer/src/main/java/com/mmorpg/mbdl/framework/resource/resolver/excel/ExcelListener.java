@@ -109,7 +109,7 @@ public class ExcelListener extends AnalysisEventListener<ArrayList<String>> {
                 Object resource = mapper.readValue(vClassObjectInJson, staticResDefinition.getvClass());
                 key2ResourceBuilder.put(staticResDefinition.getIdField().get(resource),resource);
             } catch (IOException e) {
-                throw new RuntimeException(String.format("生成资源类[%s]实例时发生IO异常,通常是由于单元格json格式错误或与类字段类型不对应所致",staticResDefinition.getvClass().getSimpleName()),e);
+                throw new RuntimeException(String.format("生成资源类[%s]实例时发生IO异常,通常是由于单元格json格式错误或与类字段类型不对应",staticResDefinition.getvClass().getSimpleName()),e);
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
