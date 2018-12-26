@@ -86,7 +86,7 @@ public class RoleManager {
                 .setName(addRoleReq.getRoleName())
                 .setRoleId(IdGeneratorFactory.getIntance().getRoleIdGenerator().generate())
                 .setRoleTypeCode(addRoleReq.getRoleType().getCode())
-                .setMapId(globalSettingResIStaticRes.get("InitMapId").getValue())
+                .setSceneId(globalSettingResIStaticRes.get("InitMapId").getValue())
                 .setServerToken(SERVER_TOKEN);
         roleEntityDao.create(roleEntityToCreate);
         return roleEntityToCreate;
@@ -98,21 +98,21 @@ public class RoleManager {
      * @param roleEntity
      * @return 成功，true,失败,false
      */
-    public boolean initRole(ISession session,RoleEntity roleEntity){
+    public Role initRole(ISession session,RoleEntity roleEntity){
         Role role = new Role();
         role.setRoleId(roleEntity.getId())
                 .setSession(session)
                 .setRoleEntity(roleEntity)
-                .setCurrentHp(100)
-                .setCurrentMp(100)
-                .setSceneId(roleEntity.getMapId())
+                .setCurrentHp(100L).setCurrentMp(100L)
+                .setMaxHp(100L).setMaxMp(100L)
+                .setSceneId(roleEntity.getSceneId())
                 .setName(roleEntity.getName());
         if (getSession2Role().values().contains(role)){
             logger.error("玩家[roleId={}]重复初始化",role.getRoleId());
-            return false;
+            return null;
         }
         addRole(role);
-        return true;
+        return role;
     }
 
     /**

@@ -43,19 +43,19 @@ public class RoleEntity implements IEntity<Long> {
     @Transient
     private RoleType roleType;
     @Column(nullable = false)
-    private int mapId;
+    private int sceneId;
 
     @Override
     public Long getId() {
         return roleId;
     }
 
-    public int getMapId() {
-        return mapId;
+    public int getSceneId() {
+        return sceneId;
     }
 
-    public RoleEntity setMapId(int mapId) {
-        this.mapId = mapId;
+    public RoleEntity setSceneId(int sceneId) {
+        this.sceneId = sceneId;
         return this;
     }
 

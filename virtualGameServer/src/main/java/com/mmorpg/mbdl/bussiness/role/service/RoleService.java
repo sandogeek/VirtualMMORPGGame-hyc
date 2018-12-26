@@ -1,6 +1,7 @@
 package com.mmorpg.mbdl.bussiness.role.service;
 
 import com.mmorpg.mbdl.bussiness.object.model.Role;
+import com.mmorpg.mbdl.bussiness.object.packet.CustomRoleUiInfoResp;
 import com.mmorpg.mbdl.bussiness.role.entity.RoleEntity;
 import com.mmorpg.mbdl.bussiness.role.manager.RoleManager;
 import com.mmorpg.mbdl.bussiness.role.packet.*;
@@ -76,8 +77,19 @@ public class RoleService {
     public ChooseRoleResp handleChooseRoleReq(ISession session, ChooseRoleReq chooseRoleReq) {
         ChooseRoleResp chooseRoleResp = new ChooseRoleResp().setResult(false);
         RoleEntity roleEntity = roleManager.findByNameAndServerToken(chooseRoleReq.getName());
-        boolean success = roleManager.initRole(session, roleEntity);
-        chooseRoleResp.setResult(success);
+        Role role = roleManager.initRole(session, roleEntity);
+        if (role!=null){
+            chooseRoleResp.setResult(true);
+            CustomRoleUiInfoResp customRoleUiInfoResp = new CustomRoleUiInfoResp()
+                    .setMaxHp(role.getMaxHp()).setMaxMp(role.getMaxMp())
+                    .setCurrentMp(role.getCurrentMp())
+                    .setCurrentHp(role.getCurrentHp());
+            customRoleUiInfoResp.setRoleId(role.getRoleId())
+                    .setName(role.getName())
+                    .setLevel(roleEntity.getLevel())
+                    .setRoleType(roleEntity.getRoleType());
+            chooseRoleResp.setCustomRoleUiInfoResp(customRoleUiInfoResp);
+        }
         session.setRoleId(roleEntity.getId());
         session.setState(SessionState.GAMEING);
         return chooseRoleResp;

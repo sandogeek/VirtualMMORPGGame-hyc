@@ -1,9 +1,12 @@
 package com.mmorpg.mbdl.bussiness.world.manager;
 
 import com.mmorpg.mbdl.bussiness.object.model.AbstractVisibleSceneObject;
+import com.mmorpg.mbdl.bussiness.object.model.Role;
+import com.mmorpg.mbdl.bussiness.role.entity.RoleEntity;
 import com.mmorpg.mbdl.bussiness.world.resource.SceneRes;
-import com.mmorpg.mbdl.bussiness.world.scene.Scene;
+import com.mmorpg.mbdl.bussiness.world.scene.model.Scene;
 import com.mmorpg.mbdl.framework.resource.exposed.IStaticRes;
+import com.mmorpg.mbdl.framework.storage.core.IStorage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -23,6 +26,8 @@ public class SceneManager {
     private Map<Integer, Scene> sceneId2SceneMap = new HashMap<>(16);
     @Autowired
     private IStaticRes<Integer, SceneRes> id2Scene;
+    @Autowired
+    private IStorage<Long, RoleEntity> roleEntityIStorage;
 
     @PostConstruct
     private void init() {
@@ -52,6 +57,11 @@ public class SceneManager {
     public void switchToSceneId(AbstractVisibleSceneObject visibleSceneObject,int sceneId){
         getSceneBySceneId(visibleSceneObject.getSceneId()).disappearInScene(visibleSceneObject);
         visibleSceneObject.setSceneId(sceneId);
+        if (visibleSceneObject instanceof Role){
+            Role role = (Role) visibleSceneObject;
+            role.getRoleEntity().setSceneId(sceneId);
+            roleEntityIStorage.update(role.getRoleEntity());
+        }
         getSceneBySceneId(sceneId).appearInScene(visibleSceneObject);
     }
 }

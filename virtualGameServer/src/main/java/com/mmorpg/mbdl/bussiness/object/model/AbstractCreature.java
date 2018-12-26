@@ -16,6 +16,28 @@ public abstract class AbstractCreature extends AbstractVisibleSceneObject {
      */
     private long currentMp;
 
+    private long maxHp;
+
+    private long maxMp;
+
+    public long getMaxHp() {
+        return maxHp;
+    }
+
+    public AbstractCreature setMaxHp(long maxHp) {
+        this.maxHp = maxHp;
+        return this;
+    }
+
+    public long getMaxMp() {
+        return maxMp;
+    }
+
+    public AbstractCreature setMaxMp(long maxMp) {
+        this.maxMp = maxMp;
+        return this;
+    }
+
     public long getCurrentHp() {
         return currentHp;
     }

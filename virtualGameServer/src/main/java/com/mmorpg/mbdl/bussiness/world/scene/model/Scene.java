@@ -1,4 +1,4 @@
-package com.mmorpg.mbdl.bussiness.world.scene;
+package com.mmorpg.mbdl.bussiness.world.scene.model;
 
 import com.mmorpg.mbdl.bussiness.object.model.AbstractVisibleSceneObject;
 import com.mmorpg.mbdl.bussiness.object.model.Role;
@@ -44,7 +44,6 @@ public class Scene {
                 }
                 self.sendPacket(uiInfoResp);
             }
-            self.sendPacket(self.getUiInfoResp(self));
             objId2Role.put(self.getRoleId(),self);
         }
         objectId2VisibleObject.put(visibleSceneObject.getObjectId(),visibleSceneObject);
