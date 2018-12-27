@@ -157,7 +157,7 @@ public abstract class AbstractTask implements Runnable {
         this.targetLogger = targetLogger;
     }
 
-    public boolean isLogOrNot() {
+    private boolean isLogOrNot() {
         return logOrNot;
     }
 

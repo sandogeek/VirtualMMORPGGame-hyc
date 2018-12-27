@@ -13,6 +13,8 @@ public abstract class FixedRateTask extends AbstractTask {
         this.initalDelay = initalDelay;
         this.period = period;
         this.timeUnit = timeUnit;
+        // 默认不打印日志
+        this.setLogOrNot(false);
     }
 
     public long getInitalDelay() {
