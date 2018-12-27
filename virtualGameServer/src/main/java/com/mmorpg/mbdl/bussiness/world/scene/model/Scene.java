@@ -2,6 +2,7 @@ package com.mmorpg.mbdl.bussiness.world.scene.model;
 
 import com.mmorpg.mbdl.bussiness.object.model.AbstractVisibleSceneObject;
 import com.mmorpg.mbdl.bussiness.object.model.Role;
+import com.mmorpg.mbdl.bussiness.world.manager.SceneManager;
 import com.mmorpg.mbdl.bussiness.world.packet.ObjectDisappearResp;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.AbstractPacket;
 
@@ -39,11 +40,12 @@ public class Scene {
             Role self = (Role)visibleSceneObject;
             for (AbstractVisibleSceneObject visibleObject : objectId2VisibleObject.values()) {
                 AbstractPacket uiInfoResp = visibleObject.getUiInfoResp(self);
-                if (uiInfoResp== null){
+                if (uiInfoResp== null) {
                     continue;
                 }
                 self.sendPacket(uiInfoResp);
             }
+            self.sendPacket(SceneManager.getInstance().getSceneUiInfoResp(self));
             objId2Role.put(self.getRoleId(),self);
         }
         objectId2VisibleObject.put(visibleSceneObject.getObjectId(),visibleSceneObject);

@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * 玩家Id管理器
+ * 包Id管理器
  * TODO 通过注解定义Req、Resp后，这个类使用枚举的方式配置
  * @author sando
  */
@@ -30,16 +30,16 @@ public class PacketIdManager {
 
     public static final short PING_HEART_BEAT = 1001;
     public static final short PONG_HEART_BEAT = 1002;
-    // login
+    /** login */
     public static final short LOGIN_AUTH_REQ = 10001;
     public static final short LOGIN_RESULT_RESP = 10002;
-    // chat
+    /** chat */
     public static final short CHAT_REQ = 10101;
     public static final short CHAT_RESP = 10102;
-    // register
+    /** register */
     public static final short REGISTER_REQ = 10201;
     public static final short REGISTER_RESP = 10202;
-    // role
+    /** role */
     public static final short GET_ROLE_LIST_REQ = 10301;
     public static final short GET_ROLE_LIST_RESP = 10302;
     public static final short ADD_ROLE_REQ = 10303;
@@ -48,12 +48,12 @@ public class PacketIdManager {
     public static final short DELETE_ROLE_RESP = 10306;
     public static final short CHOOSE_ROLE_REQ = 10307;
     public static final short CHOOSE_ROLE_RESP = 10308;
-    // world
-    public static final short FIRST_ENTER_SCENE_RESP = 10401;
+    /** world */
+    public static final short SWITCH_SCENE_REQ = 10401;
     public static final short OBJECT_DISAPPEAR_RESP = 10402;
     public static final short ENTER_WORLD_REQ = 10403;
     public static final short SCENE_UI_INFO_RESP = 10404;
-    // object
+    /** object */
     public static final short ROLE_UI_INFO_RESP = 10501;
     public static final short CUSTOM_ROLE_UI_INFO_RESP = 10502;
 

@@ -79,12 +79,7 @@ public class WsSession extends AbstractSession {
                     generateDelayedTask.compareAndSet(false,true);
                     channel.flush();
                 }
-
-                @Override
-                public boolean isLogOrNot() {
-                    return false;
-                }
-            },true);
+            }.setLogOrNot(false),true);
         }
         return future;
     }

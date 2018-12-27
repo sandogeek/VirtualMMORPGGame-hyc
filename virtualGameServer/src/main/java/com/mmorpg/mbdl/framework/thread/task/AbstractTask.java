@@ -161,8 +161,9 @@ public abstract class AbstractTask implements Runnable {
         return logOrNot;
     }
 
-    public void setLogOrNot(boolean logOrNot) {
+    public AbstractTask setLogOrNot(boolean logOrNot) {
         this.logOrNot = logOrNot;
+        return this;
     }
 
     public TaskQueue getTaskQueue() {

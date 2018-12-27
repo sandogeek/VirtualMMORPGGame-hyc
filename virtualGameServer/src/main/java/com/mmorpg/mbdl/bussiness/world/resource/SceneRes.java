@@ -19,7 +19,7 @@ public class SceneRes {
     /**
      * 可前往的场景id集合
      */
-    private List<Integer> canGo;
+    private List<Integer> canGoList;
 
     public int getSceneId() {
         return sceneId;
@@ -29,7 +29,7 @@ public class SceneRes {
         return name;
     }
 
-    public List<Integer> getCanGo() {
-        return canGo;
+    public List<Integer> getCanGoList() {
+        return canGoList;
     }
 }

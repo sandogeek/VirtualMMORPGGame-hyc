@@ -2,7 +2,9 @@ package com.mmorpg.mbdl.bussiness.world.service;
 
 import com.mmorpg.mbdl.bussiness.role.manager.RoleManager;
 import com.mmorpg.mbdl.bussiness.world.World;
+import com.mmorpg.mbdl.bussiness.world.manager.SceneManager;
 import com.mmorpg.mbdl.bussiness.world.packet.EnterWorldReq;
+import com.mmorpg.mbdl.bussiness.world.scene.packet.SwitchSceneReq;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.ISession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -37,4 +39,8 @@ public class WorldService {
     public void handleEnterWorldReq(ISession session, EnterWorldReq enterWorldReq) {
         world.born(roleManager.getRoleBySession(session));
     }
+    public void handleSwitchSceneReq(ISession session, SwitchSceneReq switchSceneReq) {
+        SceneManager.getInstance().switchToSceneById(roleManager.getRoleBySession(session),switchSceneReq.getTargetSceneId());
+    }
+
 }
