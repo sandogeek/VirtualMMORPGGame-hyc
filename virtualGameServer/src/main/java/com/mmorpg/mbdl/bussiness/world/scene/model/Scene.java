@@ -82,4 +82,8 @@ public class Scene {
         this.name = name;
         return this;
     }
+
+    public Map<Long, Role> getObjId2Role() {
+        return objId2Role;
+    }
 }

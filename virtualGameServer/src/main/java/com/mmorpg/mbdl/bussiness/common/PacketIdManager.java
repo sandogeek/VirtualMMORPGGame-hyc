@@ -56,6 +56,7 @@ public class PacketIdManager {
     /** object */
     public static final short ROLE_UI_INFO_RESP = 10501;
     public static final short CUSTOM_ROLE_UI_INFO_RESP = 10502;
+    public static final short MONSTER_UI_INFO_RESP = 10503;
 
     private static PacketIdManager self;
     public static PacketIdManager getInstance(){

@@ -20,6 +20,28 @@ public abstract class AbstractCreature extends AbstractVisibleSceneObject {
 
     private long maxMp;
 
+    private int attack;
+
+    private int defence;
+
+    public int getAttack() {
+        return attack;
+    }
+
+    public AbstractCreature setAttack(int attack) {
+        this.attack = attack;
+        return this;
+    }
+
+    public int getDefence() {
+        return defence;
+    }
+
+    public AbstractCreature setDefence(int defence) {
+        this.defence = defence;
+        return this;
+    }
+
     public long getMaxHp() {
         return maxHp;
     }

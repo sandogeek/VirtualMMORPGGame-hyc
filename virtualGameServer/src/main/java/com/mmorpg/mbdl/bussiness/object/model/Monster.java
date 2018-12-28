@@ -13,4 +13,9 @@ public class Monster extends AbstractCreature {
     public AbstractPacket getUiInfoResp(Role witness) {
         return null;
     }
+
+    @Override
+    public SceneObjectType getObjectType() {
+        return SceneObjectType.MONSTER;
+    }
 }

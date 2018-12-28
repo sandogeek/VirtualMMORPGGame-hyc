@@ -31,6 +31,8 @@ public class SceneManager {
     private IStaticRes<Integer, SceneRes> id2SceneRes;
     @Autowired
     private IStorage<Long, RoleEntity> roleEntityIStorage;
+    @Autowired
+    private SpawnManager spawnManager;
 
     @PostConstruct
     private void init() {
@@ -41,6 +43,8 @@ public class SceneManager {
                     .setSceneId(sceneRes.getSceneId());
             sceneId2SceneMap.put(scene.getSceneId(),scene);
         });
+        spawnManager.spawnAll(sceneId2SceneMap.values());
+
         // TODO 初始化怪物
     }
 

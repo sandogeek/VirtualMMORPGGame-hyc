@@ -30,6 +30,8 @@ public abstract class AbstractSceneObject {
         return name;
     }
 
+    public abstract SceneObjectType getObjectType();
+
     /**
      * 设置对象名称
      * @param name 对象名称

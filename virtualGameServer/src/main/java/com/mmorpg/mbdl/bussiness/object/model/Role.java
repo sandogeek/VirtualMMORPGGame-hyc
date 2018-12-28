@@ -2,6 +2,8 @@ package com.mmorpg.mbdl.bussiness.object.model;
 
 import com.mmorpg.mbdl.bussiness.object.packet.RoleUiInfoResp;
 import com.mmorpg.mbdl.bussiness.role.entity.RoleEntity;
+import com.mmorpg.mbdl.bussiness.world.manager.SceneManager;
+import com.mmorpg.mbdl.bussiness.world.scene.model.Scene;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.AbstractPacket;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.ISession;
 import io.netty.channel.ChannelFuture;
@@ -62,7 +64,33 @@ public class Role extends AbstractCreature {
     public ChannelFuture sendPacket(AbstractPacket abstractPacket){
         return session.sendPacket(abstractPacket);
     }
+
     public ChannelFuture sendPacket(AbstractPacket abstractPacket,boolean flushNow){
         return session.sendPacket(abstractPacket,flushNow);
+    }
+
+    public void broadcastNotIncludeSelf(AbstractPacket abstractPacket) {
+        broadcast(abstractPacket,false);
+    }
+    /**
+     * 把消息广播给所有可见玩家
+     * @param abstractPacket 要广播的包
+     * @param includeSelf 是否包含自身
+     */
+    public void broadcast(AbstractPacket abstractPacket,boolean includeSelf){
+        Scene scene = SceneManager.getInstance().getSceneBySceneId(getSceneId());
+        if (includeSelf){
+            for (Role role : scene.getObjId2Role().values()) {
+                role.sendPacket(abstractPacket);
+            }
+        }else {
+            scene.getObjId2Role().values().stream()
+                    .filter(role -> role.equals(this)).forEach(role -> role.sendPacket(abstractPacket));
+        }
+
+    }
+    @Override
+    public SceneObjectType getObjectType() {
+        return SceneObjectType.PLAYER;
     }
 }

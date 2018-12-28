@@ -3,28 +3,21 @@
     "sceneId":1000,
     "bornDataList":[
       {
-        "objectKey":10001,
-        "name":"变异蟑螂"
+        "objectKey":10001
       },
       {
-        "objectKey":10002,
-        "name":"变异蚊子"
+        "objectKey":10002
       },{
-        "objectKey":10002,
-        "name":"变异蚊子"
+        "objectKey":10002
       },{
-        "objectKey":10002,
-        "name":"变异蚊子"
+        "objectKey":10002
       },{
-        "objectKey":10002,
-        "name":"变异蚊子"
+        "objectKey":10002
       },{
-        "objectKey":10002,
-        "name":"变异蚊子"
+        "objectKey":10002
       },
       {
-        "objectKey":10003,
-        "name":"变异蜈蚣"
+        "objectKey":10003
       }
     ]
   },
@@ -32,25 +25,19 @@
     "sceneId":1002,
     "bornDataList":[
       {
-        "objectKey":10004,
-        "name":"门徒"
+        "objectKey":10004
       },{
-        "objectKey":10004,
-        "name":"门徒"
+        "objectKey":10004
       },{
-        "objectKey":10004,
-        "name":"门徒"
+        "objectKey":10004
       },{
-        "objectKey":10004,
-        "name":"门徒"
+        "objectKey":10004
       },
       {
-        "objectKey":10005,
-        "name":"护法"
+        "objectKey":10005
       },
       {
-        "objectKey":10006,
-        "name":"门主"
+        "objectKey":10006
       }
     ]
   },
@@ -58,25 +45,19 @@
     "sceneId":1003,
     "bornDataList":[
       {
-        "objectKey":10003,
-        "name":"流氓"
+        "objectKey":10012
       },{
-        "objectKey":10003,
-        "name":"流氓"
+        "objectKey":10012
       },{
-        "objectKey":10003,
-        "name":"流氓"
+        "objectKey":10012
       },{
-        "objectKey":10003,
-        "name":"流氓"
+        "objectKey":10012
       },
       {
-        "objectKey":10004,
-        "name":"百虎楼楼主"
+        "objectKey":10004
       },
       {
-        "objectKey":10005,
-        "name":"麻将馆馆长"
+        "objectKey":10005
       }
     ]
   },
@@ -85,25 +66,19 @@
     "sceneId":10001,
     "bornDataList":[
       {
-        "objectKey":10006,
-        "name":"木乃伊"
+        "objectKey":10013
       },{
-        "objectKey":10006,
-        "name":"木乃伊"
+        "objectKey":10013
       },{
-        "objectKey":10006,
-        "name":"木乃伊"
+        "objectKey":10013
       },{
-        "objectKey":10006,
-        "name":"木乃伊"
+        "objectKey":10013
       },
       {
-        "objectKey":10007,
-        "name":"黑球"
+        "objectKey":10007
       },
       {
-        "objectKey":10008,
-        "name":"蟒蛇王"
+        "objectKey":10008
       }
     ]
   },
@@ -112,31 +87,23 @@
     "sceneId":10101,
     "bornDataList":[
       {
-        "objectKey":10009,
-        "name":"巨魔"
+        "objectKey":10009
       },{
-        "objectKey":10009,
-        "name":"巨魔"
+        "objectKey":10009
       },{
-        "objectKey":10009,
-        "name":"巨魔"
+        "objectKey":10009
       },
       {
-        "objectKey":10010,
-        "name":"影魔"
+        "objectKey":10010
       },{
-        "objectKey":10010,
-        "name":"影魔"
+        "objectKey":10010
       },
       {
-        "objectKey":10011,
-        "name":"石魔"
+        "objectKey":10011
       },{
-        "objectKey":10012,
-        "name":"石魔"
+        "objectKey":10011
       },{
-        "objectKey":10013,
-        "name":"石魔"
+        "objectKey":10011
       }
     ]
   },
@@ -144,37 +111,27 @@
     "sceneId":10102,
     "bornDataList":[
       {
-        "objectKey":10014,
-        "name":"暗黑精灵"
+        "objectKey":10014
       },{
-        "objectKey":10014,
-        "name":"暗黑精灵"
+        "objectKey":10014
       },
       {
-        "objectKey":10015,
-        "name":"嗜血蝙蝠"
+        "objectKey":10015
       },{
-        "objectKey":10015,
-        "name":"嗜血蝙蝠"
+        "objectKey":10015
       },{
-        "objectKey":10015,
-        "name":"嗜血蝙蝠"
+        "objectKey":10015
       },{
-        "objectKey":10015,
-        "name":"嗜血蝙蝠"
+        "objectKey":10015
       },{
-        "objectKey":10015,
-        "name":"嗜血蝙蝠"
+        "objectKey":10015
       },
       {
-        "objectKey":10016,
-        "name":"虚空飞猪"
+        "objectKey":10016
       },{
-        "objectKey":10016,
-        "name":"虚空飞猪"
+        "objectKey":10016
       },{
-        "objectKey":10016,
-        "name":"虚空飞猪"
+        "objectKey":10016
       }
     ]
   }
