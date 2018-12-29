@@ -6,6 +6,7 @@ import com.mmorpg.mbdl.bussiness.role.dao.RoleEntityDao;
 import com.mmorpg.mbdl.bussiness.role.entity.RoleEntity;
 import com.mmorpg.mbdl.bussiness.role.model.RoleType;
 import com.mmorpg.mbdl.bussiness.role.packet.AddRoleReq;
+import com.mmorpg.mbdl.bussiness.role.resource.RoleLevelRes;
 import com.mmorpg.mbdl.framework.common.generator.IdGeneratorFactory;
 import com.mmorpg.mbdl.framework.common.utils.CommonUtils;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.ISession;
@@ -15,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -27,11 +29,23 @@ import java.util.concurrent.ConcurrentHashMap;
  **/
 @Component
 public class RoleManager {
+    private static RoleManager self;
+
+    @PostConstruct
+    private void init() {
+        self = this;
+    }
+
+    public static RoleManager getInstance() {
+        return self;
+    }
     private static Logger logger = LoggerFactory.getLogger(RoleManager.class);
     @Autowired
     private RoleEntityDao roleEntityDao;
     @Autowired
     private IStaticRes<String, GlobalSettingRes> globalSettingResIStaticRes;
+    @Autowired
+    private IStaticRes<String, RoleLevelRes> roleLevelResMap;
 
     private Map<ISession, Role> session2Role = new ConcurrentHashMap<>(128);
 
@@ -92,6 +106,10 @@ public class RoleManager {
         return roleEntityToCreate;
     }
 
+    public void updateRole(Role role) {
+        roleEntityDao.update(role.getRoleEntity());
+    }
+
     /**
      * 初始化角色
      * @param session
@@ -103,6 +121,7 @@ public class RoleManager {
         role.setRoleId(roleEntity.getId())
                 .setSession(session)
                 .setRoleEntity(roleEntity)
+                .setExp(roleEntity.getExp())
                 .setCurrentHp(100L).setCurrentMp(100L)
                 .setMaxHp(100L).setMaxMp(100L)
                 .setSceneId(roleEntity.getSceneId())

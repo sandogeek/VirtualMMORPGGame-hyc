@@ -2,6 +2,7 @@ package com.mmorpg.mbdl.bussiness.object.model;
 
 import com.mmorpg.mbdl.bussiness.object.packet.RoleUiInfoResp;
 import com.mmorpg.mbdl.bussiness.role.entity.RoleEntity;
+import com.mmorpg.mbdl.bussiness.role.manager.RoleManager;
 import com.mmorpg.mbdl.bussiness.world.manager.SceneManager;
 import com.mmorpg.mbdl.bussiness.world.scene.model.Scene;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.AbstractPacket;
@@ -20,6 +21,7 @@ public class Role extends AbstractCreature {
     private static Logger logger = LoggerFactory.getLogger(Role.class);
     private ISession session;
     private RoleEntity roleEntity;
+    private long exp;
 
     @Override
     public AbstractPacket getUiInfoResp(Role witness) {
@@ -45,6 +47,11 @@ public class Role extends AbstractCreature {
 
     public Role setRoleId(Long id){
         setObjectId(id);
+        return this;
+    }
+
+    public Role setExp(long exp) {
+        this.exp = exp;
         return this;
     }
 
@@ -92,5 +99,12 @@ public class Role extends AbstractCreature {
     @Override
     public SceneObjectType getObjectType() {
         return SceneObjectType.PLAYER;
+    }
+
+    /**
+     * 角色登出的处理逻辑
+     */
+    public void logout() {
+        RoleManager.getInstance().updateRole(this);
     }
 }

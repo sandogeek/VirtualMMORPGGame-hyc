@@ -3,12 +3,14 @@ package com.mmorpg.mbdl.bussiness.role.service;
 import com.mmorpg.mbdl.bussiness.object.model.Role;
 import com.mmorpg.mbdl.bussiness.object.packet.CustomRoleUiInfoResp;
 import com.mmorpg.mbdl.bussiness.role.entity.RoleEntity;
+import com.mmorpg.mbdl.bussiness.role.event.RoleLogoutEvent;
 import com.mmorpg.mbdl.bussiness.role.manager.RoleManager;
 import com.mmorpg.mbdl.bussiness.role.packet.*;
 import com.mmorpg.mbdl.bussiness.role.packet.vo.RoleInfo;
 import com.mmorpg.mbdl.bussiness.world.manager.SceneManager;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.ISession;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.SessionState;
+import com.mmorpg.mbdl.framework.event.core.SyncEventBus;
 import com.mmorpg.mbdl.framework.event.preset.SessionCloseEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -97,6 +99,7 @@ public class RoleService {
 
     /**
      * 处理session关闭事件
+     * TODO 这里没有断线重连机制，session关闭会触发玩家下线事件
      * @param sessionCloseEvent
      */
     public void handleSessionClose(SessionCloseEvent sessionCloseEvent) {
@@ -105,8 +108,15 @@ public class RoleService {
         if (role == null){
             return;
         }
+        SyncEventBus.getInstance().post(new RoleLogoutEvent(role));
+
+    }
+
+    public void handleRoleLogoutEvent(RoleLogoutEvent roleLogoutEvent){
+        Role role = roleLogoutEvent.getRole();
+        role.logout();
         int sceneId = role.getSceneId();
         SceneManager.getInstance().getSceneBySceneId(sceneId).disappearInScene(role);
-        roleManager.removeRoleBySession(session);
+        roleManager.removeRoleBySession(role.getSession());
     }
 }

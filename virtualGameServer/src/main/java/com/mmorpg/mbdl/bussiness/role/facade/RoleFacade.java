@@ -1,6 +1,8 @@
 package com.mmorpg.mbdl.bussiness.role.facade;
 
+import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
+import com.mmorpg.mbdl.bussiness.role.event.RoleLogoutEvent;
 import com.mmorpg.mbdl.bussiness.role.packet.*;
 import com.mmorpg.mbdl.bussiness.role.service.RoleService;
 import com.mmorpg.mbdl.framework.communicate.websocket.annotation.PacketHandler;
@@ -44,8 +46,16 @@ public class RoleFacade {
     public ChooseRoleResp handleChooseRoleReq(ISession session, ChooseRoleReq chooseRoleReq) {
         return roleService.handleChooseRoleReq(session,chooseRoleReq);
     }
+
     @Subscribe
+    @AllowConcurrentEvents
     public void handleSessionClose(SessionCloseEvent sessionCloseEvent){
         roleService.handleSessionClose(sessionCloseEvent);
+    }
+
+    @Subscribe
+    @AllowConcurrentEvents
+    public void handleSessionClose(RoleLogoutEvent roleLogoutEvent){
+        roleService.handleRoleLogoutEvent(roleLogoutEvent);
     }
 }

@@ -1,5 +1,6 @@
 package com.mmorpg.mbdl.bussiness.object.model;
 
+import com.mmorpg.mbdl.bussiness.object.packet.MonsterUiInfoResp;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.AbstractPacket;
 
 /**
@@ -11,7 +12,7 @@ import com.mmorpg.mbdl.framework.communicate.websocket.model.AbstractPacket;
 public class Monster extends AbstractCreature {
     @Override
     public AbstractPacket getUiInfoResp(Role witness) {
-        return null;
+        return new MonsterUiInfoResp(this.getObjectId(), this.getName(), this.getCurrentHp(), this.getMaxHp());
     }
 
     @Override
