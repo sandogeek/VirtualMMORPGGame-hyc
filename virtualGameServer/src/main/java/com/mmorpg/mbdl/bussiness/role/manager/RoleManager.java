@@ -45,7 +45,7 @@ public class RoleManager {
     @Autowired
     private IStaticRes<String, GlobalSettingRes> globalSettingResIStaticRes;
     @Autowired
-    private IStaticRes<String, RoleLevelRes> roleLevelResMap;
+    private IStaticRes<Short, RoleLevelRes> roleLevelResMap;
 
     private Map<ISession, Role> session2Role = new ConcurrentHashMap<>(128);
 
@@ -118,12 +118,13 @@ public class RoleManager {
      */
     public Role initRole(ISession session,RoleEntity roleEntity){
         Role role = new Role();
+        RoleLevelRes roleLevel0Res = roleLevelResMap.get((short) 0);
         role.setRoleId(roleEntity.getId())
                 .setSession(session)
                 .setRoleEntity(roleEntity)
                 .setExp(roleEntity.getExp())
-                .setCurrentHp(100L).setCurrentMp(100L)
-                .setMaxHp(100L).setMaxMp(100L)
+                .setMaxHp(roleLevel0Res.getMaxHp()).setMaxMp(roleLevel0Res.getMaxMp())
+                .setFullHp().setFullMp()
                 .setSceneId(roleEntity.getSceneId())
                 .setName(roleEntity.getName());
         if (getSession2Role().values().contains(role)){

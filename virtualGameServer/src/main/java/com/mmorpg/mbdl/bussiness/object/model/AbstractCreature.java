@@ -24,6 +24,16 @@ public abstract class AbstractCreature extends AbstractVisibleSceneObject {
 
     private int defence;
 
+    public AbstractCreature setFullHp(){
+        setCurrentHp(maxHp);
+        return this;
+    }
+
+    public AbstractCreature setFullMp(){
+        setCurrentMp(maxMp);
+        return this;
+    }
+
     public int getAttack() {
         return attack;
     }
