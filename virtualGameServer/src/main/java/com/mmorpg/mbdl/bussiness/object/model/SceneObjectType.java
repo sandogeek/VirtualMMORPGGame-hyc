@@ -14,5 +14,9 @@ public enum SceneObjectType {
     /**
      * 玩家
      */
-    PLAYER
+    PLAYER,
+    /**
+     * Npc
+     */
+    NPC
 }

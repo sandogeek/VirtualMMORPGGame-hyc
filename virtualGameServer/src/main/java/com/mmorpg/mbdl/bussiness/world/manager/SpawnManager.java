@@ -1,5 +1,6 @@
 package com.mmorpg.mbdl.bussiness.world.manager;
 
+import com.mmorpg.mbdl.bussiness.object.creator.AbstractObjectCreator;
 import com.mmorpg.mbdl.bussiness.object.creator.ObjectCreatorManager;
 import com.mmorpg.mbdl.bussiness.object.model.AbstractVisibleSceneObject;
 import com.mmorpg.mbdl.bussiness.world.resource.BornRes;
@@ -35,8 +36,12 @@ public class SpawnManager {
             int sceneId = scene.getSceneId();
             bornResMap.get(sceneId).getBornDataList().forEach(bornData -> {
                 SceneObjectAttrRes sceneObjectAttrRes = sceneObjectAttrResMap.get(bornData.getObjectKey());
+                AbstractObjectCreator creator = objectCreatorManager.getCreatorByObjectType(sceneObjectAttrRes.getObjectType());
+                if (creator == null) {
+                    throw new RuntimeException(String.format("对象类型[%s]没有相应的AbstractObjectCreator",sceneObjectAttrRes.getObjectType()));
+                }
                 AbstractVisibleSceneObject visibleSceneObject
-                        = objectCreatorManager.getCreatorByObjectType(sceneObjectAttrRes.getObjectType()).create(sceneId, bornData);
+                        = creator.create(sceneId, bornData);
                 scene.appearInScene(visibleSceneObject);
             });
 

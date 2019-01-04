@@ -1,6 +1,6 @@
 package com.mmorpg.mbdl.bussiness.role.manager;
 
-import com.mmorpg.mbdl.bussiness.common.GlobalSettingRes;
+import com.mmorpg.mbdl.bussiness.common.resource.GlobalSettingRes;
 import com.mmorpg.mbdl.bussiness.object.model.Role;
 import com.mmorpg.mbdl.bussiness.role.dao.RoleEntityDao;
 import com.mmorpg.mbdl.bussiness.role.entity.RoleEntity;

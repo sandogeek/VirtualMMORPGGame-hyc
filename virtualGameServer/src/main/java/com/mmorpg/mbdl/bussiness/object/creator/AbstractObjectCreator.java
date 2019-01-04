@@ -6,6 +6,7 @@ import com.mmorpg.mbdl.bussiness.world.model.BornData;
 import com.mmorpg.mbdl.bussiness.world.resource.SceneObjectAttrRes;
 import com.mmorpg.mbdl.framework.resource.exposed.IStaticRes;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 
@@ -15,6 +16,7 @@ import javax.annotation.PostConstruct;
  * @author Sando Geek
  * @since v1.0 2018/12/28
  **/
+@Component
 public abstract class AbstractObjectCreator<T extends AbstractVisibleSceneObject> {
     @Autowired
     private ObjectCreatorManager objectCreatorManager;

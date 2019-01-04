@@ -1,137 +1,166 @@
 [
   {
-    "sceneId":1000,
-    "bornDataList":[
+    "sceneId": 1000,
+    "bornDataList": [
       {
-        "objectKey":10001
+        "objectKey": 10001
       },
       {
-        "objectKey":10002
-      },{
-        "objectKey":10002
-      },{
-        "objectKey":10002
-      },{
-        "objectKey":10002
-      },{
-        "objectKey":10002
+        "objectKey": 10002
       },
       {
-        "objectKey":10003
+        "objectKey": 10002
+      },
+      {
+        "objectKey": 10002
+      },
+      {
+        "objectKey": 10002
+      },
+      {
+        "objectKey": 10002
+      },
+      {
+        "objectKey": 10003
+      },
+      {
+        "objectKey": 10017
+      },
+      {
+        "objectKey": 10018
       }
     ]
   },
   {
-    "sceneId":1002,
-    "bornDataList":[
+    "sceneId": 1002,
+    "bornDataList": [
       {
-        "objectKey":10004
-      },{
-        "objectKey":10004
-      },{
-        "objectKey":10004
-      },{
-        "objectKey":10004
+        "objectKey": 10004
       },
       {
-        "objectKey":10005
+        "objectKey": 10004
       },
       {
-        "objectKey":10006
+        "objectKey": 10004
+      },
+      {
+        "objectKey": 10004
+      },
+      {
+        "objectKey": 10005
+      },
+      {
+        "objectKey": 10006
       }
     ]
   },
   {
-    "sceneId":1003,
-    "bornDataList":[
+    "sceneId": 1003,
+    "bornDataList": [
       {
-        "objectKey":10012
-      },{
-        "objectKey":10012
-      },{
-        "objectKey":10012
-      },{
-        "objectKey":10012
+        "objectKey": 10012
       },
       {
-        "objectKey":10004
+        "objectKey": 10012
       },
       {
-        "objectKey":10005
-      }
-    ]
-  },
-
-  {
-    "sceneId":10001,
-    "bornDataList":[
-      {
-        "objectKey":10013
-      },{
-        "objectKey":10013
-      },{
-        "objectKey":10013
-      },{
-        "objectKey":10013
+        "objectKey": 10012
       },
       {
-        "objectKey":10007
+        "objectKey": 10012
       },
       {
-        "objectKey":10008
-      }
-    ]
-  },
-
-  {
-    "sceneId":10101,
-    "bornDataList":[
-      {
-        "objectKey":10009
-      },{
-        "objectKey":10009
-      },{
-        "objectKey":10009
+        "objectKey": 10004
       },
       {
-        "objectKey":10010
-      },{
-        "objectKey":10010
-      },
-      {
-        "objectKey":10011
-      },{
-        "objectKey":10011
-      },{
-        "objectKey":10011
+        "objectKey": 10005
       }
     ]
   },
   {
-    "sceneId":10102,
-    "bornDataList":[
+    "sceneId": 10001,
+    "bornDataList": [
       {
-        "objectKey":10014
-      },{
-        "objectKey":10014
+        "objectKey": 10013
       },
       {
-        "objectKey":10015
-      },{
-        "objectKey":10015
-      },{
-        "objectKey":10015
-      },{
-        "objectKey":10015
-      },{
-        "objectKey":10015
+        "objectKey": 10013
       },
       {
-        "objectKey":10016
-      },{
-        "objectKey":10016
-      },{
-        "objectKey":10016
+        "objectKey": 10013
+      },
+      {
+        "objectKey": 10013
+      },
+      {
+        "objectKey": 10007
+      },
+      {
+        "objectKey": 10008
+      }
+    ]
+  },
+  {
+    "sceneId": 10101,
+    "bornDataList": [
+      {
+        "objectKey": 10009
+      },
+      {
+        "objectKey": 10009
+      },
+      {
+        "objectKey": 10009
+      },
+      {
+        "objectKey": 10010
+      },
+      {
+        "objectKey": 10010
+      },
+      {
+        "objectKey": 10011
+      },
+      {
+        "objectKey": 10011
+      },
+      {
+        "objectKey": 10011
+      }
+    ]
+  },
+  {
+    "sceneId": 10102,
+    "bornDataList": [
+      {
+        "objectKey": 10014
+      },
+      {
+        "objectKey": 10014
+      },
+      {
+        "objectKey": 10015
+      },
+      {
+        "objectKey": 10015
+      },
+      {
+        "objectKey": 10015
+      },
+      {
+        "objectKey": 10015
+      },
+      {
+        "objectKey": 10015
+      },
+      {
+        "objectKey": 10016
+      },
+      {
+        "objectKey": 10016
+      },
+      {
+        "objectKey": 10016
       }
     ]
   }

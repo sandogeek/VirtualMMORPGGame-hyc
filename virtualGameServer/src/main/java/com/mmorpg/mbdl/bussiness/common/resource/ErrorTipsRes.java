@@ -1,4 +1,4 @@
-package com.mmorpg.mbdl.bussiness.common.error.resource;
+package com.mmorpg.mbdl.bussiness.common.resource;
 
 import com.mmorpg.mbdl.framework.resource.annotation.Id;
 import com.mmorpg.mbdl.framework.resource.annotation.ResDef;

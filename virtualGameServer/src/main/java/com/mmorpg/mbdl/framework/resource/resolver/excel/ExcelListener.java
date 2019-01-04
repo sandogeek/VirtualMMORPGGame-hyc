@@ -95,15 +95,22 @@ public class ExcelListener extends AnalysisEventListener<ArrayList<String>> {
             }
             // vClass实例的json数据形式
             ArrayList<String> vClassObjectInJsonArray=new ArrayList<>(16);
-            index2JsonPropertyName.keySet().stream().forEach(integer -> {
-                String content = list.get(integer);
-                Class<?> fieldType = index2FieldType.get(integer);
-                if (fieldType.isEnum()||fieldType==String.class){
-                    // 枚举或者字符串前后要加引号
-                    content = "\""+content+"\"";
+            int max = list.size()-1;
+            for (Integer integer : index2JsonPropertyName.keySet()) {
+                if (integer > max){
+                    break;
                 }
-                vClassObjectInJsonArray.add("\""+index2JsonPropertyName.get(integer)+"\":"+content);
-            });
+                String content = list.get(integer);
+                if (StringUtils.isEmpty(content)) {
+                    continue;
+                }
+                Class<?> fieldType = index2FieldType.get(integer);
+                if (fieldType.isEnum() || fieldType == String.class) {
+                    // 枚举或者字符串前后要加引号
+                    content = "\"" + content + "\"";
+                }
+                vClassObjectInJsonArray.add("\"" + index2JsonPropertyName.get(integer) + "\":" + content);
+            }
             String vClassObjectInJson ="{" + String.join("," ,vClassObjectInJsonArray) + "}";
             try {
                 Object resource = mapper.readValue(vClassObjectInJson, staticResDefinition.getvClass());

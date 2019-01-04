@@ -80,6 +80,7 @@ public class SceneManager {
     public SceneUiInfoResp getSceneUiInfoResp(Role role) {
         SceneUiInfoResp sceneUiInfoResp = new SceneUiInfoResp();
         int sceneId = role.getSceneId();
+        sceneUiInfoResp.setSceneId(sceneId);
         sceneUiInfoResp.setSceneName(id2SceneRes.get(sceneId).getName());
         List<SceneCanGoInfo> sceneCanGoInfos = sceneUiInfoResp.getSceneCanGoInfos();
         List<Integer> canGoList = id2SceneRes.get(sceneId).getCanGoList();

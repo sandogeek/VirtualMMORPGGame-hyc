@@ -1,4 +1,4 @@
-package com.mmorpg.mbdl.bussiness.common;
+package com.mmorpg.mbdl.bussiness.common.resource;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.mmorpg.mbdl.framework.resource.annotation.Id;
