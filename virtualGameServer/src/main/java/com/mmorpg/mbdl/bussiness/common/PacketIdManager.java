@@ -36,6 +36,7 @@ public class PacketIdManager {
     /** chat */
     public static final short CHAT_REQ = 10101;
     public static final short CHAT_RESP = 10102;
+    public static final short CHAT_MESSAGE = 10103;
     /** register */
     public static final short REGISTER_REQ = 10201;
     public static final short REGISTER_RESP = 10202;
@@ -71,6 +72,10 @@ public class PacketIdManager {
     }
 
     public void registerAbstractPacket(AbstractPacket abstractPacket){
+        if (packetId2AbstractPacket.keySet().contains(abstractPacket.getPacketId())){
+            throw new RuntimeException(String.format("包[%s]与包[%s]id重复",
+                    abstractPacket.getClass().getSimpleName(),packetId2AbstractPacket.get(abstractPacket.getPacketId()).getSimpleName()));
+        }
         packetId2AbstractPacket.put(abstractPacket.getPacketId(),abstractPacket.getClass());
     }
     public void registerCodec(AbstractPacket abstractPacket){

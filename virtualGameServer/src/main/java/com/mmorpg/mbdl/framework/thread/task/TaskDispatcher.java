@@ -36,6 +36,9 @@ public class TaskDispatcher {
      * @return 如果任务分发成功并被提交到线程池，返回ScheduledFuture，否则返回null
      */
     public ScheduledFuture<?> dispatch(AbstractTask abstractTask, boolean intoThreadPoolDirectly){
+        if (abstractTask == null){
+            return null;
+        }
         if (intoThreadPoolDirectly){
             abstractTask.setExecuteParallel(true);
             // if (abstractTask.getDispatcherId()!=null){

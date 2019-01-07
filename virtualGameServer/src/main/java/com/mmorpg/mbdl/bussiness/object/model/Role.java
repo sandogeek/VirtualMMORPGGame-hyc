@@ -80,7 +80,7 @@ public class Role extends AbstractCreature {
         broadcast(abstractPacket,false);
     }
     /**
-     * 把消息广播给所有可见玩家
+     * 把消息广播给当前场景中的所有可见玩家
      * @param abstractPacket 要广播的包
      * @param includeSelf 是否包含自身
      */

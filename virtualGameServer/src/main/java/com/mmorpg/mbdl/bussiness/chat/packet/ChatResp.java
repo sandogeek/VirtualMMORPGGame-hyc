@@ -4,20 +4,15 @@ import com.baidu.bjf.remoting.protobuf.annotation.Protobuf;
 import com.mmorpg.mbdl.bussiness.common.PacketIdManager;
 import com.mmorpg.mbdl.framework.communicate.websocket.annotation.ProtoDesc;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.AbstractPacket;
-import org.springframework.stereotype.Component;
 
-@Component
 @ProtoDesc(description = "聊天响应")
 public class ChatResp extends AbstractPacket {
-    @Protobuf(description = "聊天内容")
-    private String content;
+    @Protobuf(description = "发送结果",required = true)
+    private boolean result;
 
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
+    public ChatResp setResult(boolean result) {
+        this.result = result;
+        return this;
     }
 
     @Override

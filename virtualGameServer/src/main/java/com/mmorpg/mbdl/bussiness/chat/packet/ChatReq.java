@@ -4,30 +4,20 @@ import com.baidu.bjf.remoting.protobuf.annotation.Protobuf;
 import com.mmorpg.mbdl.bussiness.common.PacketIdManager;
 import com.mmorpg.mbdl.framework.communicate.websocket.annotation.ProtoDesc;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.AbstractPacket;
-import org.springframework.stereotype.Component;
 
-@Component
 @ProtoDesc(description = "聊天请求")
 public class ChatReq extends AbstractPacket {
-    @Protobuf(description = "聊天频道id")
-    private int chatChannelId;
-    @Protobuf(description = "发言内容")
+    @Protobuf(description = "聊天目标Id,为0表示向世界频道发言",required = true)
+    private long targetId;
+    @Protobuf(description = "发言内容",required = true)
     private String content;
 
-    public int getChatChannelId() {
-        return chatChannelId;
-    }
-
-    public void setChatChannelId(int chatChannelId) {
-        this.chatChannelId = chatChannelId;
+    public long getTargetId() {
+        return targetId;
     }
 
     public String getContent() {
         return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
     }
 
     @Override
