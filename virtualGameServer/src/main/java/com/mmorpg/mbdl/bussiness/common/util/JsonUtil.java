@@ -1,11 +1,17 @@
 package com.mmorpg.mbdl.bussiness.common.util;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.CollectionType;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.Collection;
 
 /**
  * 序列化反序列化工具
@@ -18,6 +24,14 @@ public class JsonUtil {
     static  {
         mapper = new ObjectMapper();
         mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+        // 在序列化时忽略值为 null 的属性
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        // 忽略值为默认值的属性
+        mapper.setDefaultPropertyInclusion(JsonInclude.Include.NON_DEFAULT);
+        // 不自动检测getter
+        mapper.configure(MapperFeature.AUTO_DETECT_GETTERS, false);
+        // 不自动检测is getter
+        mapper.configure(MapperFeature.AUTO_DETECT_IS_GETTERS, false);
     }
 
     /**
@@ -31,7 +45,15 @@ public class JsonUtil {
         try {
             return mapper.readValue(json,valueType);
         } catch (IOException e) {
-            throw new RuntimeException("",e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static <T> T inputStream2Object(InputStream src, JavaType valueType){
+        try {
+            return mapper.readValue(src,valueType);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -44,7 +66,11 @@ public class JsonUtil {
         try {
             return mapper.writeValueAsString(value);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException("",e);
+            throw new RuntimeException(e);
         }
+    }
+
+    public static CollectionType constructCollectionType(Class<? extends Collection> collectionClass, Class<?> elementClass) {
+        return mapper.getTypeFactory().constructCollectionType(collectionClass, elementClass);
     }
 }

@@ -46,7 +46,7 @@ public class MethodDelegationThisTest {
                 .name(ISource.class.getName()+"Sub")
                 .method(isDeclaredBy(ISource.class)).intercept(MethodDelegation.to(target))
                 // .method(named("hello")).intercept(MethodDelegation.to(target))
-                // .method(named("getInt").and(takesArguments(0))).intercept(MethodDelegation.to(target))
+                .method(named("getInt").and(takesArguments(0))).intercept(MethodDelegation.toField("test"))
                 .defineMethod("myMethod",int.class, Modifier.PUBLIC).withParameters(int.class).intercept(MethodDelegation.to(target))
                 .make();
         try {

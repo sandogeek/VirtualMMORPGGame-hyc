@@ -3,7 +3,7 @@ package com.mmorpg.mbdl.framework.resource.core;
 import com.mmorpg.mbdl.TestWithSpring;
 import com.mmorpg.mbdl.bussiness.common.resource.GlobalSettingRes;
 import com.mmorpg.mbdl.bussiness.common.resource.ErrorTipsRes;
-import com.mmorpg.mbdl.bussiness.item.resource.ItemRes;
+import com.mmorpg.mbdl.bussiness.container.resource.ItemRes;
 import com.mmorpg.mbdl.bussiness.world.resource.BornRes;
 import com.mmorpg.mbdl.framework.resource.exposed.IStaticRes;
 import org.junit.jupiter.api.Assertions;

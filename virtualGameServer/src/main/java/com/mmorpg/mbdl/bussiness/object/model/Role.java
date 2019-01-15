@@ -20,7 +20,11 @@ import org.slf4j.LoggerFactory;
 public class Role extends AbstractCreature {
     private static Logger logger = LoggerFactory.getLogger(Role.class);
     private ISession session;
+
+    /** 角色相关实体 **/
     private RoleEntity roleEntity;
+
+
     private long exp;
 
     @Override

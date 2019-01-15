@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
+import com.mmorpg.mbdl.bussiness.common.util.JsonUtil;
 import com.mmorpg.mbdl.framework.resource.core.StaticResDefinition;
 import com.mmorpg.mbdl.framework.resource.exposed.IExcelFormat;
 import org.apache.commons.lang3.StringUtils;
@@ -113,14 +114,11 @@ public class ExcelListener extends AnalysisEventListener<ArrayList<String>> {
             }
             String vClassObjectInJson ="{" + String.join("," ,vClassObjectInJsonArray) + "}";
             try {
-                Object resource = mapper.readValue(vClassObjectInJson, staticResDefinition.getvClass());
+                Object resource = JsonUtil.string2Object(vClassObjectInJson, staticResDefinition.getvClass());
                 key2ResourceBuilder.put(staticResDefinition.getIdField().get(resource),resource);
-            } catch (IOException e) {
+            } catch (Exception e) {
                 throw new RuntimeException(String.format("生成资源类[%s]实例时发生IO异常,通常是由于单元格json格式错误或与类字段类型不对应",staticResDefinition.getvClass().getSimpleName()),e);
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
             }
-            // logger.debug("当前行：{},内容：{}",context.getCurrentRowNum()+1,list);
         }
     }
 

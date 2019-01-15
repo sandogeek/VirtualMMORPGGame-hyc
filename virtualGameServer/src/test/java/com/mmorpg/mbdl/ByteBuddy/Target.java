@@ -13,7 +13,7 @@ import net.bytebuddy.implementation.bind.annotation.This;
 public class Target {
     int k = 2;
     public String hello(@This ISource source, @Argument(0) String name) {
-        // @This,所以访问的是增强后的方法，所以anInt应该为2
+        // @This,所以访问的是增强后的方法，所以anInt应该为4
         int anInt = source.getInt();
         return "Hello " + name + "! int= "+anInt+" k = "+k;
     }
@@ -23,6 +23,10 @@ public class Target {
 
     public int myMethod(int a){
         return a;
+    }
+
+    public int test() {
+        return 4;
     }
     // public static String intercept(Object o) { return o.toString(); }
 }

@@ -8,7 +8,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mmorpg.mbdl.bussiness.item.resource.ItemRes;
+import com.mmorpg.mbdl.bussiness.common.util.JsonUtil;
+import com.mmorpg.mbdl.bussiness.container.resource.ItemRes;
 import com.mmorpg.mbdl.framework.reflectasm.withunsafe.FieldAccess;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -65,9 +66,9 @@ public class TestFastJson {
     void jsonProperty设置() throws IllegalAccessException, InstantiationException, IOException {
         ItemRes itemRes = ItemRes.class.newInstance();
         FieldAccess itemResAccess = FieldAccess.accessUnsafe(ItemRes.class);
-        itemResAccess.setInt(itemRes,itemResAccess.getIndex("id"),20);
+        itemResAccess.setObject(itemRes,itemResAccess.getIndex("id"),"hello");
         itemResAccess.setObject(itemRes,itemResAccess.getIndex("name"),"what");
-        String writeValueAsString = mapper.writeValueAsString(itemRes);
+        String writeValueAsString = JsonUtil.object2String(itemRes);
         logger.info("{}",writeValueAsString);
         ItemRes itemRes1 = mapper.readValue("{\"Id\":20,\"Name\":\"what\"}", ItemRes.class);
         logger.info("{}",itemRes1);

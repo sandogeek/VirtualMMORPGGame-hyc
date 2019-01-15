@@ -6,6 +6,7 @@ import com.mmorpg.mbdl.bussiness.chat.packet.ChatResp;
 import com.mmorpg.mbdl.bussiness.object.model.Role;
 import com.mmorpg.mbdl.bussiness.role.manager.RoleManager;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.ISession;
+import com.mmorpg.mbdl.framework.thread.task.AbstractTask;
 import com.mmorpg.mbdl.framework.thread.task.Task;
 import com.mmorpg.mbdl.framework.thread.task.TaskDispatcher;
 import org.springframework.stereotype.Component;
@@ -41,7 +42,7 @@ public class ChatService {
     public void handleChatReq(ISession session, ChatReq chatReq){
         long targetId = chatReq.getTargetId();
         Long dispatcherId;
-        Task task = null;
+        AbstractTask task = null;
         if (targetId == 0L) {
             // 世界聊天
             dispatcherId = 0L;
@@ -52,7 +53,7 @@ public class ChatService {
 
                 @Override
                 public String taskName() {
-                    return "聊天任务";
+                    return "世界聊天任务";
                 }
 
                 @Override
@@ -66,7 +67,7 @@ public class ChatService {
                         roleTemp.sendPacket(chatMessage);
                     });
                 }
-            };
+            }.setLogOrNot(false);
         } else {
             dispatcherId = 1L;
         }

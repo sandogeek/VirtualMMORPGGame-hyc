@@ -1,19 +1,13 @@
 package com.mmorpg.mbdl.bussiness.common.orm;
 
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mmorpg.mbdl.bussiness.common.util.JsonUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.usertype.UserType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.util.ObjectUtils;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.sql.PreparedStatement;
@@ -28,12 +22,6 @@ import java.sql.Types;
  * @since v1.0 2019/1/2
  **/
 public class JsonType implements UserType {
-    private static Logger logger = LoggerFactory.getLogger(JsonType.class);
-    private static ObjectMapper mapper;
-    static  {
-        mapper = new ObjectMapper();
-        mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
-    }
 
     @Override
     public int[] sqlTypes() {
@@ -68,11 +56,7 @@ public class JsonType implements UserType {
         } catch (NoSuchFieldException e) {
             throw new RuntimeException(String.format("反序列化时发现实体类[%s]中不存在字段名为[%s]的字段",owner.getClass().getSimpleName(),columnName));
         }
-        try {
-            return mapper.readValue(json,field.getType());
-        } catch (IOException e) {
-            throw new RuntimeException("jackson反序列化失败",e);
-        }
+        return JsonUtil.string2Object(json,field.getType());
     }
 
     @Override
@@ -80,11 +64,7 @@ public class JsonType implements UserType {
         if (value == null){
             st.setString(index,"");
         } else {
-            try {
-                st.setString(index,mapper.writeValueAsString(value));
-            } catch (JsonProcessingException e) {
-                logger.error("序列化失败",e);
-            }
+            st.setString(index, JsonUtil.object2String(value));
         }
     }
 
@@ -93,11 +73,7 @@ public class JsonType implements UserType {
         if (value == null) {
             return null;
         }
-        try {
-            return mapper.readValue(mapper.writeValueAsString(value),value.getClass());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return JsonUtil.string2Object(JsonUtil.object2String(value),value.getClass());
     }
 
     @Override

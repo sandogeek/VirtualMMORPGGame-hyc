@@ -1,4 +1,4 @@
-package com.mmorpg.mbdl.bussiness.item.resource;
+package com.mmorpg.mbdl.bussiness.container.resource;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.mmorpg.mbdl.framework.resource.annotation.Id;
@@ -11,7 +11,7 @@ import com.mmorpg.mbdl.framework.resource.annotation.ResDef;
  * @since v1.0
  **/
 @ResDef
-public class ItemRes12 {
+public class ItemRes13 {
     @Id
     @JsonProperty(value = "Id")
     private String id;
