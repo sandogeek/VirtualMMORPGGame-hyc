@@ -3,7 +3,7 @@ package com.mmorpg.mbdl.ByteBuddy;
 // import com.mmorpg.mbdl.bussiness.register.cache.PlayerAccountEntityService;
 
 import com.mmorpg.mbdl.ByteBuddy.foo.Bar;
-import com.mmorpg.mbdl.bussiness.register.entity.AccountEntity;
+import com.mmorpg.mbdl.business.register.entity.AccountEntity;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.NamingStrategy;
 import net.bytebuddy.description.type.TypeDescription;

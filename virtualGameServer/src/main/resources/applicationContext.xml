@@ -12,12 +12,12 @@
     <!--自动扫包配置-->
     <context:component-scan base-package="com.mmorpg.mbdl" />
     <!--规定@PacketHandle注解的请求包处理类只能放在模块的facade包下-->
-    <context:component-scan base-package="com.mmorpg.mbdl.bussiness.**.facade">
+    <context:component-scan base-package="com.mmorpg.mbdl.business.**.facade">
         <!--使@PacketHandle注解的类成为bean-->
         <context:include-filter type="annotation"
                                 expression="com.mmorpg.mbdl.framework.communicate.websocket.annotation.PacketHandler"/>
     </context:component-scan>
-    <context:component-scan base-package="com.mmorpg.mbdl.bussiness">
+    <context:component-scan base-package="com.mmorpg.mbdl.business">
         <context:include-filter type="assignable"
                                 expression="com.mmorpg.mbdl.framework.communicate.websocket.model.AbstractPacket"/>
     </context:component-scan>

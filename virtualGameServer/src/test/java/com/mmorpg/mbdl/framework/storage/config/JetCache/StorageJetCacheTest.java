@@ -1,7 +1,7 @@
 package com.mmorpg.mbdl.framework.storage.config.JetCache;
 
 import com.mmorpg.mbdl.TestWithSpring;
-import com.mmorpg.mbdl.bussiness.register.entity.AccountEntity;
+import com.mmorpg.mbdl.business.register.entity.AccountEntity;
 import com.mmorpg.mbdl.framework.storage.core.IStorage;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

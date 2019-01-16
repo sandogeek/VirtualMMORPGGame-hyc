@@ -31,7 +31,7 @@ public class SpringDataJpaConfig {
     LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource druidDataSource, JpaVendorAdapter jpaVendorAdapter){
         LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
         entityManagerFactoryBean.setDataSource(druidDataSource);
-        entityManagerFactoryBean.setPackagesToScan("com.mmorpg.**.entity");
+        entityManagerFactoryBean.setPackagesToScan("com.mmorpg.mbdl.business");
         entityManagerFactoryBean.setJpaDialect(new HibernateJpaDialect());
         entityManagerFactoryBean.setJpaVendorAdapter(jpaVendorAdapter);
         // Map<String,?> jpaPropertyMap = new HashMap<>(10);

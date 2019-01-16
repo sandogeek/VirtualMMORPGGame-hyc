@@ -1,6 +1,6 @@
 package com.mmorpg.mbdl.framework.storage.core;
 
-import com.mmorpg.mbdl.bussiness.register.entity.AccountEntity;
+import com.mmorpg.mbdl.business.register.entity.AccountEntity;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;

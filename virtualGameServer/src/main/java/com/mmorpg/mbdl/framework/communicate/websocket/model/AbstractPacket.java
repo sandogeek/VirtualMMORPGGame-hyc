@@ -1,6 +1,6 @@
 package com.mmorpg.mbdl.framework.communicate.websocket.model;
 
-import com.mmorpg.mbdl.bussiness.common.PacketIdManager;
+import com.mmorpg.mbdl.business.common.PacketIdManager;
 import com.mmorpg.mbdl.framework.common.generator.ProtoGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

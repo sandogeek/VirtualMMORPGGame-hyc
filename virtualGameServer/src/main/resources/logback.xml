@@ -68,7 +68,7 @@
         </filter>
     </appender>
 
-    <logger name="com.mmorpg.mbdl.bussiness" level="debug"  additivity="false">
+    <logger name="com.mmorpg.mbdl.business" level="debug" additivity="false">
         <appender-ref ref="STDOUT" />
         <appender-ref ref="FILE" />
         <appender-ref ref="ERROR_FILE" />

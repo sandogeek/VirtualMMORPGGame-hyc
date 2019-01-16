@@ -1,7 +1,6 @@
 package com.mmorpg.mbdl.framework.event.core;
 
 import com.google.common.eventbus.EventBus;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -14,6 +13,7 @@ import javax.annotation.PostConstruct;
  * EventBus默认情况下会把@Subscribe方法封装成SynchronizedSubscriber保证线程安全，即同步锁的方式，
  * 如果能确保@Subscribe注解的方法是线程安全的，最好在其上添加@AllowConcurrentEvents防止锁竞争以提高性能
  * <p>目前暂时未出现需要消耗大量时间的{@link EventBus#post}，所以暂时只提供EventBus</p>
+ * TODO 业务中事件分发应该深度优先还是广度优先，目前PerThreadQueuedDispatcher是广度优先
  * @author sando
  */
 @Component
