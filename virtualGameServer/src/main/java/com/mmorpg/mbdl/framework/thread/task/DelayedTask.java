@@ -17,8 +17,8 @@ public abstract class DelayedTask extends AbstractTask {
     }
 
     @Override
-    public long getMaxDelay() {
-        return super.getMaxDelay()+TimeUnit.NANOSECONDS.convert(delay,timeUnit);
+    public long getMaxDelayTime() {
+        return super.getMaxDelayTime()+TimeUnit.NANOSECONDS.convert(delay,timeUnit);
     }
 
     public long getDelay() {

@@ -81,4 +81,10 @@ public @interface JetCacheConfig {
      * @return convertor name of cache key
      */
     String keyCovertor() default CacheConsts.UNDEFINED_STRING;
+
+    /**
+     * 合并delay时间内的变更
+     * @return
+     */
+    int delay() default 10;
 }

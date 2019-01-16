@@ -76,8 +76,8 @@ public class WsSession extends AbstractSession {
 
                 @Override
                 public void execute() {
-                    generateDelayedTask.compareAndSet(false,true);
                     channel.flush();
+                    generateDelayedTask.set(true);
                 }
             }.setLogOrNot(false),true);
         }

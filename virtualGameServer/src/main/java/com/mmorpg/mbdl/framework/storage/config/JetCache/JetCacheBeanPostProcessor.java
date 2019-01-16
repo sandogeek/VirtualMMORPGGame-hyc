@@ -65,8 +65,10 @@ public class JetCacheBeanPostProcessor implements BeanPostProcessor, Application
                     resolvableType = ResolvableType.forType(daoClass.getGenericInterfaces()[0]);
                     // 获取dao类泛型接口的第二个具体泛型，E extends IEntity的具体的E
                     Class eClass = resolvableType.getGeneric(1).resolve();
-
-                    fieldAccess.setObject(storageJetCache,cacheIndex,getCache(eClass));
+                    JetCacheConfig ann = (JetCacheConfig) eClass.getAnnotation(JetCacheConfig.class);
+                    Preconditions.checkNotNull(ann,"%s没有配置%s注解",eClass.getSimpleName(),JetCacheConfig.class.getSimpleName());
+                    storageJetCache.setDelay(ann.delay());
+                    fieldAccess.setObject(storageJetCache,cacheIndex,getCache(ann,eClass));
                 }
 
             }catch (Exception e){
@@ -76,10 +78,8 @@ public class JetCacheBeanPostProcessor implements BeanPostProcessor, Application
         }
         return bean;
     }
-    private Cache getCache(Class eClass){
+    private Cache getCache(JetCacheConfig ann,Class eClass){
         GlobalCacheConfig globalCacheConfig = applicationContext.getBean(GlobalCacheConfig.class);
-        JetCacheConfig ann = (JetCacheConfig) eClass.getAnnotation(JetCacheConfig.class);
-        Preconditions.checkNotNull(ann,"%s没有配置%s注解",eClass.getSimpleName(),JetCacheConfig.class.getSimpleName());
         // CreateCache ann = jetCacheConfig.createCache();
         CachedAnnoConfig cac = new CachedAnnoConfig();
         cac.setArea(ann.area());

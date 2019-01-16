@@ -66,13 +66,13 @@ public abstract class AbstractTask implements Runnable {
      * 任务延迟过长打印
      */
     protected void logIfOverDelay(long delayTime,long executeTime,Logger targetLogger){
-        targetLogger.warn("任务:{}执行延时超出预期({}ms)，delay={}ms,execute={}ms",this.taskName(),getMaxDelay()/100_0000F,delayTime/1000000F,executeTime/1000000F);
+        targetLogger.warn("任务:{}，执行延时超出预期({}ms)，delay={}ms,execute={}ms",this.taskName(), getMaxDelayTime()/100_0000F,delayTime/1000000F,executeTime/1000000F);
     }
     /**
      * 任务执行时间过长打印
      */
     protected void logIfOverExecute(long delayTime,long executeTime,Logger targetLogger){
-        targetLogger.warn("任务:{}执行时间超出预期({}ms)，delay={}ms,execute={}ms",this.taskName(),getMaxExecute()/100_0000F,delayTime/1000000F,executeTime/1000000F);
+        targetLogger.warn("任务:{}，执行时间超出预期({}ms)，delay={}ms,execute={}ms",this.taskName(), getMaxExecuteTime()/100_0000F,delayTime/1000000F,executeTime/1000000F);
     }
     protected void logIfNormal(long delayTime,long executeTime,Logger targetLogger){
         targetLogger.info("任务:{},delay={}ms,execute={}ms",this.taskName(),delayTime/100_0000F,executeTime/100_0000F);
@@ -81,8 +81,8 @@ public abstract class AbstractTask implements Runnable {
      * 打印日志
      */
     private void log(long delayTime,long executeTime){
-        long maxDelayTime = this.getMaxDelay();
-        long maxExecuteTime = this.getMaxExecute();
+        long maxDelayTime = this.getMaxDelayTime();
+        long maxExecuteTime = this.getMaxExecuteTime();
         Logger targetLogger = this.getTargetLogger();
         if (delayTime > maxDelayTime){
             this.logIfOverDelay(delayTime,executeTime,targetLogger);
@@ -126,21 +126,21 @@ public abstract class AbstractTask implements Runnable {
     /**
      * 最大延迟时间,默认2毫秒
      */
-    public long getMaxDelay() {
+    public long getMaxDelayTime() {
         return maxDelay;
     }
 
-    public void setMaxDelay(long maxDelay) {
+    public void setMaxDelayTime(long maxDelay) {
         this.maxDelay = maxDelay;
     }
     /**
      * 最大延迟时间,默认3毫秒
      */
-    public long getMaxExecute() {
+    public long getMaxExecuteTime() {
         return maxExecute;
     }
 
-    public AbstractTask setMaxExecute(long maxExecute) {
+    public AbstractTask setMaxExecuteTime(long maxExecute) {
         this.maxExecute = maxExecute;
         return this;
     }

@@ -9,8 +9,8 @@ import com.github.xiaolyuh.setting.LayeringCacheSetting;
 import com.github.xiaolyuh.setting.SecondaryCacheSetting;
 import com.google.common.base.Preconditions;
 import com.mmorpg.mbdl.framework.storage.annotation.LayeringCacheConfig;
+import com.mmorpg.mbdl.framework.storage.core.AbstractEntity;
 import com.mmorpg.mbdl.framework.storage.core.EntityCreator;
-import com.mmorpg.mbdl.framework.storage.core.IEntity;
 import com.mmorpg.mbdl.framework.storage.core.IStorage;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -30,20 +30,20 @@ import java.io.Serializable;
  * @author sando
  */
 @NoRepositoryBean
-public class StorageLayeringCache<PK extends Serializable &Comparable<PK>,E extends IEntity<PK>> extends SimpleJpaRepository<E,PK>
+public class StorageLayeringCache<PK extends Serializable &Comparable<PK>,E extends AbstractEntity<PK>> extends SimpleJpaRepository<E,PK>
         implements IStorage<PK,E> {
     private static final Logger logger = LoggerFactory.getLogger(StorageLayeringCache.class);
 
     /** IStorageBeanPostProcessor中注入 */
     private CacheManager cacheManager;
     /** 泛型E的实际类型 */
-    private Class<? extends IEntity> eClazz;
+    private Class<? extends AbstractEntity> eClazz;
 
     public void setCacheManager(CacheManager cacheManager) {
         this.cacheManager = cacheManager;
     }
 
-    public void seteClazz(Class<? extends IEntity> eClazz) {
+    public void seteClazz(Class<? extends AbstractEntity> eClazz) {
         this.eClazz = eClazz;
     }
 
@@ -89,7 +89,7 @@ public class StorageLayeringCache<PK extends Serializable &Comparable<PK>,E exte
         return entityAfterSave;
     }
 
-    public E getFromCache(PK id,Class<? extends IEntity> eClazz){
+    public E getFromCache(PK id,Class<? extends AbstractEntity> eClazz){
         Cache cache = getCache();
         return (E)cache.get(id,eClazz);
     }
@@ -114,4 +114,8 @@ public class StorageLayeringCache<PK extends Serializable &Comparable<PK>,E exte
         return null;
     }
 
+    @Override
+    public void mergeUpdate(E entity) {
+
+    }
 }

@@ -15,7 +15,7 @@ import java.io.Serializable;
  * @author sando
  */
 @NoRepositoryBean
-public interface IStorage<PK extends Serializable&Comparable<PK>,E extends IEntity<PK>> extends Repository<E, PK> {
+public interface IStorage<PK extends Serializable&Comparable<PK>,E extends AbstractEntity<PK>> extends Repository<E, PK> {
     /**
      * 用jpa创建一个实体，并将实体放入缓存和数据库
      * @param entity 需要创建的实体
@@ -55,6 +55,11 @@ public interface IStorage<PK extends Serializable&Comparable<PK>,E extends IEnti
      * @return
      */
     E update(E entity);
+
+    /**
+     * 根据实体类注解上的delay，把所有delay时间内的更新合并
+     */
+    void mergeUpdate(E entity);
 
     /**
      * 删除缓存（同步）和数据库（异步）中指定主键的实体

@@ -18,8 +18,8 @@ public class PersistenceDelayedTask extends DelayedTask {
     }
 
     @Override
-    public long getMaxExecute() {
-        return super.getMaxExecute();
+    public long getMaxExecuteTime() {
+        return super.getMaxExecuteTime();
     }
 
     @Override

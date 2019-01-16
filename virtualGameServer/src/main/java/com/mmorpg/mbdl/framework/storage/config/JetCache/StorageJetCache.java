@@ -3,9 +3,12 @@ package com.mmorpg.mbdl.framework.storage.config.JetCache;
 import com.alicp.jetcache.Cache;
 import com.alicp.jetcache.CacheGetResult;
 import com.google.common.base.Preconditions;
+import com.mmorpg.mbdl.framework.storage.annotation.JetCacheConfig;
+import com.mmorpg.mbdl.framework.storage.core.AbstractEntity;
 import com.mmorpg.mbdl.framework.storage.core.EntityCreator;
-import com.mmorpg.mbdl.framework.storage.core.IEntity;
 import com.mmorpg.mbdl.framework.storage.core.IStorage;
+import com.mmorpg.mbdl.framework.thread.task.DelayedTask;
+import com.mmorpg.mbdl.framework.thread.task.TaskDispatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.jpa.repository.support.JpaEntityInformation;
@@ -17,6 +20,7 @@ import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
 import java.io.Serializable;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 使用JetCache的IStorage默认实现类
@@ -25,10 +29,12 @@ import java.io.Serializable;
  * @since v1.0
  **/
 @NoRepositoryBean
-public class StorageJetCache <PK extends Serializable &Comparable<PK>,E extends IEntity<PK>> extends SimpleJpaRepository<E,PK>
+public class StorageJetCache <PK extends Serializable &Comparable<PK>,E extends AbstractEntity<PK>> extends SimpleJpaRepository<E,PK>
         implements IStorage<PK,E> {
     private static final Logger logger = LoggerFactory.getLogger(StorageJetCache.class);
     private Cache<PK,E> cache;
+    /** {@link JetCacheConfig#delay()} */
+    private int delay;
     /** 泛型E的实际类型 */
     // private Class<? extends IEntity> eClazz;
 
@@ -96,6 +102,28 @@ public class StorageJetCache <PK extends Serializable &Comparable<PK>,E extends 
     }
 
     @Override
+    public void mergeUpdate(E entity) {
+        if (this.delay == 0) {
+            update(entity);
+        }
+        else if (!entity.getCanCreateUpdateDelayTask().compareAndSet(true, false)) {
+            return;
+        }
+        TaskDispatcher.getIntance().dispatch(new DelayedTask(null, delay, TimeUnit.SECONDS) {
+            @Override
+            public String taskName() {
+                return "合并更新";
+            }
+
+            @Override
+            public void execute() {
+                update(entity);
+                entity.getCanCreateUpdateDelayTask().set(true);
+            }
+        }.setLogOrNot(true),true);
+    }
+
+    @Override
     public E get(PK id) {
         Preconditions.checkNotNull(id,"id不能为null");
         CacheGetResult<E> cacheGetResult = cache.GET(id);
@@ -151,4 +179,7 @@ public class StorageJetCache <PK extends Serializable &Comparable<PK>,E extends 
         }
     }
 
+    public void setDelay(int delay) {
+        this.delay = delay;
+    }
 }
