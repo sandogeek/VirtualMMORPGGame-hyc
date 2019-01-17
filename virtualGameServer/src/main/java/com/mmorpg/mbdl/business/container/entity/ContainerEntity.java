@@ -3,11 +3,13 @@ package com.mmorpg.mbdl.business.container.entity;
 import com.mmorpg.mbdl.business.container.model.Container;
 import com.mmorpg.mbdl.business.container.model.ContainerType;
 import com.mmorpg.mbdl.framework.storage.annotation.JetCacheConfig;
-import com.mmorpg.mbdl.framework.storage.core.IEntity;
+import com.mmorpg.mbdl.framework.storage.core.AbstractEntity;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Lob;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -18,15 +20,24 @@ import java.util.Map;
  **/
 @Entity
 @JetCacheConfig
-public class ContainerEntity implements IEntity<Long> {
+public class ContainerEntity extends AbstractEntity<Long> {
     @Id
     private Long roleId;
+    @Lob
     @Type(type = "json")
-    private Map<ContainerType, Container> type2ContainerMap;
+    private Map<ContainerType, Container> type2ContainerMap = new HashMap<>(8);
 
-    public ContainerEntity(Long roleId, Map<ContainerType, Container> type2ContainerMap) {
+    public Long getRoleId() {
+        return roleId;
+    }
+
+    public ContainerEntity setRoleId(Long roleId) {
         this.roleId = roleId;
-        this.type2ContainerMap = type2ContainerMap;
+        return this;
+    }
+
+    public Map<ContainerType, Container> getType2ContainerMap() {
+        return type2ContainerMap;
     }
 
     @Override

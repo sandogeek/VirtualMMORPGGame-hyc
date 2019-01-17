@@ -9,6 +9,11 @@ import com.mmorpg.mbdl.framework.communicate.websocket.model.AbstractPacket;
  * @since v1.0 2019/1/3
  **/
 public class Npc extends AbstractVisibleSceneObject {
+
+    public Npc(Long objectId, String name) {
+        super(objectId, name);
+    }
+
     @Override
     public AbstractPacket getUiInfoResp(Role witness) {
         return null;

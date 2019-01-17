@@ -106,9 +106,15 @@ public class RoleManager {
         return roleEntityToCreate;
     }
 
-    public void updateRole(Role role) {
-        roleEntityDao.update(role.getRoleEntity());
+    public void mergeUpdateRoleEntity(RoleEntity roleEntity) {
+        roleEntityDao.mergeUpdate(roleEntity);
     }
+
+    public void updateRoleEntity(RoleEntity roleEntity) {
+        roleEntityDao.update(roleEntity);
+    }
+
+
 
     /**
      * 初始化角色
@@ -117,22 +123,23 @@ public class RoleManager {
      * @return 成功，true,失败,false
      */
     public Role initRole(ISession session,RoleEntity roleEntity){
-        Role role = new Role();
-        RoleLevelRes roleLevel0Res = roleLevelResMap.get((short) 0);
-        role.setRoleId(roleEntity.getId())
-                .setSession(session)
-                .setRoleEntity(roleEntity)
-                .setExp(roleEntity.getExp())
-                .setMaxHp(roleLevel0Res.getMaxHp()).setMaxMp(roleLevel0Res.getMaxMp())
-                .setFullHp().setFullMp()
-                .setSceneId(roleEntity.getSceneId())
-                .setName(roleEntity.getName());
-        if (getSession2Role().values().contains(role)){
-            logger.error("玩家[roleId={}]重复初始化",role.getRoleId());
-            return null;
-        }
-        addRole(role);
-        return role;
+        // Role role = new Role(roleEntity.getId(),roleEntity.getName(),);
+        // RoleLevelRes roleLevel0Res = roleLevelResMap.get((short) 0);
+        // role.setSession(session)
+        //         .setRoleEntity(roleEntity)
+        //         .setExp(roleEntity.getExp())
+        //         .setMaxHp(roleLevel0Res.getMaxHp()).setMaxMp(roleLevel0Res.getMaxMp())
+        //         .setFullHp().setFullMp()
+        //         .setSceneId(roleEntity.getSceneId())
+        //         .setName();
+        // role.init();
+        // if (getSession2Role().values().contains(role)){
+        //     logger.error("玩家[roleId={}]重复初始化",role.getRoleId());
+        //     return null;
+        // }
+        // addRole(role);
+        // return role;
+        return null;
     }
 
     /**
@@ -167,6 +174,6 @@ public class RoleManager {
     }
 
     public RoleEntity findByNameAndServerToken(String name) {
-        return roleEntityDao.findByNameAndServerToken(name,SERVER_TOKEN);
+        return roleEntityDao.findByNameAndServerToken(name, SERVER_TOKEN);
     }
 }

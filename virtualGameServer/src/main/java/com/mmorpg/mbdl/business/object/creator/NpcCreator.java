@@ -22,10 +22,8 @@ public class NpcCreator extends AbstractObjectCreator<Npc> {
     @Override
     public Npc create(int sceneId, BornData bornData) {
         SceneObjectAttrRes sceneObjectAttrRes = this.sceneObjectAttrResMap.get(bornData.getObjectKey());
-        Npc npc = new Npc();
-        npc.setSceneId(sceneId)
-                .setName(sceneObjectAttrRes.getName())
-                .setObjectId((long) bornData.getObjectKey());
+        Npc npc = new Npc((long) bornData.getObjectKey(),sceneObjectAttrRes.getName());
+        npc.setSceneId(sceneId);
         return npc;
     }
 }

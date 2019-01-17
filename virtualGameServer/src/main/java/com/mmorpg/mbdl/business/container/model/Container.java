@@ -10,4 +10,8 @@ public class Container {
     /** 背包类型 */
     private ContainerType containerType;
 
+    public Container setContainerType(ContainerType containerType) {
+        this.containerType = containerType;
+        return this;
+    }
 }

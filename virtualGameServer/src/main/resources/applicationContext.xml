@@ -37,16 +37,29 @@
 
     <!--缓存配置-->
     <bean class="com.mmorpg.mbdl.framework.storage.config.JetCache.JetCacheConfiguration"/>
-
-    <!--&lt;!&ndash;静态资源配置&ndash;&gt;-->
-    <!--<bean class="com.mmorpg.mbdl.framework.resource.config.StaticResConfiguration"-->
-          <!--p:packageToScan="com.mmorpg.mbdl.bussiness"-->
-          <!--p:iExcelFormat-ref="iExcelFormat" -->
-    <!--/>-->
     <!--Excel格式定义，可自行实现IExcelFormat接口，然后把这个class换成自己的class-->
     <bean id="iExcelFormat" class="com.mmorpg.mbdl.framework.resource.resolver.excel.ExcelFormat"/>
 
     <!--数据库以及缓存配置-->
+    <bean id = "entityManagerFactory"
+          class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"
+          p:dataSource-ref="dataSource"
+          p:packagesToScan="com.mmorpg.mbdl.business"
+    >
+        <property name="jpaDialect">
+            <bean class="org.springframework.orm.jpa.vendor.HibernateJpaDialect" />
+        </property>
+        <property name="jpaVendorAdapter">
+            <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter"
+                  p:generateDdl="true" p:showSql="false"
+                  p:database="MYSQL" p:databasePlatform="org.hibernate.dialect.MySQL55Dialect"
+            />
+        </property>
+    </bean>
+    <!-- 事务管理器 -->
+    <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+        <property name="entityManagerFactory" ref="entityManagerFactory"/>
+    </bean>
     <jpa:repositories base-package="com.mmorpg.mbdl.**.dao" base-class="com.mmorpg.mbdl.framework.storage.config.JetCache.StorageJetCache"/>
     <bean id="dataSource"
           class="com.alibaba.druid.pool.DruidDataSource" destroy-method="close"

@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -49,6 +50,14 @@ public class JsonUtil {
         }
     }
 
+    public static <T> T string2Object(String json,JavaType valueType) {
+        try {
+            return mapper.readValue(json,valueType);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static <T> T inputStream2Object(InputStream src, JavaType valueType){
         try {
             return mapper.readValue(src,valueType);
@@ -68,6 +77,10 @@ public class JsonUtil {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static TypeFactory getTypeFactory() {
+        return mapper.getTypeFactory();
     }
 
     public static CollectionType constructCollectionType(Class<? extends Collection> collectionClass, Class<?> elementClass) {

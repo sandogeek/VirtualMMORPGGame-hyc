@@ -10,9 +10,15 @@ import com.mmorpg.mbdl.framework.communicate.websocket.model.AbstractPacket;
  * @since v1.0 2018/12/11
  **/
 public class Monster extends AbstractCreature {
+
+
+    public Monster(Long objectId, String name, CreatureLifeAttr lifeAttr, CreatureFightAttr fightAttr) {
+        super(objectId, name, lifeAttr, fightAttr);
+    }
+
     @Override
     public AbstractPacket getUiInfoResp(Role witness) {
-        return new MonsterUiInfoResp(this.getObjectId(), this.getName(), this.getCurrentHp(), this.getMaxHp());
+        return new MonsterUiInfoResp(this.getObjectId(), this.getName(), this.getLifeAttr().getCurrentHp(), this.getLifeAttr().getMaxHp());
     }
 
     @Override

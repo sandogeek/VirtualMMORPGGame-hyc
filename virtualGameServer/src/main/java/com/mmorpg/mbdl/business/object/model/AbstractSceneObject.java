@@ -18,12 +18,13 @@ public abstract class AbstractSceneObject {
      */
     private String name;
 
-    public Long getObjectId() {
-        return objectId;
+    public AbstractSceneObject(Long objectId, String name) {
+        this.objectId = objectId;
+        this.name = name;
     }
 
-    public void setObjectId(Long objectId) {
-        this.objectId = objectId;
+    public Long getObjectId() {
+        return objectId;
     }
 
     public String getName() {
@@ -31,15 +32,6 @@ public abstract class AbstractSceneObject {
     }
 
     public abstract SceneObjectType getObjectType();
-
-    /**
-     * 设置对象名称
-     * @param name 对象名称
-     */
-    public AbstractSceneObject setName(String name) {
-        this.name = name;
-        return this;
-    }
 
     @Override
     public boolean equals(Object o) {

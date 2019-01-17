@@ -22,15 +22,11 @@ public class MonsterCreator extends AbstractObjectCreator<Monster> {
 
     @Override
     public Monster create(int sceneId, BornData bornData) {
-        Monster monster = new Monster();
+
         SceneObjectAttrRes sceneObjectAttrRes = this.sceneObjectAttrResMap.get(bornData.getObjectKey());
-        monster.setCurrentMp(sceneObjectAttrRes.getMaxHp()).setMaxMp(sceneObjectAttrRes.getMaxHp())
-                .setCurrentHp(sceneObjectAttrRes.getMaxMp()).setMaxHp(sceneObjectAttrRes.getMaxMp())
-                .setAttack(sceneObjectAttrRes.getAttack())
-                .setDefence(sceneObjectAttrRes.getDefence())
-                .setSceneId(sceneId)
-                .setName(sceneObjectAttrRes.getName())
-                .setObjectId(IdGeneratorFactory.getIntance().getObjectIdGenerator().generate());
+        Long id = IdGeneratorFactory.getIntance().getObjectIdGenerator().generate();
+        Monster monster = new Monster(id,sceneObjectAttrRes.getName(),null,null);
+        monster.setSceneId(sceneId);
         return monster;
     }
 }

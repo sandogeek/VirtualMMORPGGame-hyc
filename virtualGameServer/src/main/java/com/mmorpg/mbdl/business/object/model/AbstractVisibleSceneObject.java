@@ -14,6 +14,10 @@ public abstract class AbstractVisibleSceneObject extends AbstractSceneObject {
      */
     private int sceneId;
 
+    public AbstractVisibleSceneObject(Long objectId, String name) {
+        super(objectId, name);
+    }
+
     public int getSceneId() {
         return sceneId;
     }

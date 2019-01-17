@@ -7,7 +7,6 @@ import com.mmorpg.mbdl.business.role.event.RoleLogoutEvent;
 import com.mmorpg.mbdl.business.role.manager.RoleManager;
 import com.mmorpg.mbdl.business.role.packet.*;
 import com.mmorpg.mbdl.business.role.packet.vo.RoleInfo;
-import com.mmorpg.mbdl.business.world.manager.SceneManager;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.ISession;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.SessionState;
 import com.mmorpg.mbdl.framework.event.core.SyncEventBus;
@@ -21,6 +20,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 角色服务
@@ -84,10 +84,10 @@ public class RoleService {
         Role role = roleManager.initRole(session, roleEntity);
         if (role!=null){
             chooseRoleResp.setResult(true);
-            CustomRoleUiInfoResp customRoleUiInfoResp = new CustomRoleUiInfoResp()
-                    .setMaxHp(role.getMaxHp()).setMaxMp(role.getMaxMp())
-                    .setCurrentMp(role.getCurrentMp())
-                    .setCurrentHp(role.getCurrentHp());
+            CustomRoleUiInfoResp customRoleUiInfoResp = new CustomRoleUiInfoResp();
+                    // .setMaxHp(role.getMaxHp()).setMaxMp(role.getMaxMp())
+                    // .setCurrentMp(role.getCurrentMp())
+                    // .setCurrentHp(role.getCurrentHp());
             customRoleUiInfoResp.setRoleId(role.getRoleId())
                     .setName(role.getName())
                     .setLevel(roleEntity.getLevel())
@@ -110,24 +110,23 @@ public class RoleService {
         if (role == null){
             return;
         }
+        // logout事件业务池处理
         TaskDispatcher.getIntance().dispatch(new Task(role.getRoleId()) {
             @Override
             public String taskName() {
-                return "Logout事件转移到业务池";
+                return "Logout事件";
             }
 
             @Override
             public void execute() {
                 SyncEventBus.getInstance().post(new RoleLogoutEvent(role));
             }
-        });
+        }.setMaxExecuteTime(TimeUnit.NANOSECONDS.convert(20, TimeUnit.MILLISECONDS)));
     }
 
-    public void handleRoleLogoutEvent(RoleLogoutEvent roleLogoutEvent){
+    public void handleRoleLogoutEvent(RoleLogoutEvent roleLogoutEvent) {
         Role role = roleLogoutEvent.getRole();
-        int sceneId = role.getSceneId();
-        SceneManager.getInstance().getSceneBySceneId(sceneId).disappearInScene(role);
-        roleManager.updateRole(role);
+        roleManager.updateRoleEntity(role.getRoleEntity());
         roleManager.removeRoleBySession(role.getSession());
     }
 }

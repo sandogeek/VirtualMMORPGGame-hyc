@@ -23,8 +23,21 @@ public class Role extends AbstractCreature {
     /** 角色相关实体 **/
     private RoleEntity roleEntity;
 
+    public Role(Long objectId, String name) {
+        this(objectId,name,null,null);
+    }
 
-    private long exp;
+    Role(Long objectId, String name, CreatureLifeAttr lifeAttr, RoleFightAttr fightAttr) {
+        super(objectId, name, lifeAttr, fightAttr);
+    }
+
+
+    /**
+     * 角色初始化
+      */
+    public void init() {
+
+    }
 
     @Override
     public AbstractPacket getUiInfoResp(Role witness) {
@@ -33,6 +46,12 @@ public class Role extends AbstractCreature {
                 .setName(roleEntity.getName())
                 .setLevel(roleEntity.getLevel())
                 .setRoleType(roleEntity.getRoleType());
+    }
+
+    @Override
+    public AbstractVisibleSceneObject setSceneId(int sceneId) {
+        this.roleEntity.setSceneId(sceneId);
+        return super.setSceneId(sceneId);
     }
 
     public RoleEntity getRoleEntity() {
@@ -48,15 +67,6 @@ public class Role extends AbstractCreature {
         return getObjectId();
     }
 
-    public Role setRoleId(Long id){
-        setObjectId(id);
-        return this;
-    }
-
-    public Role setExp(long exp) {
-        this.exp = exp;
-        return this;
-    }
 
     public ISession getSession() {
         return session;

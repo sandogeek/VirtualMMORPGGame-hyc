@@ -1,7 +1,7 @@
 package com.mmorpg.mbdl.business.register.entity;
 
 import com.mmorpg.mbdl.framework.storage.annotation.JetCacheConfig;
-import com.mmorpg.mbdl.framework.storage.core.IEntity;
+import com.mmorpg.mbdl.framework.storage.core.AbstractEntity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,7 +12,7 @@ import javax.persistence.Id;
  */
 @Entity
 @JetCacheConfig
-public class AccountEntity implements IEntity<String> {
+public class AccountEntity extends AbstractEntity<String> {
     @Id
     private String account;
 

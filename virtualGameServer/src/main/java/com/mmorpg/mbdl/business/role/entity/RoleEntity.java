@@ -1,8 +1,9 @@
 package com.mmorpg.mbdl.business.role.entity;
 
+import com.mmorpg.mbdl.business.role.manager.RoleManager;
 import com.mmorpg.mbdl.business.role.model.RoleType;
 import com.mmorpg.mbdl.framework.storage.annotation.JetCacheConfig;
-import com.mmorpg.mbdl.framework.storage.core.IEntity;
+import com.mmorpg.mbdl.framework.storage.core.AbstractEntity;
 
 import javax.persistence.*;
 
@@ -18,7 +19,7 @@ import javax.persistence.*;
         @Index(name = "index_account",columnList = "account"),
         @Index(name = "index_name_serverId",columnList = "name,serverToken",unique = true)
 })
-public class RoleEntity implements IEntity<Long> {
+public class RoleEntity extends AbstractEntity<Long> {
     @Id
     @Column(nullable = false)
     private Long roleId;
@@ -56,6 +57,7 @@ public class RoleEntity implements IEntity<Long> {
 
     public RoleEntity setSceneId(int sceneId) {
         this.sceneId = sceneId;
+        RoleManager.getInstance().mergeUpdateRoleEntity(this);
         return this;
     }
 
@@ -77,6 +79,7 @@ public class RoleEntity implements IEntity<Long> {
 
     public RoleEntity setExp(long exp) {
         this.exp = exp;
+        RoleManager.getInstance().mergeUpdateRoleEntity(this);
         return this;
     }
 
@@ -86,6 +89,7 @@ public class RoleEntity implements IEntity<Long> {
 
     public RoleEntity setLevel(short level) {
         this.level = level;
+        RoleManager.getInstance().mergeUpdateRoleEntity(this);
         return this;
     }
 
