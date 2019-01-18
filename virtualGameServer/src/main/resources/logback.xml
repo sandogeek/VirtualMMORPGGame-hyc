@@ -15,7 +15,7 @@
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <!--%M和%line内部是通过打印堆栈信息获取，会增加打日志的性能消耗，生产环境需要注意去除-->
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36}.%M:%line - %msg%n</pattern>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
 

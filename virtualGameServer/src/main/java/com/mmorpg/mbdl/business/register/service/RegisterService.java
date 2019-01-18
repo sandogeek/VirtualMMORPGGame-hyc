@@ -29,7 +29,12 @@ public class RegisterService {
            AccountEntity accountEntity = new AccountEntity();
            accountEntity.setAccount(registerReq.getAccount());
            accountEntity.setPassword(registerReq.getPassword());
-           playerAccountEntityIStorage.create(accountEntity);
+           try {
+               playerAccountEntityIStorage.create(accountEntity);
+           } catch (Exception e) {
+               registerResp.setSuccess(false);
+               return registerResp;
+           }
            registerResp.setSuccess(true);
        }
        return registerResp;

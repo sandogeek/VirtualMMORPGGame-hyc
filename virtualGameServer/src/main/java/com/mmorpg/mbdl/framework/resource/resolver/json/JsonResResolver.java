@@ -1,7 +1,7 @@
 package com.mmorpg.mbdl.framework.resource.resolver.json;
 
 import com.google.common.collect.ImmutableMap;
-import com.mmorpg.mbdl.business.common.util.JsonUtil;
+import com.mmorpg.mbdl.framework.common.utils.JsonUtil;
 import com.mmorpg.mbdl.framework.resource.core.StaticResDefinition;
 import com.mmorpg.mbdl.framework.resource.exposed.AbstractBeanFactoryAwareResResolver;
 import org.apache.commons.lang3.StringUtils;

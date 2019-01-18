@@ -1,5 +1,6 @@
 package com.mmorpg.mbdl.framework.communicate.websocket.model;
 
+import com.mmorpg.mbdl.framework.common.utils.JsonUtil;
 import com.mmorpg.mbdl.framework.event.core.SyncEventBus;
 import com.mmorpg.mbdl.framework.event.preset.SessionCloseEvent;
 import com.mmorpg.mbdl.framework.thread.task.DelayedTask;
@@ -61,6 +62,7 @@ public class WsSession extends AbstractSession {
             logger.warn("发包失败：发包时channel={}已inActive, roleId={}", channel, roleId);
             return null;
         }
+        logger.debug("账号<{}>,发包[{}] 内容：{}", account, abstractPacket.getClass().getSimpleName(), JsonUtil.object2String(abstractPacket));
         if (flushNow){
             return channel.writeAndFlush(abstractPacket);
         }

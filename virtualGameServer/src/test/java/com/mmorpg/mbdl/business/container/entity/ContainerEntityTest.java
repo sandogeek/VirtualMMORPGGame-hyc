@@ -27,7 +27,7 @@ class ContainerEntityTest extends TestWithSpring {
     }
 
     @Test
-    void 从数据查取数据() {
+    void 从数据库查取数据() {
         ContainerEntity containerEntity = containerEntityIStorage.get(10000L);
         logger.debug("");
     }

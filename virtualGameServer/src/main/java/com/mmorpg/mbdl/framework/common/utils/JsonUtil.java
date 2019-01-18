@@ -1,4 +1,4 @@
-package com.mmorpg.mbdl.business.common.util;
+package com.mmorpg.mbdl.framework.common.utils;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;

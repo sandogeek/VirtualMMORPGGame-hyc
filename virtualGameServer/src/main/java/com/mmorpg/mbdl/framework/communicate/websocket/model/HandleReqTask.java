@@ -24,7 +24,7 @@ public class HandleReqTask extends Task {
 
     @Override
     public String taskName() {
-        String name = String.format("处理请求包[%s]",packetMethodDifinition.getAbstractPacketClazz().getSimpleName());
+        String name = String.format("账号<%s>,处理请求包[%s]结束", session.getAccount(),packetMethodDifinition.getAbstractPacketClazz().getSimpleName());
         return name;
     }
 

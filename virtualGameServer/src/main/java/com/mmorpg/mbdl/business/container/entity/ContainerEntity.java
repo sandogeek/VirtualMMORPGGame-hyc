@@ -8,7 +8,6 @@ import org.hibernate.annotations.Type;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.Lob;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,7 +22,6 @@ import java.util.Map;
 public class ContainerEntity extends AbstractEntity<Long> {
     @Id
     private Long roleId;
-    @Lob
     @Type(type = "json")
     private Map<ContainerType, Container> type2ContainerMap = new HashMap<>(8);
 

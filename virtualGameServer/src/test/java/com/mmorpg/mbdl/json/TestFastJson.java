@@ -7,8 +7,9 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mmorpg.mbdl.business.common.util.JsonUtil;
+import com.mmorpg.mbdl.framework.common.utils.JsonUtil;
 import com.mmorpg.mbdl.business.container.resource.ItemRes;
 import com.mmorpg.mbdl.framework.reflectasm.withunsafe.FieldAccess;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,6 +18,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 测试类
@@ -34,6 +37,31 @@ public class TestFastJson {
         mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
         mapper.setDefaultPropertyInclusion(JsonInclude.Include.NON_DEFAULT);
 
+    }
+
+    @Test
+    void 测试() {
+        Map<Integer,Long> map = new HashMap<>();
+        map.put(1,0L);
+
+        // I know this way violates the java generic constraint.
+        String json = null;
+        try {
+            json = mapper.writeValueAsString(map);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        Map<Integer,Long> mapFromJson = null;
+        try {
+            mapFromJson = mapper.readValue(json, new TypeReference<Map<Integer,Long>>(){});
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        for(Long v : mapFromJson.values()) {
+            // will throw ClassCastException
+            System.out.println(v);
+        }
     }
 
     @Test

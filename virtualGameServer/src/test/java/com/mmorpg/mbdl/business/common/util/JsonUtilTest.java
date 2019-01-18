@@ -1,5 +1,6 @@
 package com.mmorpg.mbdl.business.common.util;
 
+import com.mmorpg.mbdl.framework.common.utils.JsonUtil;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;

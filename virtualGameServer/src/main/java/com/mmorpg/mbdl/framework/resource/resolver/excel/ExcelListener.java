@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
-import com.mmorpg.mbdl.business.common.util.JsonUtil;
+import com.mmorpg.mbdl.framework.common.utils.JsonUtil;
 import com.mmorpg.mbdl.framework.resource.core.StaticResDefinition;
 import com.mmorpg.mbdl.framework.resource.exposed.IExcelFormat;
 import org.apache.commons.lang3.StringUtils;

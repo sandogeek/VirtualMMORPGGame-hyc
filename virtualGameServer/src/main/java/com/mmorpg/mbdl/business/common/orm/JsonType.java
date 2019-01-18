@@ -1,26 +1,21 @@
 package com.mmorpg.mbdl.business.common.orm;
 
 
-import com.fasterxml.jackson.databind.type.CollectionType;
-import com.fasterxml.jackson.databind.type.MapType;
-import com.mmorpg.mbdl.business.common.util.JsonUtil;
+import com.fasterxml.jackson.databind.JavaType;
+import com.mmorpg.mbdl.framework.common.utils.JsonUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.usertype.UserType;
-import org.springframework.core.ResolvableType;
 import org.springframework.util.ObjectUtils;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 自定义hibernate字段类型
@@ -59,31 +54,15 @@ public class JsonType implements UserType {
             return null;
         }
         String columnName = rs.getMetaData().getColumnName(rs.findColumn(names[0]));
-        String entityJson = "{\""+columnName+ "\":"+json + "}";
         Field field;
         try {
             field = owner.getClass().getDeclaredField(columnName);
         } catch (NoSuchFieldException e) {
-            throw new RuntimeException(String.format("反序列化时发现实体类[%s]中不存在字段名为[%s]的字段",owner.getClass().getSimpleName(),columnName));
+            throw new RuntimeException(String.format("反序列化时发现实体类[%s]中不存在字段名为[%s]的字段",owner.getClass().getSimpleName(),columnName),e);
         }
-        Class<?> type = field.getType();
-        if (Map.class.isAssignableFrom(type)) {
-            ResolvableType resolvableType = ResolvableType.forType(field.getGenericType());
-            if (resolvableType.hasGenerics()) {
-                Class<?> keyType = resolvableType.getGeneric(0).resolve();
-                Class<?> valueType = resolvableType.getGeneric(1).resolve();
-                MapType mapType = JsonUtil.getTypeFactory().constructMapType(HashMap.class, keyType, valueType);
-                return JsonUtil.string2Object(json,mapType);
-            }
-        } else if (Collection.class.isAssignableFrom(type)) {
-            ResolvableType resolvableType = ResolvableType.forType(field.getGenericType());
-            if (resolvableType.hasGenerics()) {
-                Class<?> elementClazz = resolvableType.getGeneric(0).resolve();
-                CollectionType collectionType = JsonUtil.getTypeFactory().constructCollectionType(List.class, elementClazz);
-                return JsonUtil.string2Object(json, collectionType);
-            }
-        }
-        return JsonUtil.string2Object(json,type);
+        Type genericType = field.getGenericType();
+        JavaType javaType = JsonUtil.getTypeFactory().constructType(genericType);
+        return JsonUtil.string2Object(json, javaType);
     }
 
     @Override
