@@ -1,7 +1,7 @@
 package com.mmorpg.mbdl.business.world.manager;
 
 import com.mmorpg.mbdl.business.object.model.AbstractVisibleSceneObject;
-import com.mmorpg.mbdl.business.object.model.Role;
+import com.mmorpg.mbdl.business.role.model.Role;
 import com.mmorpg.mbdl.business.role.entity.RoleEntity;
 import com.mmorpg.mbdl.business.world.resource.SceneRes;
 import com.mmorpg.mbdl.business.world.scene.model.Scene;

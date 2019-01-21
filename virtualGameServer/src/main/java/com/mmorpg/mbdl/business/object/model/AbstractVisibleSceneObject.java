@@ -1,5 +1,6 @@
 package com.mmorpg.mbdl.business.object.model;
 
+import com.mmorpg.mbdl.business.role.model.Role;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.AbstractPacket;
 
 /**

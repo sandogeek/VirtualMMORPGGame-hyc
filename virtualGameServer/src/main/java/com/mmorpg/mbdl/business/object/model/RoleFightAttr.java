@@ -1,5 +1,7 @@
 package com.mmorpg.mbdl.business.object.model;
 
+import com.mmorpg.mbdl.business.role.model.Role;
+
 /**
  * 角色战斗属性
  *

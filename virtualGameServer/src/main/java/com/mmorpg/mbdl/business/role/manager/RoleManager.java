@@ -1,7 +1,7 @@
 package com.mmorpg.mbdl.business.role.manager;
 
 import com.mmorpg.mbdl.business.common.resource.GlobalSettingRes;
-import com.mmorpg.mbdl.business.object.model.Role;
+import com.mmorpg.mbdl.business.role.model.Role;
 import com.mmorpg.mbdl.business.role.dao.RoleEntityDao;
 import com.mmorpg.mbdl.business.role.entity.RoleEntity;
 import com.mmorpg.mbdl.business.role.model.RoleType;
@@ -123,23 +123,23 @@ public class RoleManager {
      * @return 成功，true,失败,false
      */
     public Role initRole(ISession session,RoleEntity roleEntity){
-        // Role role = new Role(roleEntity.getId(),roleEntity.getName(),);
-        // RoleLevelRes roleLevel0Res = roleLevelResMap.get((short) 0);
-        // role.setSession(session)
-        //         .setRoleEntity(roleEntity)
-        //         .setExp(roleEntity.getExp())
-        //         .setMaxHp(roleLevel0Res.getMaxHp()).setMaxMp(roleLevel0Res.getMaxMp())
-        //         .setFullHp().setFullMp()
-        //         .setSceneId(roleEntity.getSceneId())
-        //         .setName();
-        // role.init();
-        // if (getSession2Role().values().contains(role)){
-        //     logger.error("玩家[roleId={}]重复初始化",role.getRoleId());
-        //     return null;
-        // }
-        // addRole(role);
-        // return role;
-        return null;
+        Role role = new Role(roleEntity.getId(),roleEntity.getName());
+        RoleLevelRes roleLevel0Res = roleLevelResMap.get((short) 0);
+        role.setSession(session).setRoleEntity(roleEntity);
+        PropManager propManager = new PropManager(role);
+        role.setPropManager(propManager);
+        // .setExp(roleEntity.getExp())
+                // .setMaxHp(roleLevel0Res.getMaxHp()).setMaxMp(roleLevel0Res.getMaxMp())
+                // .setFullHp().setFullMp()
+                // .setSceneId(roleEntity.getSceneId())
+                // .setName();
+        role.init();
+        if (getSession2Role().values().contains(role)){
+            logger.error("玩家[roleId={}]重复初始化",role.getRoleId());
+            return null;
+        }
+        addRole(role);
+        return role;
     }
 
     /**

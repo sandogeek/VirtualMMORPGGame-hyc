@@ -1,7 +1,9 @@
-package com.mmorpg.mbdl.business.object.model;
+package com.mmorpg.mbdl.business.role.model;
 
+import com.mmorpg.mbdl.business.object.model.*;
 import com.mmorpg.mbdl.business.object.packet.RoleUiInfoResp;
 import com.mmorpg.mbdl.business.role.entity.RoleEntity;
+import com.mmorpg.mbdl.business.role.manager.PropManager;
 import com.mmorpg.mbdl.business.world.manager.SceneManager;
 import com.mmorpg.mbdl.business.world.scene.model.Scene;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.AbstractPacket;
@@ -19,6 +21,8 @@ import org.slf4j.LoggerFactory;
 public class Role extends AbstractCreature {
     private static Logger logger = LoggerFactory.getLogger(Role.class);
     private ISession session;
+
+    private PropManager propManager;
 
     /** 角色相关实体 **/
     private RoleEntity roleEntity;
@@ -87,6 +91,11 @@ public class Role extends AbstractCreature {
 
     public ChannelFuture sendPacket(AbstractPacket abstractPacket,boolean flushNow){
         return session.sendPacket(abstractPacket,flushNow);
+    }
+
+    public Role setPropManager(PropManager propManager) {
+        this.propManager = propManager;
+        return this;
     }
 
     public void broadcastNotIncludeSelf(AbstractPacket abstractPacket) {

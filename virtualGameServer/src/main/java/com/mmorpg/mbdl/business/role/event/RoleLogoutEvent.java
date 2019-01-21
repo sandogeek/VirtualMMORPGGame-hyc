@@ -1,6 +1,6 @@
 package com.mmorpg.mbdl.business.role.event;
 
-import com.mmorpg.mbdl.business.object.model.Role;
+import com.mmorpg.mbdl.business.role.model.Role;
 
 /**
  * 角色下线事件

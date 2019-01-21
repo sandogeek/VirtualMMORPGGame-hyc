@@ -1,6 +1,6 @@
 package com.mmorpg.mbdl.business.role.service;
 
-import com.mmorpg.mbdl.business.object.model.Role;
+import com.mmorpg.mbdl.business.role.model.Role;
 import com.mmorpg.mbdl.business.object.packet.CustomRoleUiInfoResp;
 import com.mmorpg.mbdl.business.role.entity.RoleEntity;
 import com.mmorpg.mbdl.business.role.event.RoleLogoutEvent;

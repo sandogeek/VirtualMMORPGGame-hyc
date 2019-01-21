@@ -3,7 +3,7 @@ package com.mmorpg.mbdl.business.chat.service;
 import com.mmorpg.mbdl.business.chat.packet.ChatMessage;
 import com.mmorpg.mbdl.business.chat.packet.ChatReq;
 import com.mmorpg.mbdl.business.chat.packet.ChatResp;
-import com.mmorpg.mbdl.business.object.model.Role;
+import com.mmorpg.mbdl.business.role.model.Role;
 import com.mmorpg.mbdl.business.role.manager.RoleManager;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.ISession;
 import com.mmorpg.mbdl.framework.thread.task.AbstractTask;

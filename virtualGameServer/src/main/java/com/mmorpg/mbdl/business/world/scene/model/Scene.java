@@ -1,7 +1,7 @@
 package com.mmorpg.mbdl.business.world.scene.model;
 
 import com.mmorpg.mbdl.business.object.model.AbstractVisibleSceneObject;
-import com.mmorpg.mbdl.business.object.model.Role;
+import com.mmorpg.mbdl.business.role.model.Role;
 import com.mmorpg.mbdl.business.world.manager.SceneManager;
 import com.mmorpg.mbdl.business.world.packet.ObjectDisappearResp;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.AbstractPacket;
