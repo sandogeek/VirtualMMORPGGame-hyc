@@ -1,6 +1,6 @@
 package com.mmorpg.mbdl.business.role.manager;
 
-import com.mmorpg.mbdl.business.role.model.Role;
+import com.mmorpg.mbdl.business.object.model.AbstractCreature;
 import com.mmorpg.mbdl.business.role.model.PropTree;
 import com.mmorpg.mbdl.business.role.model.PropType;
 
@@ -13,15 +13,31 @@ import java.util.concurrent.ConcurrentHashMap;
  * @since v1.0 2019/1/21
  **/
 public class PropManager {
-    private Role owner;
+    private AbstractCreature owner;
     private Map<PropType, PropTree> type2Tree = new ConcurrentHashMap<>();
 
-    public PropManager(Role owner) {
+    public PropManager(AbstractCreature owner) {
         this.owner = owner;
-        for (PropType propType :
-                PropType.values()) {
-            type2Tree.put(propType,new PropTree());
-        }
     }
 
+    public PropTree getOrCreateTree(PropType propType) {
+        PropTree propTree = type2Tree.get(propType);
+        if (propTree == null) {
+            return type2Tree.put(propType, propType.create(owner));
+        }
+        return propTree;
+    }
+
+    public PropTree getPropTreeByType(PropType propType) {
+        return type2Tree.get(propType);
+    }
+
+    /**
+     * 根据
+     * @param propType
+     * @return
+     */
+    public long getPropValueOf(PropType propType) {
+        return type2Tree.get(propType).getValue();
+    }
 }

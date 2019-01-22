@@ -19,9 +19,10 @@ public class PropNode {
     /** 是否是叶子节点 */
     private boolean isLeafNode = true;
 
-    public PropNode(PropTree propTree, long initValue) {
+    public PropNode(PropTree propTree, long initValue,String name) {
         this.propTree = propTree;
         this.value = initValue;
+        this.name = name;
     }
 
     /**
@@ -31,7 +32,7 @@ public class PropNode {
     public PropNode getOrCreateChild(String name) {
         PropNode propNode = childPropNodeMap.get(name);
         if (propNode == null) {
-            PropNode node = new PropNode(propTree, 0);
+            PropNode node = new PropNode(propTree, 0, name);
             addChild(node);
             return node;
         }
@@ -47,12 +48,26 @@ public class PropNode {
         if (propNode == null) {
             return;
         }
-        propNode.addAndGet(-propNode.getValue());
-        childPropNodeMap.remove(name);
+        try {
+            propTree.getTreeRWLock().writeLock().lock();
+            childPropNodeMap.remove(name);
+            handleAddAndGet(-propNode.getValue());
+            if (childPropNodeMap.isEmpty()) {
+                isLeafNode = true;
+            }
+        } finally {
+            propTree.getTreeRWLock().writeLock().unlock();
+        }
     }
     
     public PropNode getChild(String name) {
-        return childPropNodeMap.get(name);
+        try {
+            propTree.getTreeRWLock().readLock().lock();
+            return childPropNodeMap.get(name);
+        } finally {
+            propTree.getTreeRWLock().readLock().unlock();
+        }
+
     }
 
     /**
@@ -60,13 +75,33 @@ public class PropNode {
      * @param propNode
      */
     private void addChild(PropNode propNode) {
-        this.isLeafNode = false;
-        childPropNodeMap.put(propNode.name, propNode);
+        try {
+            propTree.getTreeRWLock().writeLock().lock();
+            this.isLeafNode = false;
+            childPropNodeMap.put(propNode.name, propNode);
+            propNode.setPropTree(this.propTree);
+            propNode.setParent(this);
+        } finally {
+            propTree.getTreeRWLock().writeLock().unlock();
+        }
     }
 
-    protected long handleAddAndGet(long delta) {
-        this.value += delta;
+    protected long handleSet(long newValue) {
+        this.value = newValue;
         return this.value;
+    }
+
+    /**
+     * 因为{@link PropNode#addAndGet(long)}已经锁住了整棵树，提取出来避免重复加锁
+     * @param delta
+     * @return
+     */
+    protected long handleAddAndGet(long delta) {
+        long tempValue = this.value + delta;
+        if (parent != null) {
+            parent.handleAddAndGet(delta);
+        }
+        return handleSet(tempValue);
     }
 
     /**
@@ -74,34 +109,57 @@ public class PropNode {
      * @param delta
      */
     public long addAndGet(long delta) {
-        check(delta);
+        check();
         try {
             propTree.getTreeRWLock().writeLock().lock();
-            parent.handleAddAndGet(delta);
             return handleAddAndGet(delta);
         } finally {
             propTree.getTreeRWLock().writeLock().unlock();
         }
+        // check(delta);
+        // try {
+        //     propTree.getTreeRWLock().writeLock().lock();
+        //     if (parent != null) {
+        //         parent.handleAddAndGet(delta);
+        //     }
+        //     return handleAddAndGet(delta);
+        // } finally {
+        //     propTree.getTreeRWLock().writeLock().unlock();
+        // }
     }
 
-    protected void check(long delta) {
-        if (!isLeafNode) {
-            throw new RuntimeException(String.format("此函数不能用于更改非叶子节点的值,当前节点[%s]", this.name));
+    protected void check() {
+        try {
+            propTree.getTreeRWLock().readLock().lock();
+            if (!isLeafNode) {
+                throw new RuntimeException(String.format("此函数不能用于更改非叶子节点的值,当前节点[%s]", this.name));
+            }
+        } finally {
+            propTree.getTreeRWLock().readLock().unlock();
         }
-        if ((propTree.value + delta) < 0 ) {
-            throw new RuntimeException("此变更将导致根节点的值小于0");
-        }
+
+
     }
 
     /**
      * 把节点设置为指定值
      */
     public void set(long newValue) {
-        long delta = newValue - value;
-        if (delta == 0) {
-            return;
+        check();
+        try {
+            propTree.getTreeRWLock().writeLock().lock();
+            if (parent != null) {
+                parent.handleAddAndGet(newValue - value);
+            }
+            handleSet(newValue);
+        } finally {
+            propTree.getTreeRWLock().writeLock().unlock();
         }
-        addAndGet(delta);
+        // long delta = newValue - value;
+        // if (delta == 0) {
+        //     return;
+        // }
+        // addAndGet(delta);
     }
 
     /**
@@ -111,13 +169,17 @@ public class PropNode {
     public long getValue() {
         try {
             propTree.getTreeRWLock().readLock().lock();
-            return value;
+            return doGetValue();
         } finally {
             propTree.getTreeRWLock().readLock().unlock();
         }
     }
 
-    public PropNode setParent(PropNode parent) {
+    protected long doGetValue() {
+        return value;
+    }
+
+    PropNode setParent(PropNode parent) {
         this.parent = parent;
         return this;
     }

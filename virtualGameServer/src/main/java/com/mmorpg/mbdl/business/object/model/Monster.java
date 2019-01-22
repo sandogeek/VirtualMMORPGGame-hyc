@@ -1,6 +1,7 @@
 package com.mmorpg.mbdl.business.object.model;
 
 import com.mmorpg.mbdl.business.object.packet.MonsterUiInfoResp;
+import com.mmorpg.mbdl.business.role.model.PropType;
 import com.mmorpg.mbdl.business.role.model.Role;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.AbstractPacket;
 
@@ -13,13 +14,20 @@ import com.mmorpg.mbdl.framework.communicate.websocket.model.AbstractPacket;
 public class Monster extends AbstractCreature {
 
 
-    public Monster(Long objectId, String name, CreatureLifeAttr lifeAttr, CreatureFightAttr fightAttr) {
-        super(objectId, name, lifeAttr, fightAttr);
+    public Monster(Long objectId, String name) {
+        super(objectId, name);
+    }
+
+    @Override
+    protected void init() {
+
     }
 
     @Override
     public AbstractPacket getUiInfoResp(Role witness) {
-        return new MonsterUiInfoResp(this.getObjectId(), this.getName(), this.getLifeAttr().getCurrentHp(), this.getLifeAttr().getMaxHp());
+        return new MonsterUiInfoResp(this.getObjectId(), this.getName(),
+                propManager.getPropValueOf(PropType.CURRENT_HP),
+                propManager.getPropValueOf(PropType.MAX_HP));
     }
 
     @Override

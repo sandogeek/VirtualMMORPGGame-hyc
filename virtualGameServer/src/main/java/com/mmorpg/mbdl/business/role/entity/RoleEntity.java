@@ -1,6 +1,5 @@
 package com.mmorpg.mbdl.business.role.entity;
 
-import com.mmorpg.mbdl.business.role.manager.RoleManager;
 import com.mmorpg.mbdl.business.role.model.RoleType;
 import com.mmorpg.mbdl.framework.storage.annotation.JetCacheConfig;
 import com.mmorpg.mbdl.framework.storage.core.AbstractEntity;
@@ -57,7 +56,6 @@ public class RoleEntity extends AbstractEntity<Long> {
 
     public RoleEntity setSceneId(int sceneId) {
         this.sceneId = sceneId;
-        RoleManager.getInstance().mergeUpdateRoleEntity(this);
         return this;
     }
 
@@ -79,7 +77,6 @@ public class RoleEntity extends AbstractEntity<Long> {
 
     public RoleEntity setExp(long exp) {
         this.exp = exp;
-        RoleManager.getInstance().mergeUpdateRoleEntity(this);
         return this;
     }
 
@@ -89,7 +86,6 @@ public class RoleEntity extends AbstractEntity<Long> {
 
     public RoleEntity setLevel(short level) {
         this.level = level;
-        RoleManager.getInstance().mergeUpdateRoleEntity(this);
         return this;
     }
 

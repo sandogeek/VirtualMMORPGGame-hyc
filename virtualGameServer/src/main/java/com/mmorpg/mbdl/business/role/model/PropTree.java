@@ -3,7 +3,7 @@ package com.mmorpg.mbdl.business.role.model;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
- * 属性树
+ * 属性树根节点
  *
  * @author Sando Geek
  * @since v1.0 2019/1/21
@@ -12,10 +12,10 @@ public class PropTree extends PropNode {
     /**
      * 属性树读写锁
      */
-    private ReentrantReadWriteLock treeRWLock = new ReentrantReadWriteLock();
+    protected ReentrantReadWriteLock treeRWLock = new ReentrantReadWriteLock();
 
     public PropTree() {
-        super(null, 0);
+        super(null, 0,"根节点");
         setPropTree(this);
     }
 
@@ -23,4 +23,11 @@ public class PropTree extends PropNode {
         return treeRWLock;
     }
 
+    @Override
+    protected long handleSet(long newValue) {
+        if (newValue < 0 ) {
+            throw new RuntimeException("不能将根节点的值设置为负值");
+        }
+        return super.handleSet(newValue);
+    }
 }

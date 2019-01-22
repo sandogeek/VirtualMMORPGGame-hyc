@@ -1,9 +1,12 @@
 package com.mmorpg.mbdl.business.role.model;
 
-import com.mmorpg.mbdl.business.object.model.*;
+import com.mmorpg.mbdl.business.object.model.AbstractCreature;
+import com.mmorpg.mbdl.business.object.model.AbstractVisibleSceneObject;
+import com.mmorpg.mbdl.business.object.model.SceneObjectType;
 import com.mmorpg.mbdl.business.object.packet.RoleUiInfoResp;
 import com.mmorpg.mbdl.business.role.entity.RoleEntity;
-import com.mmorpg.mbdl.business.role.manager.PropManager;
+import com.mmorpg.mbdl.business.role.manager.RoleManager;
+import com.mmorpg.mbdl.business.role.resource.RoleLevelRes;
 import com.mmorpg.mbdl.business.world.manager.SceneManager;
 import com.mmorpg.mbdl.business.world.scene.model.Scene;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.AbstractPacket;
@@ -22,25 +25,38 @@ public class Role extends AbstractCreature {
     private static Logger logger = LoggerFactory.getLogger(Role.class);
     private ISession session;
 
-    private PropManager propManager;
-
-    /** 角色相关实体 **/
+    /** 角色相关实体，所有会变更字段已自动mergeUpdate **/
     private RoleEntity roleEntity;
 
     public Role(Long objectId, String name) {
-        this(objectId,name,null,null);
-    }
-
-    Role(Long objectId, String name, CreatureLifeAttr lifeAttr, RoleFightAttr fightAttr) {
-        super(objectId, name, lifeAttr, fightAttr);
+        super(objectId,name);
     }
 
 
     /**
      * 角色初始化
       */
+    @Override
     public void init() {
+        for (PropType propType :
+                PropType.values()) {
+            propManager.getOrCreateTree(propType);
+        }
+        propManager.getPropTreeByType(PropType.SCENE_ID).set(roleEntity.getSceneId());
+        propManager.getPropTreeByType(PropType.EXP).set(roleEntity.getExp());
+        RoleLevelRes roleLevelRes = RoleManager.getInstance().getRoleLevelResByLevel(roleEntity.getLevel());
+        propManager.getPropTreeByType(PropType.MAX_HP).getOrCreateChild("level").set(roleLevelRes.getMaxHp());
+        propManager.getPropTreeByType(PropType.MAX_MP).getOrCreateChild("level").set(roleLevelRes.getMaxMp());
+        fullHP();
+        fullMP();
+    }
 
+    public void fullHP() {
+        propManager.getPropTreeByType(PropType.CURRENT_HP).set(propManager.getPropValueOf(PropType.MAX_HP));
+    }
+
+    public void fullMP() {
+        propManager.getPropTreeByType(PropType.CURRENT_MP).set(propManager.getPropValueOf(PropType.MAX_MP));
     }
 
     @Override
@@ -91,11 +107,6 @@ public class Role extends AbstractCreature {
 
     public ChannelFuture sendPacket(AbstractPacket abstractPacket,boolean flushNow){
         return session.sendPacket(abstractPacket,flushNow);
-    }
-
-    public Role setPropManager(PropManager propManager) {
-        this.propManager = propManager;
-        return this;
     }
 
     public void broadcastNotIncludeSelf(AbstractPacket abstractPacket) {
