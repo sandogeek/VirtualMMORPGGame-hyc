@@ -1,6 +1,6 @@
 package com.mmorpg.mbdl.business.role.service;
 
-import com.mmorpg.mbdl.business.role.model.PropType;
+import com.mmorpg.mbdl.business.role.model.prop.PropType;
 import com.mmorpg.mbdl.business.role.model.Role;
 import com.mmorpg.mbdl.business.object.packet.CustomRoleUiInfoResp;
 import com.mmorpg.mbdl.business.role.entity.RoleEntity;
@@ -113,7 +113,7 @@ public class RoleService {
             return;
         }
         // logout事件业务池处理
-        TaskDispatcher.getIntance().dispatch(new Task(role.getRoleId()) {
+        TaskDispatcher.getInstance().dispatch(new Task(role.getRoleId()) {
             @Override
             public String taskName() {
                 return "Logout事件";

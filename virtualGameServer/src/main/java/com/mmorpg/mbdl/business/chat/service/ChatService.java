@@ -73,6 +73,6 @@ public class ChatService {
         }
 
         // 把消息提交到任务队列串行发出，以保证所有玩家看到的消息顺序一致
-        TaskDispatcher.getIntance().dispatch(task);
+        TaskDispatcher.getInstance().dispatch(task);
     }
 }

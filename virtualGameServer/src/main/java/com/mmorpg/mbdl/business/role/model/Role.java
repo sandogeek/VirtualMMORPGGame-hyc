@@ -6,6 +6,7 @@ import com.mmorpg.mbdl.business.object.model.SceneObjectType;
 import com.mmorpg.mbdl.business.object.packet.RoleUiInfoResp;
 import com.mmorpg.mbdl.business.role.entity.RoleEntity;
 import com.mmorpg.mbdl.business.role.manager.RoleManager;
+import com.mmorpg.mbdl.business.role.model.prop.PropType;
 import com.mmorpg.mbdl.business.role.resource.RoleLevelRes;
 import com.mmorpg.mbdl.business.world.manager.SceneManager;
 import com.mmorpg.mbdl.business.world.scene.model.Scene;
@@ -42,8 +43,8 @@ public class Role extends AbstractCreature {
                 PropType.values()) {
             propManager.getOrCreateTree(propType);
         }
-        propManager.getPropTreeByType(PropType.SCENE_ID).set(roleEntity.getSceneId());
-        propManager.getPropTreeByType(PropType.EXP).set(roleEntity.getExp());
+        propManager.getPropTreeByType(PropType.SCENE_ID).setRootNodeValue(roleEntity.getSceneId());
+        propManager.getPropTreeByType(PropType.EXP).setRootNodeValue(roleEntity.getExp());
         RoleLevelRes roleLevelRes = RoleManager.getInstance().getRoleLevelResByLevel(roleEntity.getLevel());
         propManager.getPropTreeByType(PropType.MAX_HP).getOrCreateChild("level").set(roleLevelRes.getMaxHp());
         propManager.getPropTreeByType(PropType.MAX_MP).getOrCreateChild("level").set(roleLevelRes.getMaxMp());
@@ -52,11 +53,11 @@ public class Role extends AbstractCreature {
     }
 
     public void fullHP() {
-        propManager.getPropTreeByType(PropType.CURRENT_HP).set(propManager.getPropValueOf(PropType.MAX_HP));
+        propManager.getPropTreeByType(PropType.CURRENT_HP).setRootNodeValue(propManager.getPropValueOf(PropType.MAX_HP));
     }
 
     public void fullMP() {
-        propManager.getPropTreeByType(PropType.CURRENT_MP).set(propManager.getPropValueOf(PropType.MAX_MP));
+        propManager.getPropTreeByType(PropType.CURRENT_MP).setRootNodeValue(propManager.getPropValueOf(PropType.MAX_MP));
     }
 
     @Override

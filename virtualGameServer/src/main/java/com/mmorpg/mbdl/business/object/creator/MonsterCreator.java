@@ -25,7 +25,7 @@ public class MonsterCreator extends AbstractObjectCreator<Monster> {
 
         SceneObjectAttrRes sceneObjectAttrRes = this.sceneObjectAttrResMap.get(bornData.getObjectKey());
         Long id = IdGeneratorFactory.getIntance().getObjectIdGenerator().generate();
-        Monster monster = new Monster(id,sceneObjectAttrRes.getName(),null,null);
+        Monster monster = new Monster(id,sceneObjectAttrRes.getName());
         monster.setSceneId(sceneId);
         return monster;
     }

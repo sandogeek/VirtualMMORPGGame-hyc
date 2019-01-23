@@ -1,8 +1,9 @@
-package com.mmorpg.mbdl.business.role.model;
+package com.mmorpg.mbdl.business.role.model.prop;
 
 import com.mmorpg.mbdl.business.object.model.AbstractCreature;
 import com.mmorpg.mbdl.business.role.entity.RoleEntity;
 import com.mmorpg.mbdl.business.role.manager.RoleManager;
+import com.mmorpg.mbdl.business.role.model.Role;
 
 /**
  * 属性类型，每个类型对应一颗属性树
@@ -44,15 +45,14 @@ public enum PropType {
             Role role = (Role) abstractCreature;
             EntityPropTree entityPropTree = new EntityPropTree() {
                 @Override
-                protected long doHandleSet(long newValue) {
+                protected void doSetPropValue(long newValue) {
                     RoleEntity roleEntity = role.getRoleEntity();
                     roleEntity.setLevel((short)newValue);
                     RoleManager.getInstance().mergeUpdateRoleEntity(roleEntity);
-                    return roleEntity.getLevel();
                 }
 
                 @Override
-                public long doGetValue() {
+                public long doGetPropValue() {
                     return role.getRoleEntity().getLevel();
                 }
             };
@@ -68,15 +68,14 @@ public enum PropType {
             Role role = (Role) abstractCreature;
             EntityPropTree entityPropTree = new EntityPropTree() {
                 @Override
-                protected long doHandleSet(long newValue) {
+                protected void doSetPropValue(long newValue) {
                     RoleEntity roleEntity = role.getRoleEntity();
                     roleEntity.setSceneId((short)newValue);
                     RoleManager.getInstance().mergeUpdateRoleEntity(roleEntity);
-                    return roleEntity.getSceneId();
                 }
 
                 @Override
-                public long doGetValue() {
+                public long doGetPropValue() {
                     return role.getRoleEntity().getSceneId();
                 }
             };
@@ -92,15 +91,14 @@ public enum PropType {
             Role role = (Role) abstractCreature;
             EntityPropTree entityPropTree = new EntityPropTree() {
                 @Override
-                protected long doHandleSet(long newValue) {
+                protected void doSetPropValue(long newValue) {
                     RoleEntity roleEntity = role.getRoleEntity();
                     roleEntity.setExp((short)newValue);
                     RoleManager.getInstance().mergeUpdateRoleEntity(roleEntity);
-                    return roleEntity.getExp();
                 }
 
                 @Override
-                public long doGetValue() {
+                public long doGetPropValue() {
                     return role.getRoleEntity().getExp();
                 }
             };

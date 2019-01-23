@@ -1,7 +1,7 @@
 package com.mmorpg.mbdl.business.object.model;
 
 import com.mmorpg.mbdl.business.role.manager.PropManager;
-import com.mmorpg.mbdl.business.role.model.PropType;
+import com.mmorpg.mbdl.business.role.model.prop.PropType;
 
 /**
  * 抽象生物

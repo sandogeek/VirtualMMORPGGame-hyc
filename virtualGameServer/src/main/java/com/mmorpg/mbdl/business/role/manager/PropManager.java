@@ -1,8 +1,8 @@
 package com.mmorpg.mbdl.business.role.manager;
 
 import com.mmorpg.mbdl.business.object.model.AbstractCreature;
-import com.mmorpg.mbdl.business.role.model.PropTree;
-import com.mmorpg.mbdl.business.role.model.PropType;
+import com.mmorpg.mbdl.business.role.model.prop.PropTree;
+import com.mmorpg.mbdl.business.role.model.prop.PropType;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -38,6 +38,6 @@ public class PropManager {
      * @return
      */
     public long getPropValueOf(PropType propType) {
-        return type2Tree.get(propType).getValue();
+        return type2Tree.get(propType).getPropValue();
     }
 }
