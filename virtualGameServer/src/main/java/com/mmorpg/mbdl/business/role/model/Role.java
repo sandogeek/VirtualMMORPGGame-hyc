@@ -1,5 +1,6 @@
 package com.mmorpg.mbdl.business.role.model;
 
+import com.google.common.base.MoreObjects;
 import com.mmorpg.mbdl.business.object.model.AbstractCreature;
 import com.mmorpg.mbdl.business.object.model.AbstractVisibleSceneObject;
 import com.mmorpg.mbdl.business.object.model.SceneObjectType;
@@ -35,7 +36,7 @@ public class Role extends AbstractCreature {
 
 
     /**
-     * 角色初始化
+     * 角色属性初始化
       */
     @Override
     public void init() {
@@ -43,21 +44,26 @@ public class Role extends AbstractCreature {
                 PropType.values()) {
             propManager.getOrCreateTree(propType);
         }
-        propManager.getPropTreeByType(PropType.SCENE_ID).setRootNodeValue(roleEntity.getSceneId());
-        propManager.getPropTreeByType(PropType.EXP).setRootNodeValue(roleEntity.getExp());
+    }
+
+    /**
+     * init执行完毕后的初始化
+     */
+    public void afterInit() {
         RoleLevelRes roleLevelRes = RoleManager.getInstance().getRoleLevelResByLevel(roleEntity.getLevel());
         propManager.getPropTreeByType(PropType.MAX_HP).getOrCreateChild("level").set(roleLevelRes.getMaxHp());
         propManager.getPropTreeByType(PropType.MAX_MP).getOrCreateChild("level").set(roleLevelRes.getMaxMp());
+        propManager.getPropTreeByType(PropType.ATTACK).getOrCreateChild("level").set(roleLevelRes.getAttack());
+        propManager.getPropTreeByType(PropType.DEFENCE).getOrCreateChild("level").set(roleLevelRes.getDefence());
+        propManager.setRootNodeValueOnType(PropType.SCENE_ID, roleEntity.getSceneId());
+        propManager.setRootNodeValueOnType(PropType.EXP, roleEntity.getExp());
         fullHP();
         fullMP();
     }
 
-    public void fullHP() {
-        propManager.getPropTreeByType(PropType.CURRENT_HP).setRootNodeValue(propManager.getPropValueOf(PropType.MAX_HP));
-    }
-
-    public void fullMP() {
-        propManager.getPropTreeByType(PropType.CURRENT_MP).setRootNodeValue(propManager.getPropValueOf(PropType.MAX_MP));
+    @Override
+    public int getSceneId() {
+        return (int)propManager.getPropValueOf(PropType.SCENE_ID);
     }
 
     @Override
@@ -135,4 +141,10 @@ public class Role extends AbstractCreature {
         return SceneObjectType.PLAYER;
     }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("角色名称", roleEntity.getName())
+                .toString();
+    }
 }

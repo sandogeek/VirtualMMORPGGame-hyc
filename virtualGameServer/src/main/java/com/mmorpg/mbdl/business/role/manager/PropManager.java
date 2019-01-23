@@ -33,11 +33,15 @@ public class PropManager {
     }
 
     /**
-     * 根据
+     * 根据属性类型获取属性值
      * @param propType
      * @return
      */
     public long getPropValueOf(PropType propType) {
         return type2Tree.get(propType).getPropValue();
+    }
+
+    public void setRootNodeValueOnType(PropType propType, long newValue) {
+        type2Tree.get(propType).setRootNodeValue(newValue);
     }
 }

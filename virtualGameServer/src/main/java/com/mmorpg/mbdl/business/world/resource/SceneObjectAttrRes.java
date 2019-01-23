@@ -13,7 +13,7 @@ import com.mmorpg.mbdl.framework.resource.annotation.ResDef;
 @ResDef
 public class SceneObjectAttrRes {
     @Id
-    private int objectId;
+    private int objectKey;
     private String name;
     private SceneObjectType objectType;
     private long maxHp;
@@ -21,8 +21,8 @@ public class SceneObjectAttrRes {
     private int attack;
     private int defence;
 
-    public int getObjectId() {
-        return objectId;
+    public int getObjectKey() {
+        return objectKey;
     }
 
     public String getName() {

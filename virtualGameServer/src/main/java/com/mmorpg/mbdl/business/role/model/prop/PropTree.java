@@ -1,5 +1,7 @@
 package com.mmorpg.mbdl.business.role.model.prop;
 
+import com.google.common.base.MoreObjects;
+
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
@@ -85,5 +87,16 @@ public class PropTree {
 
     protected void doSetPropValue(long newValue) {
         this.propValue = newValue;
+    }
+
+    /**
+     * 覆写以便debug
+     * @return
+     */
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("属性值", getPropValue())
+                .toString();
     }
 }

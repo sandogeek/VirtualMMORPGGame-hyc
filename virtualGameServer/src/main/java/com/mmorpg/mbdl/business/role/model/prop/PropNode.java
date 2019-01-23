@@ -1,5 +1,7 @@
 package com.mmorpg.mbdl.business.role.model.prop;
 
+import com.google.common.base.MoreObjects;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -158,5 +160,12 @@ public class PropNode {
     private PropNode setPropTree(PropTree propTree) {
         this.propTree = propTree;
         return this;
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("value", value)
+                .toString();
     }
 }

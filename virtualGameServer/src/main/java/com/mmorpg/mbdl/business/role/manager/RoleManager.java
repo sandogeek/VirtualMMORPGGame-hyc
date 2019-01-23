@@ -111,7 +111,7 @@ public class RoleManager {
     }
 
     public void mergeUpdateRoleEntity(RoleEntity roleEntity) {
-        roleEntityDao.mergeUpdate(roleEntity);
+        roleEntityDao.mergeUpdate(roleEntity, roleEntityDao);
     }
 
     public void updateRoleEntity(RoleEntity roleEntity) {
@@ -129,9 +129,7 @@ public class RoleManager {
     public Role initRole(ISession session,RoleEntity roleEntity){
         Role role = new Role(roleEntity.getId(),roleEntity.getName());
         role.setSession(session).setRoleEntity(roleEntity);
-        PropManager propManager = new PropManager(role);
-        role.setPropManager(propManager);
-        role.init();
+        role.afterInit();
         if (getSession2Role().values().contains(role)){
             logger.error("玩家[roleId={}]重复初始化",role.getRoleId());
             return null;
