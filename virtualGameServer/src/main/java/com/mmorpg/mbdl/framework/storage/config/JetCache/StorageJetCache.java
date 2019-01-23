@@ -102,9 +102,9 @@ public class StorageJetCache <PK extends Serializable &Comparable<PK>,E extends 
     }
 
     @Override
-    public void mergeUpdate(E entity) {
+    public void mergeUpdate(E entity,final IStorage<PK,E> storage) {
         if (this.delay == 0) {
-            update(entity);
+            storage.update(entity);
         }
         else if (!entity.getCanCreateUpdateDelayTask().compareAndSet(true, false)) {
             return;
@@ -117,7 +117,7 @@ public class StorageJetCache <PK extends Serializable &Comparable<PK>,E extends 
 
             @Override
             public void execute() {
-                update(entity);
+                storage.update(entity);
                 entity.getCanCreateUpdateDelayTask().set(true);
             }
         }.setLogOrNot(true),true);

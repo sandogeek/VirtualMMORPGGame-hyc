@@ -58,8 +58,10 @@ public interface IStorage<PK extends Serializable&Comparable<PK>,E extends Abstr
 
     /**
      * 根据实体类注解上的delay，把所有delay时间内的更新合并
+     * @param entity 实体
+     * @param storage 实体对应的IStorage
      */
-    void mergeUpdate(E entity);
+    void mergeUpdate(E entity,IStorage<PK,E> storage);
 
     /**
      * 删除缓存（同步）和数据库（异步）中指定主键的实体

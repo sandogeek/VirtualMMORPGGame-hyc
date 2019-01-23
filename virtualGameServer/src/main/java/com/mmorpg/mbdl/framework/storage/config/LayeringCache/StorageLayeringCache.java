@@ -115,7 +115,7 @@ public class StorageLayeringCache<PK extends Serializable &Comparable<PK>,E exte
     }
 
     @Override
-    public void mergeUpdate(E entity) {
+    public void mergeUpdate(E entity,IStorage storage) {
 
     }
 }

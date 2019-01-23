@@ -110,7 +110,7 @@ public abstract class AbstractTask implements Runnable {
         try{
             execute();
         }catch (Throwable e){
-            logger.error("任务{}执行失败，抛出异常",taskName(),e);
+            logger.error("任务:{}执行失败，抛出异常",taskName(),e);
         }finally {
             stopWatch.stop();
             long executeTime = stopWatch.getNanoTime();
