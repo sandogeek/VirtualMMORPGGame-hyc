@@ -6,7 +6,6 @@ import com.alicp.jetcache.anno.support.CachedAnnoConfig;
 import com.alicp.jetcache.anno.support.GlobalCacheConfig;
 import com.google.common.base.Preconditions;
 import com.mmorpg.mbdl.framework.common.utils.ReflectUtils;
-import com.mmorpg.mbdl.framework.reflectasm.withunsafe.FieldAccess;
 import com.mmorpg.mbdl.framework.storage.annotation.JetCacheConfig;
 import com.mmorpg.mbdl.framework.storage.core.IStorage;
 import org.slf4j.Logger;
@@ -26,13 +25,6 @@ import org.springframework.core.ResolvableType;
 public class JetCacheBeanPostProcessor implements BeanPostProcessor, ApplicationContextAware {
     private static final Logger logger = LoggerFactory.getLogger(JetCacheBeanPostProcessor.class);
     private ApplicationContext applicationContext;
-    private static FieldAccess fieldAccess;
-    private static int cacheIndex;
-
-    static {
-        fieldAccess = FieldAccess.accessUnsafe(StorageJetCache.class);
-        cacheIndex = fieldAccess.getIndex("cache");
-    }
 
     @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
@@ -50,9 +42,11 @@ public class JetCacheBeanPostProcessor implements BeanPostProcessor, Application
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
         if (bean instanceof IStorage){
             try {
-                Class<? extends IStorage> storageClazz = ((IStorage)bean).getClass();
+                IStorage proxy = (IStorage) bean;
+                Class<? extends IStorage> storageClazz = proxy.getClass();
                 // 获取此代理对象的目标对象
                 StorageJetCache storageJetCache = (StorageJetCache) ReflectUtils.getTarget(bean);
+                storageJetCache.setProxy(proxy);
                 Class<IStorage> daoClass =null;
                 for (Class clz:storageClazz.getInterfaces()){
                     if (IStorage.class.isAssignableFrom(clz)){
@@ -68,7 +62,7 @@ public class JetCacheBeanPostProcessor implements BeanPostProcessor, Application
                     JetCacheConfig ann = (JetCacheConfig) eClass.getAnnotation(JetCacheConfig.class);
                     Preconditions.checkNotNull(ann,"%s没有配置%s注解",eClass.getSimpleName(),JetCacheConfig.class.getSimpleName());
                     storageJetCache.setDelay(ann.delay());
-                    fieldAccess.setObject(storageJetCache,cacheIndex,getCache(ann,eClass));
+                    storageJetCache.setCache(getCache(ann,eClass));
                 }
 
             }catch (Exception e){

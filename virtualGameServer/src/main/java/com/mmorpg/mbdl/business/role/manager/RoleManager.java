@@ -111,7 +111,7 @@ public class RoleManager {
     }
 
     public void mergeUpdateRoleEntity(RoleEntity roleEntity) {
-        roleEntityDao.mergeUpdate(roleEntity, roleEntityDao);
+        roleEntityDao.mergeUpdate(roleEntity);
     }
 
     public void updateRoleEntity(RoleEntity roleEntity) {

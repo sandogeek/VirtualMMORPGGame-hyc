@@ -35,8 +35,8 @@ public class StorageJetCache <PK extends Serializable &Comparable<PK>,E extends 
     private Cache<PK,E> cache;
     /** {@link JetCacheConfig#delay()} */
     private int delay;
-    /** 泛型E的实际类型 */
-    // private Class<? extends IEntity> eClazz;
+    /** 代理对象 */
+    private IStorage<PK,E> proxy;
 
 
     public StorageJetCache(JpaEntityInformation<E, ?> entityInformation, EntityManager entityManager) {
@@ -102,9 +102,9 @@ public class StorageJetCache <PK extends Serializable &Comparable<PK>,E extends 
     }
 
     @Override
-    public void mergeUpdate(E entity,final IStorage<PK,E> storage) {
+    public void mergeUpdate(E entity) {
         if (this.delay == 0) {
-            storage.update(entity);
+            proxy.update(entity);
         }
         else if (!entity.getCanCreateUpdateDelayTask().compareAndSet(true, false)) {
             return;
@@ -117,7 +117,7 @@ public class StorageJetCache <PK extends Serializable &Comparable<PK>,E extends 
 
             @Override
             public void execute() {
-                storage.update(entity);
+                proxy.update(entity);
                 entity.getCanCreateUpdateDelayTask().set(true);
             }
         }.setLogOrNot(true),true);
@@ -181,5 +181,13 @@ public class StorageJetCache <PK extends Serializable &Comparable<PK>,E extends 
 
     public void setDelay(int delay) {
         this.delay = delay;
+    }
+
+    public void setProxy(IStorage<PK, E> proxy) {
+        this.proxy = proxy;
+    }
+
+    public void setCache(Cache<PK, E> cache) {
+        this.cache = cache;
     }
 }

@@ -16,7 +16,7 @@ class StorageJetCacheTest extends TestWithSpring {
     @Autowired
     IStorage<String, AccountEntity> iStorage;
     @Test
-    void create() {
+    void create() throws Exception {
         String account = "sandoTestCreate";
         AccountEntity accountEntity = new AccountEntity();
         // accountEntity.setRoleId(1222L);
@@ -25,6 +25,7 @@ class StorageJetCacheTest extends TestWithSpring {
         Assertions.assertThrows(DataIntegrityViolationException.class,()->{
             iStorage.create(accountEntity);
         });
+        System.in.read();
     }
 
     AccountEntity createNotExists(){
