@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
  * @author sando
  */
 @Component
-public class BussinessPoolExecutor {
+public class BusinessPoolExecutor {
     /** 业务线程池 */
     // TODO 深入学习netty后对比决定是否换用netty的线程池
     private ScheduledThreadPoolExecutor businessThreadPool;
@@ -37,8 +37,8 @@ public class BussinessPoolExecutor {
     @Value("${server.config.thread.name}")
     private String threadNameFommat;
 
-    private static BussinessPoolExecutor self;
-    public static BussinessPoolExecutor getIntance(){
+    private static BusinessPoolExecutor self;
+    public static BusinessPoolExecutor getInstance(){
         return self;
     }
     @PostConstruct

@@ -26,7 +26,7 @@ public class WebSocketServerInitializer extends ChannelInitializer<SocketChannel
     @Autowired
     private WsPacketInboundHandler wsPacketInboundHandler;
     @Autowired
-    private AbstractPacketDispacherHandler abstractPacketDispacherHandler;
+    private AbstractPacketDispatcherHandler abstractPacketDispatcherHandler;
     @Autowired
     private AbstractPacketOutboundHandler abstractPacketOutboundHandler;
     @Autowired
@@ -62,7 +62,7 @@ public class WebSocketServerInitializer extends ChannelInitializer<SocketChannel
 
         pipeline.addLast("Inbound:WsPacket2AbstractPacket",wsPacketInboundHandler);
         pipeline.addLast("heartBeatHandler",heartBeatHandler);
-        pipeline.addLast("Inbound:AbstractPacket2End",abstractPacketDispacherHandler);
+        pipeline.addLast("Inbound:AbstractPacket2End", abstractPacketDispatcherHandler);
         pipeline.addLast("Outbound:AbstractPacket2WsPacket",abstractPacketOutboundHandler);
     }
 }

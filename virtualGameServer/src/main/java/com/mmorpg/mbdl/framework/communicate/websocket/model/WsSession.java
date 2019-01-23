@@ -69,7 +69,7 @@ public class WsSession extends AbstractSession {
         ChannelFuture future = channel.write(abstractPacket);
         if (generateDelayedTask.compareAndSet(true,false)){
             // 缓冲25毫秒
-            TaskDispatcher.getIntance().dispatch(new DelayedTask(null,25, TimeUnit.MILLISECONDS) {
+            TaskDispatcher.getInstance().dispatch(new DelayedTask(null,25, TimeUnit.MILLISECONDS) {
 
                 @Override
                 public String taskName() {

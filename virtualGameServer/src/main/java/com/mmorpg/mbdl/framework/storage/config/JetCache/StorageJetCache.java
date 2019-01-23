@@ -109,7 +109,7 @@ public class StorageJetCache <PK extends Serializable &Comparable<PK>,E extends 
         else if (!entity.getCanCreateUpdateDelayTask().compareAndSet(true, false)) {
             return;
         }
-        TaskDispatcher.getIntance().dispatch(new DelayedTask(null, delay, TimeUnit.SECONDS) {
+        TaskDispatcher.getInstance().dispatch(new DelayedTask(null, delay, TimeUnit.SECONDS) {
             @Override
             public String taskName() {
                 return "合并更新";

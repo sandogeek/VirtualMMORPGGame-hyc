@@ -1,7 +1,7 @@
 package com.mmorpg.mbdl.framework.thread.task;
 
 import com.google.common.collect.Lists;
-import com.mmorpg.mbdl.framework.thread.BussinessPoolExecutor;
+import com.mmorpg.mbdl.framework.thread.BusinessPoolExecutor;
 
 import java.util.Queue;
 import java.util.concurrent.ScheduledFuture;
@@ -35,7 +35,7 @@ public class TaskQueue {
             this.queue.add(abstractTask);
             if (queue.size()==1){
                 // 只有一个任务的话，说明是刚加的，立即送到线程池里的队列执行
-                return BussinessPoolExecutor.getIntance().executeTask(abstractTask);
+                return BusinessPoolExecutor.getInstance().executeTask(abstractTask);
             }
         }
         return null;
@@ -46,7 +46,7 @@ public class TaskQueue {
      * @return
      */
     public ScheduledFuture<?> executeParallel(AbstractTask abstractTask){
-        return BussinessPoolExecutor.getIntance().executeTask(abstractTask);
+        return BusinessPoolExecutor.getInstance().executeTask(abstractTask);
     }
     /**
      * 执行完一个任务后的处理
@@ -58,7 +58,7 @@ public class TaskQueue {
             queue.poll();
             if (!queue.isEmpty()) {
                 // 有任务继续执行
-                return BussinessPoolExecutor.getIntance().executeTask(queue.poll());
+                return BusinessPoolExecutor.getInstance().executeTask(queue.peek());
             }
         }
         return null;

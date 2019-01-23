@@ -1,6 +1,6 @@
 package com.mmorpg.mbdl.framework.thread.task;
 
-import com.mmorpg.mbdl.framework.thread.BussinessPoolExecutor;
+import com.mmorpg.mbdl.framework.thread.BusinessPoolExecutor;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -167,6 +167,6 @@ public abstract class AbstractTask implements Runnable {
     }
 
     public TaskQueue getTaskQueue() {
-        return BussinessPoolExecutor.getIntance().getOrCreateTaskQueue(getDispatcherId());
+        return BusinessPoolExecutor.getInstance().getOrCreateTaskQueue(getDispatcherId());
     }
 }

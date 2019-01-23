@@ -21,8 +21,8 @@ import java.util.concurrent.TimeUnit;
  */
 @ChannelHandler.Sharable
 @Component
-public class AbstractPacketDispacherHandler extends SimpleChannelInboundHandler<AbstractPacket> {
-    private static final Logger logger= LoggerFactory.getLogger(AbstractPacketDispacherHandler.class);
+public class AbstractPacketDispatcherHandler extends SimpleChannelInboundHandler<AbstractPacket> {
+    private static final Logger logger= LoggerFactory.getLogger(AbstractPacketDispatcherHandler.class);
 
 
     @Override
@@ -46,7 +46,7 @@ public class AbstractPacketDispacherHandler extends SimpleChannelInboundHandler<
                 return;
             }
         }
-        TaskDispatcher.getIntance().dispatch(
+        TaskDispatcher.getInstance().dispatch(
                 new HandleReqTask(session.selectDispatcherId(),packetMethodDifinition, session,abstractPacket)
                         .setMaxExecuteTime(TimeUnit.NANOSECONDS.convert(30,TimeUnit.MILLISECONDS)),executeParallel);
         // TaskExecutorGroup.addTask(new HandleReqTask(packetMethodDifinition,session,abstractPacket));

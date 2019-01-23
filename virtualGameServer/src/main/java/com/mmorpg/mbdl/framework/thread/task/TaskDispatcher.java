@@ -1,7 +1,7 @@
 package com.mmorpg.mbdl.framework.thread.task;
 
 import com.mmorpg.mbdl.framework.communicate.websocket.model.HandleReqTask;
-import com.mmorpg.mbdl.framework.thread.BussinessPoolExecutor;
+import com.mmorpg.mbdl.framework.thread.BusinessPoolExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +19,7 @@ import java.util.concurrent.ScheduledFuture;
 public class TaskDispatcher {
     private static final Logger logger = LoggerFactory.getLogger(TaskDispatcher.class);
     private static TaskDispatcher self;
-    public static TaskDispatcher getIntance(){
+    public static TaskDispatcher getInstance(){
         return self;
     }
     @PostConstruct
@@ -27,7 +27,7 @@ public class TaskDispatcher {
         self = this;
     }
     @Autowired
-    private BussinessPoolExecutor bussinessPoolExecutor;
+    private BusinessPoolExecutor businessPoolExecutor;
 
     /**
      * 分发任务
@@ -41,16 +41,12 @@ public class TaskDispatcher {
         }
         if (intoThreadPoolDirectly){
             abstractTask.setExecuteParallel(true);
-            // if (abstractTask.getDispatcherId()!=null){
-            //     /** 设置并行任务的dispatcherId为null,否则这个任务执行到最后会执行{@link TaskQueue#andThen()}}方法，导致原队列的后续任务并行 */
-            //     abstractTask.setDispatcherId(null);
-            // }
-            return BussinessPoolExecutor.getIntance().executeTask(abstractTask);
+            return BusinessPoolExecutor.getInstance().executeTask(abstractTask);
         }
         // dispatcherId为null的任务并行执行
         if (abstractTask.getDispatcherId()==null){
             abstractTask.setExecuteParallel(true);
-            return BussinessPoolExecutor.getIntance().executeTask(abstractTask);
+            return BusinessPoolExecutor.getInstance().executeTask(abstractTask);
         }
         // 如果不是请求处理任务，校验其是否占用了未登录时使用的队列
         if (!(abstractTask instanceof HandleReqTask)){
@@ -61,7 +57,7 @@ public class TaskDispatcher {
                 }
             }
         }
-        TaskQueue taskQueue = bussinessPoolExecutor.getBusinessThreadPoolTaskQueues().getOrCreate(abstractTask.getDispatcherId());
+        TaskQueue taskQueue = businessPoolExecutor.getBusinessThreadPoolTaskQueues().getOrCreate(abstractTask.getDispatcherId());
         return taskQueue.submit(abstractTask);
     }
 
