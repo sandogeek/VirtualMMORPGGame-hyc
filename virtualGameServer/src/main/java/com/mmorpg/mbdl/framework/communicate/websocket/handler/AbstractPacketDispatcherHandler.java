@@ -48,7 +48,7 @@ public class AbstractPacketDispatcherHandler extends SimpleChannelInboundHandler
         }
         TaskDispatcher.getInstance().dispatch(
                 new HandleReqTask(session.selectDispatcherId(),packetMethodDifinition, session,abstractPacket)
-                        .setMaxExecuteTime(TimeUnit.NANOSECONDS.convert(30,TimeUnit.MILLISECONDS)),executeParallel);
+                        .setMaxExecuteTime(30,TimeUnit.MILLISECONDS),executeParallel);
         // TaskExecutorGroup.addTask(new HandleReqTask(packetMethodDifinition,session,abstractPacket));
     }
 

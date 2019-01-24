@@ -54,7 +54,7 @@ public @interface JetCacheConfig {
      * Use two level cache (local+remote) when value is CacheType.BOTH.
      * @return the cache type
      */
-    CacheType cacheType() default CacheType.BOTH;
+    CacheType cacheType() default CacheType.LOCAL;
 
     /**
      * Specify max elements in local memory when cacheType is CacheType.LOCAL or CacheType.BOTH.

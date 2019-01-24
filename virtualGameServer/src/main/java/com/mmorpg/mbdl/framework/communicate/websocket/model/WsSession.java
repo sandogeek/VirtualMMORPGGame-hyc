@@ -62,11 +62,20 @@ public class WsSession extends AbstractSession {
             logger.warn("发包失败：发包时channel={}已inActive, roleId={}", channel, roleId);
             return null;
         }
-        logger.debug("账号<{}>,发包[{}] 内容：{}", account, abstractPacket.getClass().getSimpleName(), JsonUtil.object2String(abstractPacket));
+        ChannelFuture future;
         if (flushNow){
-            return channel.writeAndFlush(abstractPacket);
+            future = channel.writeAndFlush(abstractPacket);
+            return future;
         }
-        ChannelFuture future = channel.write(abstractPacket);
+        future = channel.write(abstractPacket);
+        future.addListener(futureTemp -> {
+            String logContent = String.format("账号<%s>,发包[%s] 内容：%s",account, abstractPacket.getClass().getSimpleName(), JsonUtil.object2String(abstractPacket));
+            if (futureTemp.isSuccess()) {
+                logger.debug(logContent);
+            } else if (futureTemp.cause() != null) {
+                logger.error(logContent + "失败!", futureTemp.cause());
+            }
+        });
         if (generateDelayedTask.compareAndSet(true,false)){
             // 缓冲25毫秒
             TaskDispatcher.getInstance().dispatch(new DelayedTask(null,25, TimeUnit.MILLISECONDS) {

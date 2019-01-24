@@ -130,8 +130,9 @@ public abstract class AbstractTask implements Runnable {
         return maxDelay;
     }
 
-    public void setMaxDelayTime(long maxDelay) {
-        this.maxDelay = maxDelay;
+    public AbstractTask setMaxDelayTime(long maxDelay, TimeUnit timeUnit) {
+        this.maxDelay = TimeUnit.NANOSECONDS.convert(maxExecute,timeUnit);
+        return this;
     }
     /**
      * 最大延迟时间,默认3毫秒
@@ -140,8 +141,8 @@ public abstract class AbstractTask implements Runnable {
         return maxExecute;
     }
 
-    public AbstractTask setMaxExecuteTime(long maxExecute) {
-        this.maxExecute = maxExecute;
+    public AbstractTask setMaxExecuteTime(long maxExecute, TimeUnit timeUnit) {
+        this.maxExecute = TimeUnit.NANOSECONDS.convert(maxExecute,timeUnit);
         return this;
     }
 

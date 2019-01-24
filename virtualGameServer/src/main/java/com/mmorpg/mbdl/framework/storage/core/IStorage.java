@@ -49,7 +49,7 @@ public interface IStorage<PK extends Serializable&Comparable<PK>,E extends Abstr
     E getOrCreate(PK id, EntityCreator<PK,E> entityCreator);
 
     /**
-     * 更新缓存（同步）和数据库（异步）中的实体<br>
+     * 更新缓存（同步）和数据库中的实体<br>
      * 调用update是为了尽快保存重要变更，以免服务器故障导致数据丢失
      * @param entity
      * @return

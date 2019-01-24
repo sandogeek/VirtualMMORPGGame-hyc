@@ -3,6 +3,7 @@ package com.mmorpg.mbdl.framework.storage.config.JetCache;
 import com.alicp.jetcache.Cache;
 import com.alicp.jetcache.CacheGetResult;
 import com.google.common.base.Preconditions;
+import com.mmorpg.mbdl.framework.common.utils.JsonUtil;
 import com.mmorpg.mbdl.framework.storage.annotation.JetCacheConfig;
 import com.mmorpg.mbdl.framework.storage.core.AbstractEntity;
 import com.mmorpg.mbdl.framework.storage.core.EntityCreator;
@@ -20,7 +21,9 @@ import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
 import java.io.Serializable;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * 使用JetCache的IStorage默认实现类
@@ -90,37 +93,82 @@ public class StorageJetCache <PK extends Serializable &Comparable<PK>,E extends 
             }
             // 缓存中有，说明数据库中也有
             else {
-                return insertOrUpdate(entity);
+                return executeUpdate(entity);
             }
         }else {
             if (exists(entity.getId())){
-                return insertOrUpdate(entity);
+                return executeUpdate(entity);
             }else {
                 throw new EntityNotFoundException("数据库中不存在该实体，先create一下？");
             }
         }
     }
 
+    private E executeUpdate(E entity) {
+        AtomicReference<E> reference = new AtomicReference<>(null);
+        // 不能创建合并更新任务说明此实体已有此类任务
+        // if (!entity.getCanCreateMergeUpdateTask().get() && entity.getMergeUpdateTaskFutureAtomic().get()!=null) {
+            entity.getMergeUpdateTaskFutureAtomic().updateAndGet((prev) -> {
+                AtomicReference<ScheduledFuture> mergeUpdateTaskFutureAtomic = entity.getMergeUpdateTaskFutureAtomic();
+                if (prev!=null) {
+                    prev.cancel(false);
+                    if (prev.isCancelled()) {
+                        try {
+                            reference.set(insertOrUpdate(entity));
+                        } finally {
+                            mergeUpdateTaskFutureAtomic.set(null);
+                        }
+                    } else {
+                        return prev;
+                    }
+                } else {
+                    try {
+                        reference.set(insertOrUpdate(entity));
+                    } finally {
+                        mergeUpdateTaskFutureAtomic.set(null);
+                    }
+                }
+                return mergeUpdateTaskFutureAtomic.get();
+            });
+        // } else {
+        //     reference.set(insertOrUpdate(entity));
+        // }
+        return reference.get();
+    }
+
     @Override
     public void mergeUpdate(E entity) {
         if (this.delay == 0) {
             proxy.update(entity);
-        }
-        else if (!entity.getCanCreateUpdateDelayTask().compareAndSet(true, false)) {
             return;
         }
-        TaskDispatcher.getInstance().dispatch(new DelayedTask(null, delay, TimeUnit.SECONDS) {
-            @Override
-            public String taskName() {
-                return "合并更新";
-            }
+        // else if (!entity.getCanCreateMergeUpdateTask().compareAndSet(true, false)) {
+        //     return;
+        // }
+        entity.getMergeUpdateTaskFutureAtomic().updateAndGet(prev -> {
+            if (prev != null) {
+                return prev;
+            } else {
+                ScheduledFuture<?> scheduledFuture = TaskDispatcher.getInstance().dispatch(new DelayedTask(null, delay, TimeUnit.SECONDS) {
+                    @Override
+                    public String taskName() {
+                        return String.format("合并更新实体[%s]：%s", entity.getClass().getSimpleName(), JsonUtil.object2String(entity));
+                    }
 
-            @Override
-            public void execute() {
-                proxy.update(entity);
-                entity.getCanCreateUpdateDelayTask().set(true);
+                    @Override
+                    public void execute() {
+                        try {
+                            entity.getMergeUpdateTaskFutureAtomic().set(null);
+                            proxy.update(entity);
+                        } finally {
+
+                            // entity.getCanCreateMergeUpdateTask().set(true);
+                        }
+                    }
+                }.setLogOrNot(true).setMaxExecuteTime(30, TimeUnit.MILLISECONDS), true);
+                return scheduledFuture;
             }
-        }.setLogOrNot(true),true);
+        });
     }
 
     @Override
