@@ -1,5 +1,7 @@
 package com.mmorpg.mbdl.business.container.service;
 
+import com.mmorpg.mbdl.business.container.manager.ContainerManager;
+import com.mmorpg.mbdl.business.role.event.RoleLogoutEvent;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -21,5 +23,9 @@ public class ContainerService {
 
     public static ContainerService getInstance() {
         return self;
+    }
+
+    public void handleRoleLogoutEvent(RoleLogoutEvent roleLogoutEvent) {
+        ContainerManager.getInstance().updateEntity(roleLogoutEvent.getRole().getContainerEntity());
     }
 }

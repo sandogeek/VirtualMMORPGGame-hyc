@@ -1,6 +1,8 @@
 package com.mmorpg.mbdl.business.role.model;
 
 import com.google.common.base.MoreObjects;
+import com.mmorpg.mbdl.business.container.entity.ContainerEntity;
+import com.mmorpg.mbdl.business.container.manager.ContainerManager;
 import com.mmorpg.mbdl.business.object.model.AbstractCreature;
 import com.mmorpg.mbdl.business.object.model.AbstractVisibleSceneObject;
 import com.mmorpg.mbdl.business.object.model.SceneObjectType;
@@ -27,36 +29,34 @@ public class Role extends AbstractCreature {
     private static Logger logger = LoggerFactory.getLogger(Role.class);
     private ISession session;
 
-    /** 角色相关实体，所有会变更字段已自动mergeUpdate **/
+    /** 角色相关实体 **/
     private RoleEntity roleEntity;
+    private ContainerEntity containerEntity;
 
     public Role(Long objectId, String name) {
         super(objectId,name);
     }
 
+    /**
+     * 绑定各种实体
+     */
+    public void bindEntity() {
+        ContainerManager.getInstance().bindContainerEntity(this);
+    }
 
     /**
-     * 角色属性初始化
+     * 角色初始化
       */
-    @Override
     public void init() {
         for (PropType propType :
                 PropType.values()) {
             propManager.getOrCreateTree(propType);
         }
-    }
-
-    /**
-     * init执行完毕后的初始化
-     */
-    public void afterInit() {
         RoleLevelRes roleLevelRes = RoleManager.getInstance().getRoleLevelResByLevel(roleEntity.getLevel());
         propManager.getPropTreeByType(PropType.MAX_HP).getOrCreateChild("level").set(roleLevelRes.getMaxHp());
         propManager.getPropTreeByType(PropType.MAX_MP).getOrCreateChild("level").set(roleLevelRes.getMaxMp());
         propManager.getPropTreeByType(PropType.ATTACK).getOrCreateChild("level").set(roleLevelRes.getAttack());
         propManager.getPropTreeByType(PropType.DEFENCE).getOrCreateChild("level").set(roleLevelRes.getDefence());
-        propManager.setRootNodeValueOnType(PropType.SCENE_ID, roleEntity.getSceneId());
-        propManager.setRootNodeValueOnType(PropType.EXP, roleEntity.getExp());
         fullHP();
         fullMP();
     }
@@ -77,7 +77,7 @@ public class Role extends AbstractCreature {
 
     @Override
     public AbstractVisibleSceneObject setSceneId(int sceneId) {
-        this.roleEntity.setSceneId(sceneId);
+        this.getPropManager().setRootNodeValueOnType(PropType.SCENE_ID,sceneId);
         return super.setSceneId(sceneId);
     }
 
@@ -87,6 +87,15 @@ public class Role extends AbstractCreature {
 
     public Role setRoleEntity(RoleEntity roleEntity) {
         this.roleEntity = roleEntity;
+        return this;
+    }
+
+    public ContainerEntity getContainerEntity() {
+        return containerEntity;
+    }
+
+    public Role setContainerEntity(ContainerEntity containerEntity) {
+        this.containerEntity = containerEntity;
         return this;
     }
 
@@ -147,4 +156,5 @@ public class Role extends AbstractCreature {
                 .add("角色名称", roleEntity.getName())
                 .toString();
     }
+
 }

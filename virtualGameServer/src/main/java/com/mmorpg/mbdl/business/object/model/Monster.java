@@ -19,11 +19,6 @@ public class Monster extends AbstractCreature {
     }
 
     @Override
-    protected void init() {
-
-    }
-
-    @Override
     public AbstractPacket getUiInfoResp(Role witness) {
         return new MonsterUiInfoResp(this.getObjectId(), this.getName(),
                 propManager.getPropValueOf(PropType.CURRENT_HP),

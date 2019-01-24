@@ -14,7 +14,7 @@ public class PropTree {
     /** 该类型属性的属性值（此值等于属性树所有节点的值之和） */
     private long propValue;
     /** 属性树根节点 */
-    private PropNode rootNode = new PropNode(this,0,"根节点");
+    private PropNode rootNode = new PropNode(this, doGetPropValue(),"根节点");
     /**
      * 属性树读写锁
      */
@@ -78,7 +78,7 @@ public class PropTree {
     }
 
     void addPropValue(long delta) {
-        setPropValue(propValue+delta);
+        setPropValue(doGetPropValue()+delta);
     }
 
     protected long doGetPropValue() {

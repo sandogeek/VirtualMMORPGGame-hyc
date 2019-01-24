@@ -112,7 +112,7 @@ public class RoleService {
         if (role == null){
             return;
         }
-        // logout事件业务池处理
+        // logout事件转移到业务池处理
         TaskDispatcher.getInstance().dispatch(new Task(role.getRoleId()) {
             @Override
             public String taskName() {
@@ -123,7 +123,7 @@ public class RoleService {
             public void execute() {
                 SyncEventBus.getInstance().post(new RoleLogoutEvent(role));
             }
-        }.setMaxExecuteTime(TimeUnit.NANOSECONDS.convert(20, TimeUnit.MILLISECONDS)));
+        }.setMaxExecuteTime(20, TimeUnit.MILLISECONDS));
     }
 
     public void handleRoleLogoutEvent(RoleLogoutEvent roleLogoutEvent) {

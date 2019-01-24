@@ -21,13 +21,7 @@ public abstract class AbstractCreature extends AbstractVisibleSceneObject {
         propManager.getOrCreateTree(PropType.MAX_MP);
         propManager.getOrCreateTree(PropType.ATTACK);
         propManager.getOrCreateTree(PropType.DEFENCE);
-        init();
     }
-
-    /**
-     * 进一步初始化各项属性
-     */
-    protected abstract void init();
 
     public void fullHP() {
         propManager.getPropTreeByType(PropType.CURRENT_HP).setRootNodeValue(propManager.getPropValueOf(PropType.MAX_HP));

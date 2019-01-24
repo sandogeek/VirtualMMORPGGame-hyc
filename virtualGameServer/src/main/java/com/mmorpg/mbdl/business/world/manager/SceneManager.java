@@ -1,14 +1,16 @@
 package com.mmorpg.mbdl.business.world.manager;
 
 import com.mmorpg.mbdl.business.object.model.AbstractVisibleSceneObject;
-import com.mmorpg.mbdl.business.role.model.Role;
 import com.mmorpg.mbdl.business.role.entity.RoleEntity;
+import com.mmorpg.mbdl.business.role.model.Role;
 import com.mmorpg.mbdl.business.world.resource.SceneRes;
 import com.mmorpg.mbdl.business.world.scene.model.Scene;
 import com.mmorpg.mbdl.business.world.scene.packet.SceneUiInfoResp;
 import com.mmorpg.mbdl.business.world.scene.packet.vo.SceneCanGoInfo;
 import com.mmorpg.mbdl.framework.resource.exposed.IStaticRes;
 import com.mmorpg.mbdl.framework.storage.core.IStorage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -25,6 +27,7 @@ import java.util.Map;
  **/
 @Component
 public class SceneManager {
+    private static Logger logger = LoggerFactory.getLogger(SceneManager.class);
     private static SceneManager self;
     private Map<Integer, Scene> sceneId2SceneMap = new HashMap<>(16);
     @Autowired
@@ -62,13 +65,12 @@ public class SceneManager {
      * @param sceneId 场景id
      */
     public void switchToSceneById(AbstractVisibleSceneObject visibleSceneObject, int sceneId){
+        if (sceneId2SceneMap.get(sceneId) == null) {
+            logger.error("想要切换的目标场景不存在");
+            return;
+        }
         getSceneBySceneId(visibleSceneObject.getSceneId()).disappearInScene(visibleSceneObject);
         visibleSceneObject.setSceneId(sceneId);
-        if (visibleSceneObject instanceof Role){
-            Role role = (Role) visibleSceneObject;
-            role.getRoleEntity().setSceneId(sceneId);
-            roleEntityIStorage.update(role.getRoleEntity());
-        }
         getSceneBySceneId(sceneId).appearInScene(visibleSceneObject);
     }
 
