@@ -60,7 +60,7 @@ public class ChatService {
                 public void execute() {
                     ChatResp chatResp = new ChatResp();
                     chatResp.setResult(true);
-                    session.sendPacket(chatResp);
+                    RoleManager.getInstance().getRoleBySession(session).sendPacket(chatResp);
                     Role role = RoleManager.getInstance().getRoleBySession(session);
                     ChatMessage chatMessage = new ChatMessage(session.getRoleId(), role.getName(), 0, chatReq.getContent());
                     RoleManager.getInstance().getSession2Role().values().stream().filter(role1 -> !role.equals(role1)).forEach(roleTemp -> {

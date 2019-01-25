@@ -57,8 +57,8 @@ public class PropTree {
         return rootNode.getOrCreateChild(name);
     }
 
-    public void deleteChild(String name) {
-        rootNode.deleteChild(name);
+    public void removeChild(String name) {
+        rootNode.removeChild(name);
     }
 
     public PropNode getChild(String name) {

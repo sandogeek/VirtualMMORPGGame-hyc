@@ -12,6 +12,8 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.Collection;
 
 /**
@@ -22,7 +24,8 @@ import java.util.Collection;
  **/
 public class JsonUtil {
     private static ObjectMapper mapper;
-    static  {
+
+    static {
         mapper = new ObjectMapper();
         mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
         // 在序列化时忽略值为 null 的属性
@@ -37,30 +40,41 @@ public class JsonUtil {
 
     /**
      * 反序列化
-     * @param json 待反序列化的内容
+     *
+     * @param json      待反序列化的内容
      * @param valueType 值类型
      * @param <T>
      * @return
      */
-    public static <T> T string2Object(String json,Class<T> valueType) {
+    public static <T> T string2Object(String json, Class<T> valueType) {
         try {
-            return mapper.readValue(json,valueType);
+            return mapper.readValue(json, valueType);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public static <T> T string2Object(String json,JavaType valueType) {
+    public static Object string2Object(String json, JavaType valueType) {
         try {
-            return mapper.readValue(json,valueType);
+            return mapper.readValue(json, valueType);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public static <T> T inputStream2Object(InputStream src, JavaType valueType){
+    /**
+     * 反序列化常规type以及带泛型信息的type
+     * @param json
+     * @param type
+     * @return
+     */
+    public static Object string2Object(String json,Type type) {
+        return string2Object(json, getParameterizedJavaType(type));
+    }
+
+    public static <T> T inputStream2Object(InputStream src, JavaType valueType) {
         try {
-            return mapper.readValue(src,valueType);
+            return mapper.readValue(src, valueType);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -68,6 +82,7 @@ public class JsonUtil {
 
     /**
      * 序列化
+     *
      * @param value 待序列化的对象
      * @return
      */
@@ -78,6 +93,26 @@ public class JsonUtil {
             throw new RuntimeException(e);
         }
     }
+
+    private static JavaType getParameterizedJavaType(Type type) {
+        // 判断是否带有泛型
+        if (type instanceof ParameterizedType) {
+            // 获取泛型类型
+            Type[] actualTypeArguments = ((ParameterizedType) type).getActualTypeArguments();
+            Class rawType = (Class) ((ParameterizedType) type).getRawType();
+            JavaType[] javaTypes = new JavaType[actualTypeArguments.length];
+            for (int i = 0; i < actualTypeArguments.length; i++) {
+            // 泛型也可能带有泛型，递归获取
+                javaTypes[i] = getParameterizedJavaType(actualTypeArguments[i]);
+            }
+            return getTypeFactory().constructParametricType(rawType, javaTypes);
+        } else {
+            // 简单类型直接用该类构建JavaType
+            Class cla = (Class) type;
+            return getTypeFactory().constructParametricType(cla, new JavaType[0]);
+        }
+    }
+
 
     public static TypeFactory getTypeFactory() {
         return mapper.getTypeFactory();

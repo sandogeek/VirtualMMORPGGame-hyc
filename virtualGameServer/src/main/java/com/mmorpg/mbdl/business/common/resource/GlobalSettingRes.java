@@ -1,7 +1,7 @@
 package com.mmorpg.mbdl.business.common.resource;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.mmorpg.mbdl.framework.resource.annotation.Id;
+import com.mmorpg.mbdl.framework.resource.annotation.Key;
 import com.mmorpg.mbdl.framework.resource.annotation.ResDef;
 
 /**
@@ -12,7 +12,7 @@ import com.mmorpg.mbdl.framework.resource.annotation.ResDef;
  **/
 @ResDef
 public class GlobalSettingRes {
-    @Id
+    @Key
     @JsonProperty("Code")
     private String code;
     @JsonProperty("Value")

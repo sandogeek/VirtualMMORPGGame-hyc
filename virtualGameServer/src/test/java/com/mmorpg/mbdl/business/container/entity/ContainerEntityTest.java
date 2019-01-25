@@ -22,7 +22,7 @@ class ContainerEntityTest extends TestWithSpring {
         ContainerEntity containerEntity = new ContainerEntity();
         containerEntity.setRoleId(10000L);
         Map<ContainerType, Container> type2ContainerMap = containerEntity.getType2ContainerMap();
-        type2ContainerMap.put(ContainerType.BAG,new Container());
+        type2ContainerMap.put(ContainerType.PACK,new Container());
         containerEntityIStorage.create(containerEntity);
     }
 

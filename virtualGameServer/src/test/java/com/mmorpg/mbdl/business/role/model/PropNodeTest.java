@@ -25,9 +25,9 @@ class PropNodeTest {
 
     @Test
     void deleteChild() {
-        propTree.deleteChild("testNode1");
+        propTree.removeChild("testNode1");
         Assertions.assertEquals(300L,propTree.getPropValue());
-        propTree.deleteChild("testNode2");
+        propTree.removeChild("testNode2");
         Assertions.assertEquals(100L,propTree.getPropValue());
     }
 

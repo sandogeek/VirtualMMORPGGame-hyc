@@ -1,7 +1,6 @@
 package com.mmorpg.mbdl.business.common.orm;
 
 
-import com.fasterxml.jackson.databind.JavaType;
 import com.mmorpg.mbdl.framework.common.utils.JsonUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.HibernateException;
@@ -11,7 +10,6 @@ import org.springframework.util.ObjectUtils;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
-import java.lang.reflect.Type;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -60,9 +58,8 @@ public class JsonType implements UserType {
         } catch (NoSuchFieldException e) {
             throw new RuntimeException(String.format("反序列化时发现实体类[%s]中不存在字段名为[%s]的字段",owner.getClass().getSimpleName(),columnName),e);
         }
-        Type genericType = field.getGenericType();
-        JavaType javaType = JsonUtil.getTypeFactory().constructType(genericType);
-        return JsonUtil.string2Object(json, javaType);
+        Object object = JsonUtil.string2Object(json, field.getGenericType());
+        return object;
     }
 
     @Override

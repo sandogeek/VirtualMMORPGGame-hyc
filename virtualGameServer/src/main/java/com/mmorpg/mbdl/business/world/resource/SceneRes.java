@@ -1,6 +1,6 @@
 package com.mmorpg.mbdl.business.world.resource;
 
-import com.mmorpg.mbdl.framework.resource.annotation.Id;
+import com.mmorpg.mbdl.framework.resource.annotation.Key;
 import com.mmorpg.mbdl.framework.resource.annotation.ResDef;
 
 import java.util.List;
@@ -13,7 +13,7 @@ import java.util.List;
  **/
 @ResDef
 public class SceneRes {
-    @Id
+    @Key
     private int sceneId;
     private String name;
     /**

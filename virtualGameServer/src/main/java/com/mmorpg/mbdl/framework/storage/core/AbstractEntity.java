@@ -4,9 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.Transient;
 import java.io.Serializable;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * 抽象实体
@@ -18,16 +16,16 @@ public abstract class AbstractEntity<PK extends Serializable &Comparable<PK>> im
     @JsonIgnore
     @Transient
     private AtomicBoolean canCreateMergeUpdateTask = new AtomicBoolean(true);
-    @JsonIgnore
-    @Transient
-    private AtomicReference<ScheduledFuture> mergeUpdateTaskFutureAtomic = new AtomicReference<>(null);
+    // @JsonIgnore
+    // @Transient
+    // private AtomicReference<ScheduledFuture> mergeUpdateTaskFutureAtomic = new AtomicReference<>(null);
 
     public AtomicBoolean getCanCreateMergeUpdateTask() {
         return canCreateMergeUpdateTask;
     }
 
-    public AtomicReference<ScheduledFuture> getMergeUpdateTaskFutureAtomic() {
-        return mergeUpdateTaskFutureAtomic;
-    }
+    // public AtomicReference<ScheduledFuture> getMergeUpdateTaskFutureAtomic() {
+    //     return mergeUpdateTaskFutureAtomic;
+    // }
 
 }

@@ -1,7 +1,7 @@
 package com.mmorpg.mbdl.business.container.resource;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.mmorpg.mbdl.framework.resource.annotation.Id;
+import com.mmorpg.mbdl.framework.resource.annotation.Key;
 import com.mmorpg.mbdl.framework.resource.annotation.ResDef;
 
 /**
@@ -12,8 +12,8 @@ import com.mmorpg.mbdl.framework.resource.annotation.ResDef;
  **/
 @ResDef
 public class ItemRes6 {
-    @Id
-    @JsonProperty(value = "Id")
+    @Key
+    @JsonProperty(value = "Key")
     private String id;
 
     @JsonProperty(value = "Name")

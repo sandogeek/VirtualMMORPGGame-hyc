@@ -1,6 +1,6 @@
 package com.mmorpg.mbdl.business.role.resource;
 
-import com.mmorpg.mbdl.framework.resource.annotation.Id;
+import com.mmorpg.mbdl.framework.resource.annotation.Key;
 import com.mmorpg.mbdl.framework.resource.annotation.ResDef;
 
 /**
@@ -11,7 +11,7 @@ import com.mmorpg.mbdl.framework.resource.annotation.ResDef;
  **/
 @ResDef
 public class RoleLevelRes {
-    @Id
+    @Key
     private short level;
     private long maxHp;
     private long maxMp;

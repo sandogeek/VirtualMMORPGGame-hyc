@@ -7,8 +7,10 @@ package com.mmorpg.mbdl.business.container.model;
  * @since v1.0 2019/1/15
  **/
 public enum ContainerType {
-
-    BAG("背包");
+    /**
+     * 背包
+     */
+    PACK("背包");
 
     private String desc;
 

@@ -21,9 +21,7 @@ import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
 import java.io.Serializable;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * 使用JetCache的IStorage默认实现类
@@ -105,35 +103,36 @@ public class StorageJetCache <PK extends Serializable &Comparable<PK>,E extends 
     }
 
     private E executeUpdate(E entity) {
-        AtomicReference<E> reference = new AtomicReference<>(null);
+        // TODO 执行update时取消先前的合并更新任务（如果有的话）
+        // AtomicReference<E> reference = new AtomicReference<>(null);
         // 不能创建合并更新任务说明此实体已有此类任务
         // if (!entity.getCanCreateMergeUpdateTask().get() && entity.getMergeUpdateTaskFutureAtomic().get()!=null) {
-            entity.getMergeUpdateTaskFutureAtomic().updateAndGet((prev) -> {
-                AtomicReference<ScheduledFuture> mergeUpdateTaskFutureAtomic = entity.getMergeUpdateTaskFutureAtomic();
-                if (prev!=null) {
-                    prev.cancel(false);
-                    if (prev.isCancelled()) {
-                        try {
-                            reference.set(insertOrUpdate(entity));
-                        } finally {
-                            mergeUpdateTaskFutureAtomic.set(null);
-                        }
-                    } else {
-                        return prev;
-                    }
-                } else {
-                    try {
-                        reference.set(insertOrUpdate(entity));
-                    } finally {
-                        mergeUpdateTaskFutureAtomic.set(null);
-                    }
-                }
-                return mergeUpdateTaskFutureAtomic.get();
-            });
+        //     entity.getMergeUpdateTaskFutureAtomic().updateAndGet((prev) -> {
+        //         AtomicReference<ScheduledFuture> mergeUpdateTaskFutureAtomic = entity.getMergeUpdateTaskFutureAtomic();
+        //         if (prev!=null) {
+        //             prev.cancel(false);
+        //             if (prev.isCancelled()) {
+        //                 try {
+        //                     reference.set(insertOrUpdate(entity));
+        //                 } finally {
+        //                     mergeUpdateTaskFutureAtomic.set(null);
+        //                 }
+        //             } else {
+        //                 return prev;
+        //             }
+        //         } else {
+        //             try {
+        //                 reference.set(insertOrUpdate(entity));
+        //             } finally {
+        //                 mergeUpdateTaskFutureAtomic.set(null);
+        //             }
+        //         }
+        //         return mergeUpdateTaskFutureAtomic.get();
+        //     });
         // } else {
         //     reference.set(insertOrUpdate(entity));
         // }
-        return reference.get();
+        return insertOrUpdate(entity);
     }
 
     @Override
@@ -142,33 +141,48 @@ public class StorageJetCache <PK extends Serializable &Comparable<PK>,E extends 
             proxy.update(entity);
             return;
         }
-        // else if (!entity.getCanCreateMergeUpdateTask().compareAndSet(true, false)) {
-        //     return;
-        // }
-        entity.getMergeUpdateTaskFutureAtomic().updateAndGet(prev -> {
-            if (prev != null) {
-                return prev;
-            } else {
-                ScheduledFuture<?> scheduledFuture = TaskDispatcher.getInstance().dispatch(new DelayedTask(null, delay, TimeUnit.SECONDS) {
-                    @Override
-                    public String taskName() {
-                        return String.format("合并更新实体[%s]：%s", entity.getClass().getSimpleName(), JsonUtil.object2String(entity));
-                    }
-
-                    @Override
-                    public void execute() {
-                        try {
-                            entity.getMergeUpdateTaskFutureAtomic().set(null);
-                            proxy.update(entity);
-                        } finally {
-
-                            // entity.getCanCreateMergeUpdateTask().set(true);
-                        }
-                    }
-                }.setLogOrNot(true).setMaxExecuteTime(30, TimeUnit.MILLISECONDS), true);
-                return scheduledFuture;
+        else if (!entity.getCanCreateMergeUpdateTask().compareAndSet(true, false)) {
+            return;
+        }
+        TaskDispatcher.getInstance().dispatch(new DelayedTask(null, delay, TimeUnit.SECONDS) {
+            @Override
+            public String taskName() {
+                return String.format("合并更新实体[%s]：%s", entity.getClass().getSimpleName(), JsonUtil.object2String(entity));
             }
-        });
+
+            @Override
+            public void execute() {
+                try {
+                    proxy.update(entity);
+                } finally {
+                    entity.getCanCreateMergeUpdateTask().set(true);
+                }
+            }
+        }.setLogOrNot(true).setMaxExecuteTime(30, TimeUnit.MILLISECONDS), true);
+        // entity.getMergeUpdateTaskFutureAtomic().updateAndGet(prev -> {
+        //     if (prev != null) {
+        //         return prev;
+        //     } else {
+        //         ScheduledFuture<?> scheduledFuture = TaskDispatcher.getInstance().dispatch(new DelayedTask(null, delay, TimeUnit.SECONDS) {
+        //             @Override
+        //             public String taskName() {
+        //                 return String.format("合并更新实体[%s]：%s", entity.getClass().getSimpleName(), JsonUtil.object2String(entity));
+        //             }
+        //
+        //             @Override
+        //             public void execute() {
+        //                 try {
+        //                     entity.getMergeUpdateTaskFutureAtomic().set(null);
+        //                     proxy.update(entity);
+        //                 } finally {
+        //
+        //                     // entity.getCanCreateMergeUpdateTask().set(true);
+        //                 }
+        //             }
+        //         }.setLogOrNot(true).setMaxExecuteTime(30, TimeUnit.MILLISECONDS), true);
+        //         return scheduledFuture;
+        //     }
+        // });
     }
 
     @Override
@@ -190,9 +204,9 @@ public class StorageJetCache <PK extends Serializable &Comparable<PK>,E extends 
     @Transactional(rollbackFor = Exception.class)
     public E getOrCreate(PK id, EntityCreator<PK, E> entityCreator) {
         Preconditions.checkNotNull(id,"id不能为null");
-        CacheGetResult<E> cacheGetResult = cache.GET(id);
-        if (cacheGetResult.isSuccess()){
-            return cacheGetResult.getValue();
+        E e = get(id);
+        if (e!=null){
+            return e;
         }else {
             E entityCreated = entityCreator.create(id);
             return insertOrUpdate(entityCreated);

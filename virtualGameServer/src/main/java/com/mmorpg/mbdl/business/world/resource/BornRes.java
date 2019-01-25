@@ -1,7 +1,7 @@
 package com.mmorpg.mbdl.business.world.resource;
 
 import com.mmorpg.mbdl.business.world.model.BornData;
-import com.mmorpg.mbdl.framework.resource.annotation.Id;
+import com.mmorpg.mbdl.framework.resource.annotation.Key;
 import com.mmorpg.mbdl.framework.resource.annotation.ResDef;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
@@ -15,7 +15,7 @@ import java.util.List;
  **/
 @ResDef(suffix = ".json")
 public class BornRes {
-    @Id
+    @Key
     private int sceneId;
     private List<BornData> bornDataList;
 

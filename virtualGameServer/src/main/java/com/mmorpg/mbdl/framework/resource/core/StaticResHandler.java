@@ -3,7 +3,7 @@ package com.mmorpg.mbdl.framework.resource.core;
 import com.google.common.base.Preconditions;
 import com.mmorpg.mbdl.EnhanceStarter;
 import com.mmorpg.mbdl.framework.common.utils.SpringPropertiesUtil;
-import com.mmorpg.mbdl.framework.resource.annotation.Id;
+import com.mmorpg.mbdl.framework.resource.annotation.Key;
 import com.mmorpg.mbdl.framework.resource.annotation.ResDef;
 import com.mmorpg.mbdl.framework.resource.exposed.AbstractBeanFactoryAwareResResolver;
 import com.mmorpg.mbdl.framework.resource.exposed.AbstractMetadataReaderPostProcessor;
@@ -202,7 +202,7 @@ public class StaticResHandler implements BeanFactoryPostProcessor {
 
             /** 表格型资源，检查其Id的唯一性，并生成{@link IStaticRes}的子类实例 */
             if (resDef.isTable()){
-                Set<Field> fields = getAllFields(clazz, withAnnotation(Id.class));
+                Set<Field> fields = getAllFields(clazz, withAnnotation(Key.class));
                 if (fields.size() > 1){
                     throw new RuntimeException(String.format("表格型资源类[%s]包含多个@Id注解的字段",clazz.getSimpleName()));
                 }else if (fields.size() < 1){

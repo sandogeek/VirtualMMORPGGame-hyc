@@ -53,10 +53,17 @@ public class PropNode {
     }
 
     /**
+     * 移除当前节点的值
+     */
+    public void remove() {
+        this.parent.removeChild(name);
+    }
+
+    /**
      * 删除指定名称的子节点
      * @param name 子节点名称
      */
-    public void deleteChild(String name) {
+    public void removeChild(String name) {
         PropNode propNode = getChild(name);
         if (propNode == null) {
             return;
@@ -77,7 +84,6 @@ public class PropNode {
         } finally {
             propTree.getTreeRWLock().readLock().unlock();
         }
-
     }
 
     /**

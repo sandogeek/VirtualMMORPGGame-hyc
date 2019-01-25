@@ -1,7 +1,7 @@
 package com.mmorpg.mbdl.business.world.resource;
 
 import com.mmorpg.mbdl.business.object.model.SceneObjectType;
-import com.mmorpg.mbdl.framework.resource.annotation.Id;
+import com.mmorpg.mbdl.framework.resource.annotation.Key;
 import com.mmorpg.mbdl.framework.resource.annotation.ResDef;
 
 /**
@@ -12,7 +12,7 @@ import com.mmorpg.mbdl.framework.resource.annotation.ResDef;
  **/
 @ResDef
 public class SceneObjectAttrRes {
-    @Id
+    @Key
     private int objectKey;
     private String name;
     private SceneObjectType objectType;
