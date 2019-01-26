@@ -13,7 +13,7 @@ import com.mmorpg.mbdl.framework.resource.annotation.ResDef;
 @ResDef
 public class ItemRes5 {
     @Key
-    @JsonProperty(value = "Key")
+    @JsonProperty(value = "Id")
     private String id;
 
     @JsonProperty(value = "Name")

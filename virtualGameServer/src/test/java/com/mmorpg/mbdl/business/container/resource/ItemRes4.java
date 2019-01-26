@@ -11,7 +11,7 @@ import com.mmorpg.mbdl.framework.resource.annotation.ResDef;
  * @since v1.0
  **/
 @ResDef
-public class ItemRes9 {
+public class ItemRes4 {
     @Key
     @JsonProperty(value = "Id")
     private String id;
