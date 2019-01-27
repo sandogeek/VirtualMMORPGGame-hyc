@@ -54,7 +54,7 @@ public interface IStorage<PK extends Serializable&Comparable<PK>,E extends Abstr
      * @param entity
      * @return
      */
-    E update(E entity);
+    void update(E entity);
 
     /**
      * 根据实体类注解上的delay，把所有delay时间内的更新合并

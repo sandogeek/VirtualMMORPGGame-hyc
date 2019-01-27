@@ -78,17 +78,17 @@ public class StorageJetCache <PK extends Serializable &Comparable<PK>,E extends 
         return entity;
     }
 
-    private E doUpdate(E entity){
+    private void doUpdate(E entity){
+        // TODO merge返回的实体和参数的实体不一致
         PK id = entity.getId();
-        E entitySaved = entityManager.merge(entity);
-        cache.put(id,entitySaved);
+        entityManager.merge(entity);
+        cache.put(id, entity);
         entityManager.flush();
-        return entitySaved;
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public E update(E entity) {
+    public void update(E entity) {
         PK id = entity.getId();
         Preconditions.checkNotNull(id,"id不能为null");
         CacheGetResult<E> cacheGetResult = cache.GET(id);
@@ -100,20 +100,20 @@ public class StorageJetCache <PK extends Serializable &Comparable<PK>,E extends 
             }
             // 缓存中有，说明数据库中也有
             else {
-                return executeUpdate(entity);
+                executeUpdate(entity);
             }
         }else {
             if (exists(entity.getId())){
-                return executeUpdate(entity);
+                executeUpdate(entity);
             }else {
                 throw new EntityNotFoundException("数据库中不存在该实体，先create一下？");
             }
         }
     }
 
-    private E executeUpdate(E entity) {
+    private void executeUpdate(E entity) {
         // TODO 执行update时取消先前的合并更新任务（如果有的话）
-        return doUpdate(entity);
+        doUpdate(entity);
     }
 
     @Override

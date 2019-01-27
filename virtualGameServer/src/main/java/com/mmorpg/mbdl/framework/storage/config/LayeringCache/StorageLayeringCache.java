@@ -105,7 +105,7 @@ public class StorageLayeringCache<PK extends Serializable &Comparable<PK>,E exte
     }
 
     @Override
-    public E update(E entity) {
+    public void update(E entity) {
         return null;
     }
 

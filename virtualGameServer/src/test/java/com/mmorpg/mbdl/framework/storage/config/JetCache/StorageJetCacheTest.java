@@ -110,7 +110,6 @@ class StorageJetCacheTest extends TestWithSpring {
             return entity;
         });
         containerEntityIStorage.remove(1000L);
-        logger.debug("");
     }
 
     @Test

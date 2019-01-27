@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mmorpg.mbdl.framework.common.utils.JsonUtil;
 import com.mmorpg.mbdl.framework.reflectasm.withunsafe.FieldAccess;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -85,7 +86,6 @@ public class TestFastJson {
 
         JavaBeanTest test = JSON.parseObject("{\"string\":\"hello json\",\"anInt\":15,\"state\":\"LOGIN\"}", JavaBeanTest.class, Feature.SupportNonPublicField);
         logger.info("{}", JSON.toJSON(javaBeanTest, new SerializeConfig(true)));
-
     }
 
 }
