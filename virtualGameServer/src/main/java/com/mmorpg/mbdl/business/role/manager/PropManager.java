@@ -4,8 +4,8 @@ import com.mmorpg.mbdl.business.object.model.AbstractCreature;
 import com.mmorpg.mbdl.business.role.model.prop.PropTree;
 import com.mmorpg.mbdl.business.role.model.prop.PropType;
 
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 属性管理器
@@ -14,7 +14,9 @@ import java.util.concurrent.ConcurrentHashMap;
  **/
 public class PropManager {
     private AbstractCreature owner;
-    private Map<PropType, PropTree> type2Tree = new ConcurrentHashMap<>();
+    private Map<PropType, PropTree> type2Tree = new HashMap<>(12);
+    /** 节点名称到其对应的所有节点的集合，方便快速找到所有节点 */
+    // private Multimap<String, PropNode> name2Node = ArrayListMultimap.create();
 
     public PropManager(AbstractCreature owner) {
         this.owner = owner;

@@ -28,6 +28,10 @@ public class ItemRes {
         return name;
     }
 
+    public int getMaxAmount() {
+        return maxAmount;
+    }
+
     public Map<PropType, Long> getPropChangeAfterUse() {
         return propChangeAfterUse;
     }

@@ -52,13 +52,17 @@ public class Role extends AbstractCreature {
                 PropType.values()) {
             propManager.getOrCreateTree(propType);
         }
+        updatePropForLevel();
+        fullHP();
+        fullMP();
+    }
+
+    public void updatePropForLevel() {
         RoleLevelRes roleLevelRes = RoleManager.getInstance().getRoleLevelResByLevel(roleEntity.getLevel());
         propManager.getPropTreeByType(PropType.MAX_HP).getOrCreateChild("level").set(roleLevelRes.getMaxHp());
         propManager.getPropTreeByType(PropType.MAX_MP).getOrCreateChild("level").set(roleLevelRes.getMaxMp());
         propManager.getPropTreeByType(PropType.ATTACK).getOrCreateChild("level").set(roleLevelRes.getAttack());
         propManager.getPropTreeByType(PropType.DEFENCE).getOrCreateChild("level").set(roleLevelRes.getDefence());
-        fullHP();
-        fullMP();
     }
 
     @Override

@@ -4,7 +4,6 @@ import com.mmorpg.mbdl.TestWithSpring;
 import com.mmorpg.mbdl.business.container.entity.ContainerEntity;
 import com.mmorpg.mbdl.business.container.model.Container;
 import com.mmorpg.mbdl.business.container.model.ContainerType;
-import com.mmorpg.mbdl.business.container.model.Item;
 import com.mmorpg.mbdl.business.register.entity.AccountEntity;
 import com.mmorpg.mbdl.framework.storage.core.IStorage;
 import org.junit.jupiter.api.Assertions;
@@ -104,8 +103,8 @@ class StorageJetCacheTest extends TestWithSpring {
             // 赠送一点背包物品
             Container packContainer = new Container();
             // 放入5个小血瓶、5个小蓝瓶
-            packContainer.addItem(new Item(1,5));
-            packContainer.addItem(new Item(2,5));
+            packContainer.addItem(1,5);
+            packContainer.addItem(2,5);
             entity.getType2ContainerMap().put(ContainerType.PACK,packContainer);
             return entity;
         });
@@ -118,10 +117,11 @@ class StorageJetCacheTest extends TestWithSpring {
         // 赠送一点背包物品
         Container packContainer = new Container();
         // 放入5个小血瓶、5个小蓝瓶
-        packContainer.addItem(new Item(1,5));
-        packContainer.addItem(new Item(2,5));
+        packContainer.addItem(1,5);
+        packContainer.addItem(2,5);
         entity.getType2ContainerMap().put(ContainerType.PACK,packContainer);
-        ContainerEntity updatedEntity = containerEntityIStorage.update(entity);
+        containerEntityIStorage.create(entity);
+        containerEntityIStorage.update(entity);
         containerEntityIStorage.remove(1000L);
         logger.debug("");
     }

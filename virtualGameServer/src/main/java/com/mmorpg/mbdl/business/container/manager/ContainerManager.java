@@ -3,8 +3,9 @@ package com.mmorpg.mbdl.business.container.manager;
 import com.mmorpg.mbdl.business.container.entity.ContainerEntity;
 import com.mmorpg.mbdl.business.container.model.Container;
 import com.mmorpg.mbdl.business.container.model.ContainerType;
-import com.mmorpg.mbdl.business.container.model.Item;
+import com.mmorpg.mbdl.business.container.res.ItemRes;
 import com.mmorpg.mbdl.business.role.model.Role;
+import com.mmorpg.mbdl.framework.resource.exposed.IStaticRes;
 import com.mmorpg.mbdl.framework.storage.core.IStorage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -23,6 +24,8 @@ public class ContainerManager {
 
     @Autowired
     private IStorage<Long, ContainerEntity> containerEntityIStorage;
+    @Autowired
+    private IStaticRes<Integer, ItemRes> itemResIStaticRes;
 
     @PostConstruct
     private void init() {
@@ -39,12 +42,16 @@ public class ContainerManager {
             // 赠送一点背包物品
             Container packContainer = new Container();
             // 放入5个小血瓶、5个小蓝瓶
-            packContainer.addItem(new Item(1,5));
-            packContainer.addItem(new Item(2,5));
+            packContainer.addItem(1,5);
+            packContainer.addItem(2,5);
             entity.getType2ContainerMap().put(ContainerType.PACK,packContainer);
             return entity;
         });
         role.setContainerEntity(containerEntity);
+    }
+
+    public ItemRes getItemResByKey(Integer key) {
+        return itemResIStaticRes.get(key);
     }
 
     public void updateEntity(ContainerEntity containerEntity) {
