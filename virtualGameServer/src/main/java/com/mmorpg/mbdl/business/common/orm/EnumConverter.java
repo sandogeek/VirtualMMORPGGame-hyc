@@ -20,9 +20,9 @@ public class EnumConverter implements AttributeConverter<EnumReadable, Integer> 
     //     this.xclazz = (Class<X>) (((ParameterizedType) this.getClass().getGenericSuperclass())
     //             .getActualTypeArguments())[0];
     //     try {
-    //         valuesMethod = xclazz.getMethod("values");
+    //         valuesMethod = xclazz.getMethod("getAll");
     //     } catch (Exception e) {
-    //         throw new RuntimeException("can't get values method from " + xclazz);
+    //         throw new RuntimeException("can't get getAll method from " + xclazz);
     //     }
     // }
 
@@ -46,8 +46,8 @@ public class EnumConverter implements AttributeConverter<EnumReadable, Integer> 
     // @SuppressWarnings("unchecked")
     // public X convertToEntityAttribute(Y dbData) {
     //     try {
-    //         X[] values = (X[]) valuesMethod.invoke(null);
-    //         for (X x : values) {
+    //         X[] getAll = (X[]) valuesMethod.invoke(null);
+    //         for (X x : getAll) {
     //             if (x.getValue().equals(dbData)) {
     //                 return x;
     //             }

@@ -58,6 +58,11 @@ public class PacketIdManager {
     public static final short ROLE_UI_INFO_RESP = 10501;
     public static final short CUSTOM_ROLE_UI_INFO_RESP = 10502;
     public static final short MONSTER_UI_INFO_RESP = 10503;
+    /** container */
+    public static final short GET_PACK_CONTENT_REQ = 10601;
+    public static final short GET_PACK_CONTENT_RESP = 10602;
+    public static final short USE_ITEM_REQ = 10603;
+    public static final short USE_ITEM_RESP = 10604;
 
     private static PacketIdManager self;
     public static PacketIdManager getInstance(){

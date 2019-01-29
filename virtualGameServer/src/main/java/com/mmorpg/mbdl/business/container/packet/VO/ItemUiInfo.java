@@ -1,0 +1,27 @@
+package com.mmorpg.mbdl.business.container.packet.VO;
+
+import com.baidu.bjf.remoting.protobuf.annotation.Protobuf;
+
+/**
+ * 物品前端能拿到的信息
+ *
+ * @author Sando Geek
+ * @since v1.0 2019/1/29
+ **/
+public class ItemUiInfo {
+    @Protobuf(description = "物品唯一id",required = true)
+    private long objectId;
+    @Protobuf(description = "对应物品表中的key", required = true)
+    private int key;
+    @Protobuf(description = "名称", required = true)
+    private String name;
+    @Protobuf(description = "数量",required = true)
+    private int amount;
+
+    public ItemUiInfo(long objectId, int key, String name, int amount) {
+        this.objectId = objectId;
+        this.key = key;
+        this.name = name;
+        this.amount = amount;
+    }
+}

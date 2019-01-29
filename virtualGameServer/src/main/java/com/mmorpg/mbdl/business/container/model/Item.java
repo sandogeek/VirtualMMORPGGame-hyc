@@ -12,15 +12,8 @@ import java.util.Objects;
  * @since v1.0 2019/1/25
  **/
 public class Item implements Comparable<Item> {
-    /** 物品唯一id */
     private long objectId;
-    /**
-     * 对应物品表中的key
-     */
     private int key;
-    /**
-     * 数量
-     */
     private int amount;
 
     public Item() {
