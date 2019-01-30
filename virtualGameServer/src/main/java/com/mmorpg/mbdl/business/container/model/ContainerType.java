@@ -10,7 +10,8 @@ public enum ContainerType {
     /**
      * 背包
      */
-    PACK("背包");
+    PACK("背包"),
+    ;
 
     private String desc;
 

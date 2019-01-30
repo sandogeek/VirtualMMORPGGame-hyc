@@ -1,5 +1,6 @@
 package com.mmorpg.mbdl.business.container.res;
 
+import com.mmorpg.mbdl.business.container.model.ItemType;
 import com.mmorpg.mbdl.business.role.model.prop.PropType;
 import com.mmorpg.mbdl.framework.resource.annotation.Key;
 import com.mmorpg.mbdl.framework.resource.annotation.ResDef;
@@ -19,6 +20,7 @@ public class ItemRes {
     private String name;
     private Map<PropType,Long> propChangeAfterUse;
     private int maxAmount;
+    private ItemType itemType;
 
     public int getKey() {
         return key;
@@ -30,6 +32,10 @@ public class ItemRes {
 
     public int getMaxAmount() {
         return maxAmount;
+    }
+
+    public ItemType getItemType() {
+        return itemType;
     }
 
     public Map<PropType, Long> getPropChangeAfterUse() {

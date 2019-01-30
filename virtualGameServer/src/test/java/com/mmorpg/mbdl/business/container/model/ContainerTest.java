@@ -38,10 +38,10 @@ class ContainerTest extends TestWithSpring {
     void 添加key不在集合中的物品() {
         Container container = new Container();
         container.addItem(1,49*3+1);
-        Collection<Item> items = container.getAll();
-        Item lastItem = Iterables.getLast(items);
-        Assertions.assertEquals(4,items.size());
-        Assertions.assertEquals(1,lastItem.getAmount());
+        Collection<AbstractItem> abstractItems = container.getAll();
+        AbstractItem lastAbstractItem = Iterables.getLast(abstractItems);
+        Assertions.assertEquals(4, abstractItems.size());
+        Assertions.assertEquals(1, lastAbstractItem.getAmount());
     }
 
     @Test
@@ -49,10 +49,10 @@ class ContainerTest extends TestWithSpring {
         Container container = new Container();
         container.addItem(1,49*3+1);
         container.addItem(1,20);
-        Collection<Item> items = container.getAll();
-        Item lastItem = Iterables.getLast(items);
-        Assertions.assertEquals(4,items.size());
-        Assertions.assertEquals(21,lastItem.getAmount());
+        Collection<AbstractItem> abstractItems = container.getAll();
+        AbstractItem lastAbstractItem = Iterables.getLast(abstractItems);
+        Assertions.assertEquals(4, abstractItems.size());
+        Assertions.assertEquals(21, lastAbstractItem.getAmount());
     }
 
     @Test
@@ -60,10 +60,10 @@ class ContainerTest extends TestWithSpring {
         Container container = new Container();
         container.addItem(1,49*3+1);
         container.addItem(1,49+21);
-        Collection<Item> items = container.getAll();
-        Item lastItem = Iterables.getLast(items);
-        Assertions.assertEquals(5,items.size());
-        Assertions.assertEquals(22,lastItem.getAmount());
+        Collection<AbstractItem> abstractItems = container.getAll();
+        AbstractItem lastAbstractItem = Iterables.getLast(abstractItems);
+        Assertions.assertEquals(5, abstractItems.size());
+        Assertions.assertEquals(22, lastAbstractItem.getAmount());
     }
 
     @Test
@@ -71,17 +71,17 @@ class ContainerTest extends TestWithSpring {
         Container container = new Container();
         container.addItem(1,3*49);
         container.addItem(1,20);
-        Collection<Item> items = container.getAll();
-        Item lastItem = Iterables.getLast(items);
-        Assertions.assertEquals(4,items.size());
-        Assertions.assertEquals(20,lastItem.getAmount());
+        Collection<AbstractItem> abstractItems = container.getAll();
+        AbstractItem lastAbstractItem = Iterables.getLast(abstractItems);
+        Assertions.assertEquals(4, abstractItems.size());
+        Assertions.assertEquals(20, lastAbstractItem.getAmount());
     }
 
     @Test
     void 删除物品() {
         container.removeItem(1,49+41);
-        Collection<Item> items = container.getAll();
-        Assertions.assertThrows(NoSuchElementException.class, () -> Iterables.getLast(items));
+        Collection<AbstractItem> abstractItems = container.getAll();
+        Assertions.assertThrows(NoSuchElementException.class, () -> Iterables.getLast(abstractItems));
         container.addItem(1,49+41);
     }
 

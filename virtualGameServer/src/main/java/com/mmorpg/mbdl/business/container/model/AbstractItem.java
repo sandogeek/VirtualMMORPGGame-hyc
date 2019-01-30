@@ -1,6 +1,9 @@
 package com.mmorpg.mbdl.business.container.model;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.google.common.base.MoreObjects;
+import com.mmorpg.mbdl.business.equip.model.Equip;
 import com.mmorpg.mbdl.framework.common.generator.IdGeneratorFactory;
 
 import java.util.Objects;
@@ -11,15 +14,20 @@ import java.util.Objects;
  * @author Sando Geek
  * @since v1.0 2019/1/25
  **/
-public class Item implements Comparable<Item> {
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY)
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = Equip.class),
+        @JsonSubTypes.Type(value = NormalItem.class),
+})
+public abstract class AbstractItem implements Comparable<AbstractItem> {
     private long objectId;
     private int key;
     private int amount;
 
-    public Item() {
+    public AbstractItem() {
     }
 
-    public Item(int key, int amount) {
+    public AbstractItem(int key, int amount) {
         this.key = key;
         this.amount = amount;
     }
@@ -27,16 +35,22 @@ public class Item implements Comparable<Item> {
     /**
      * 初始化新物品
      */
-    Item init() {
+    AbstractItem init() {
         this.objectId = IdGeneratorFactory.getIntance().getObjectIdGenerator().generate();
         return this;
     }
+
+    /**
+     * 获取物品类型
+     * @return
+     */
+    public abstract ItemType getItemType();
 
     public long getObjectId() {
         return objectId;
     }
 
-    public Item setObjectId(long objectId) {
+    public AbstractItem setObjectId(long objectId) {
         this.objectId = objectId;
         return this;
     }
@@ -45,13 +59,13 @@ public class Item implements Comparable<Item> {
         return key;
     }
 
-    public Item setKey(int key) {
+    public AbstractItem setKey(int key) {
         this.key = key;
         return this;
     }
 
     @Override
-    public int compareTo(Item other) {
+    public int compareTo(AbstractItem other) {
         if (this.objectId < other.objectId) {
             return -1;
         } else if (this.objectId > other.objectId) {
@@ -68,8 +82,8 @@ public class Item implements Comparable<Item> {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        Item item = (Item) o;
-        return objectId == item.objectId;
+        AbstractItem abstractItem = (AbstractItem) o;
+        return objectId == abstractItem.objectId;
     }
 
     @Override
@@ -81,7 +95,7 @@ public class Item implements Comparable<Item> {
         return amount;
     }
 
-    public Item setAmount(int amount) {
+    public AbstractItem setAmount(int amount) {
         this.amount = amount;
         return this;
     }

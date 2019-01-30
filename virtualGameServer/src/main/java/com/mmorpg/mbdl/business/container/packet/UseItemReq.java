@@ -23,6 +23,18 @@ public class UseItemReq extends AbstractPacket {
     public UseItemReq() {
     }
 
+    public long getObjectId() {
+        return objectId;
+    }
+
+    public int getKey() {
+        return key;
+    }
+
+    public int getAmount() {
+        return amount;
+    }
+
     @Override
     public short getPacketId() {
         return PacketIdManager.USE_ITEM_REQ;
