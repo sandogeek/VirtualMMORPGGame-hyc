@@ -7,8 +7,11 @@ package com.mmorpg.mbdl.business.container.model;
  * @since v1.0 2019/1/30
  **/
 public class NormalItem extends AbstractItem {
-    @Override
-    public ItemType getItemType() {
-        return ItemType.NORMAL;
+    public NormalItem() {
+        super();
+    }
+
+    public NormalItem(int key, int amount) {
+        super(key, amount);
     }
 }

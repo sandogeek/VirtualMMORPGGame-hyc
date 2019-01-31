@@ -22,12 +22,15 @@ class ContainerTest extends TestWithSpring {
 
     @BeforeEach
     void setUp() {
+        containerEntityIStorage.remove(1000L);
         ContainerEntity containerEntity = containerEntityIStorage.getOrCreate(1000L, id -> {
             ContainerEntity entity = new ContainerEntity().setRoleId(id);
             // 赠送一点背包物品
             Container packContainer = new Container();
             // 放入90个小血瓶
             packContainer.addItem(1,90);
+            // 两把木剑
+            packContainer.addItem(10000,2);
             entity.getType2ContainerMap().put(ContainerType.PACK,packContainer);
             return entity;
         });
@@ -38,9 +41,10 @@ class ContainerTest extends TestWithSpring {
     void 添加key不在集合中的物品() {
         Container container = new Container();
         container.addItem(1,49*3+1);
+        container.addItem(10000,2);
         Collection<AbstractItem> abstractItems = container.getAll();
         AbstractItem lastAbstractItem = Iterables.getLast(abstractItems);
-        Assertions.assertEquals(4, abstractItems.size());
+        Assertions.assertEquals(6, abstractItems.size());
         Assertions.assertEquals(1, lastAbstractItem.getAmount());
     }
 

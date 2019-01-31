@@ -6,6 +6,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.TreeMultimap;
 import com.mmorpg.mbdl.business.container.exception.ItemNotEnoughException;
 import com.mmorpg.mbdl.business.container.manager.ContainerManager;
+import com.mmorpg.mbdl.business.container.model.creator.ItemCreatorManager;
 import com.mmorpg.mbdl.business.container.res.ItemRes;
 import com.mmorpg.mbdl.framework.common.utils.JsonUtil;
 
@@ -39,7 +40,7 @@ public class Container {
         int maxAmount = itemRes.getMaxAmount();
         if (maxAmount == 1) {
             for (int i = 0; i < amount; i++) {
-                doAddItem(new AbstractItem(key,1));
+                doAddItem(ItemCreatorManager.getInstance().getCreatorByItemType(itemRes.getItemType()).create(key, 1));
             }
             return true;
         }
@@ -48,7 +49,8 @@ public class Container {
     }
 
     private void addItemHelper1(int key, int amount, int maxAmount) {
-        AbstractItem abstractItem = new AbstractItem(key, amount);
+        ItemRes itemRes = ContainerManager.getInstance().getItemResByKey(key);
+        AbstractItem abstractItem = ItemCreatorManager.getInstance().getCreatorByItemType(itemRes.getItemType()).create(key, amount);
         // 找到id最新的同类物品，判断其是否达到最大堆叠数，没达到就把物品放到这个物品上
         NavigableSet<AbstractItem> abstractItems = key2ItemMultiMap.get(abstractItem.getKey());
         if (!abstractItems.isEmpty()) {

@@ -1,6 +1,6 @@
 package com.mmorpg.mbdl.business.equip.entity;
 
-import com.mmorpg.mbdl.business.container.model.AbstractItem;
+import com.mmorpg.mbdl.business.equip.model.Equip;
 import com.mmorpg.mbdl.business.equip.model.EquipType;
 import com.mmorpg.mbdl.framework.storage.annotation.JetCacheConfig;
 import com.mmorpg.mbdl.framework.storage.core.AbstractEntity;
@@ -23,10 +23,10 @@ public class EquipEntity extends AbstractEntity<Long> {
     @Id
     private long roleId;
     @Type(type = "json")
-    private Map<EquipType, AbstractItem> type2ItemMap = new HashMap<>(EquipType.values().length);
+    private Map<EquipType, Equip> type2EquipMap = new HashMap<>(EquipType.values().length);
 
-    public Map<EquipType, AbstractItem> getType2ItemMap() {
-        return type2ItemMap;
+    public Map<EquipType, Equip> getType2EquipMap() {
+        return type2EquipMap;
     }
 
     @Override

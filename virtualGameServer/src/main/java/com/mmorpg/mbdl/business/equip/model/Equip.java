@@ -1,9 +1,7 @@
 package com.mmorpg.mbdl.business.equip.model;
 
 import com.google.common.base.MoreObjects;
-import com.mmorpg.mbdl.business.container.manager.ContainerManager;
 import com.mmorpg.mbdl.business.container.model.AbstractItem;
-import com.mmorpg.mbdl.business.container.model.ItemType;
 
 /**
  * 装备
@@ -17,15 +15,9 @@ public class Equip extends AbstractItem {
     public Equip() {
     }
 
-    public Equip(int key, int currentDurability) {
-        super(key, 1);
-        ContainerManager.getInstance().getItemResByKey(key).getItemType()
+    public Equip(int key, int amount, int currentDurability) {
+        super(key, amount);
         this.currentDurability = currentDurability;
-    }
-
-    @Override
-    public ItemType getItemType() {
-        return ItemType.EQUIP;
     }
 
     @Override

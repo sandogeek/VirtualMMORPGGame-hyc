@@ -27,4 +27,15 @@ public class ItemCreatorManager {
     public static ItemCreatorManager getInstance() {
         return self;
     }
+
+    public void register(AbstractItemCreator abstractItemCreator) {
+        if (type2AbstractItemCreatorMap.get(abstractItemCreator.getItemType())!=null){
+            throw new RuntimeException(String.format("%s重复",AbstractItemCreator.class.getSimpleName()));
+        }
+        type2AbstractItemCreatorMap.put(abstractItemCreator.getItemType(),abstractItemCreator);
+    }
+
+    public AbstractItemCreator getCreatorByItemType(ItemType itemType) {
+        return type2AbstractItemCreatorMap.get(itemType);
+    }
 }

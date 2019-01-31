@@ -1,6 +1,7 @@
 package com.mmorpg.mbdl.business.container.res;
 
 import com.mmorpg.mbdl.business.container.model.ItemType;
+import com.mmorpg.mbdl.business.equip.model.EquipType;
 import com.mmorpg.mbdl.business.role.model.prop.PropType;
 import com.mmorpg.mbdl.framework.resource.annotation.Key;
 import com.mmorpg.mbdl.framework.resource.annotation.ResDef;
@@ -21,6 +22,13 @@ public class ItemRes {
     private Map<PropType,Long> propChangeAfterUse;
     private int maxAmount;
     private ItemType itemType;
+    /** 初始耐久度 */
+    private int durability;
+    /**
+     * 装备类型
+     * @return
+     */
+    private EquipType equipType;
 
     public int getKey() {
         return key;
@@ -36,6 +44,14 @@ public class ItemRes {
 
     public ItemType getItemType() {
         return itemType;
+    }
+
+    public int getDurability() {
+        return durability;
+    }
+
+    public EquipType getEquipType() {
+        return equipType;
     }
 
     public Map<PropType, Long> getPropChangeAfterUse() {

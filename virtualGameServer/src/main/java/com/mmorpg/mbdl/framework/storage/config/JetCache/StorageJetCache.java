@@ -75,6 +75,7 @@ public class StorageJetCache <PK extends Serializable &Comparable<PK>,E extends 
 
     private E doInsert(E entity) {
         entityManager.persist(entity);
+        cache.put(entity.getId(),entity);
         return entity;
     }
 
@@ -183,7 +184,7 @@ public class StorageJetCache <PK extends Serializable &Comparable<PK>,E extends 
             }
             // 缓存中有，说明数据库中也有
             else {
-                delete(id);
+                delete(entity);
                 cache.put(id,null);
                 return entity;
             }
@@ -191,7 +192,7 @@ public class StorageJetCache <PK extends Serializable &Comparable<PK>,E extends 
             // 缓存没有直接查库
             E entity = findOne(id);
             if (entity != null){
-                delete(id);
+                delete(entity);
                 cache.put(id,null);
             }
             return entity;

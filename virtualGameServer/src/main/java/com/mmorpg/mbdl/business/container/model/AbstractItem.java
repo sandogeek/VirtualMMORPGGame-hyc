@@ -14,7 +14,7 @@ import java.util.Objects;
  * @author Sando Geek
  * @since v1.0 2019/1/25
  **/
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME)
 @JsonSubTypes({
         @JsonSubTypes.Type(value = Equip.class),
         @JsonSubTypes.Type(value = NormalItem.class),
@@ -39,12 +39,6 @@ public abstract class AbstractItem implements Comparable<AbstractItem> {
         this.objectId = IdGeneratorFactory.getIntance().getObjectIdGenerator().generate();
         return this;
     }
-
-    /**
-     * 获取物品类型
-     * @return
-     */
-    public abstract ItemType getItemType();
 
     public long getObjectId() {
         return objectId;
