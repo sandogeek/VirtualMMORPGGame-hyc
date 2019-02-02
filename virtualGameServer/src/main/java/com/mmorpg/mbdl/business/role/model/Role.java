@@ -3,6 +3,8 @@ package com.mmorpg.mbdl.business.role.model;
 import com.google.common.base.MoreObjects;
 import com.mmorpg.mbdl.business.container.entity.ContainerEntity;
 import com.mmorpg.mbdl.business.container.manager.ContainerManager;
+import com.mmorpg.mbdl.business.equip.entity.EquipEntity;
+import com.mmorpg.mbdl.business.equip.manager.EquipManager;
 import com.mmorpg.mbdl.business.object.model.AbstractCreature;
 import com.mmorpg.mbdl.business.object.model.AbstractVisibleSceneObject;
 import com.mmorpg.mbdl.business.object.model.SceneObjectType;
@@ -32,6 +34,7 @@ public class Role extends AbstractCreature {
     /** 角色相关实体 **/
     private RoleEntity roleEntity;
     private ContainerEntity containerEntity;
+    private EquipEntity equipEntity;
 
     public Role(Long objectId, String name) {
         super(objectId,name);
@@ -42,6 +45,7 @@ public class Role extends AbstractCreature {
      */
     public void bindEntity() {
         ContainerManager.getInstance().bindContainerEntity(this);
+        EquipManager.getInstance().bindEntity(this);
     }
 
     /**
@@ -91,6 +95,15 @@ public class Role extends AbstractCreature {
 
     public Role setRoleEntity(RoleEntity roleEntity) {
         this.roleEntity = roleEntity;
+        return this;
+    }
+
+    public EquipEntity getEquipEntity() {
+        return equipEntity;
+    }
+
+    public Role setEquipEntity(EquipEntity equipEntity) {
+        this.equipEntity = equipEntity;
         return this;
     }
 
