@@ -13,6 +13,10 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class PropTree {
     /** 该类型属性的属性值（此值等于属性树所有节点的值之和） */
     private long propValue;
+    /**
+     * 最大属性值
+     */
+    private Long maxValue;
     /** 属性树根节点 */
     private PropNode rootNode = new PropNode(this, doGetPropValue(),"根节点");
     /**
@@ -53,6 +57,10 @@ public class PropTree {
         rootNode.set(newValue);
     }
 
+    public long addRootNodeValue(long delta) {
+        return rootNode.addAndGet(delta);
+    }
+
     public PropNode getOrCreateChild(String name) {
         return rootNode.getOrCreateChild(name);
     }
@@ -73,8 +81,15 @@ public class PropTree {
     void setPropValue(long newValue) {
         if (newValue < 0 ) {
             throw new RuntimeException("属性值不能为负值");
+        } else if (maxValue!=null && newValue > maxValue) {
+            doSetPropValue(maxValue);
         }
         doSetPropValue(newValue);
+    }
+
+    public PropTree setMaxValue(Long maxValue) {
+        this.maxValue = maxValue;
+        return this;
     }
 
     void addPropValue(long delta) {

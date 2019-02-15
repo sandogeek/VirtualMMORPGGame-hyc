@@ -1,6 +1,7 @@
 package com.mmorpg.mbdl.business.container.packet.VO;
 
 import com.baidu.bjf.remoting.protobuf.annotation.Protobuf;
+import com.mmorpg.mbdl.business.container.model.ItemType;
 
 /**
  * 物品前端能拿到的信息
@@ -17,11 +18,17 @@ public class ItemUiInfo {
     private String name;
     @Protobuf(description = "数量",required = true)
     private int amount;
+    @Protobuf(description = "物品类型",required = true)
+    private ItemType itemType;
 
-    public ItemUiInfo(long objectId, int key, String name, int amount) {
+    public ItemUiInfo() {
+    }
+
+    public ItemUiInfo(long objectId, int key, String name, int amount, ItemType itemType) {
         this.objectId = objectId;
         this.key = key;
         this.name = name;
         this.amount = amount;
+        this.itemType = itemType;
     }
 }

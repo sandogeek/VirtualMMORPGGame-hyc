@@ -23,11 +23,33 @@ public enum PropType {
     /**
      * 最大血量
      */
-    MAX_HP,
+    MAX_HP() {
+        @Override
+        public PropTree create(AbstractCreature abstractCreature) {
+            return new PropTree() {
+                @Override
+                protected void doSetPropValue(long newValue) {
+                    super.doSetPropValue(newValue);
+                    abstractCreature.getPropManager().getOrCreateTree(PropType.CURRENT_HP).setMaxValue(newValue);
+                }
+            };
+        }
+    },
     /**
      * 最大蓝量
      */
-    MAX_MP,
+    MAX_MP() {
+        @Override
+        public PropTree create(AbstractCreature abstractCreature) {
+            return new PropTree() {
+                @Override
+                protected void doSetPropValue(long newValue) {
+                    super.doSetPropValue(newValue);
+                    abstractCreature.getPropManager().getOrCreateTree(PropType.CURRENT_MP).setMaxValue(newValue);
+                }
+            };
+        }
+    },
     /**
      * 攻击力
      */

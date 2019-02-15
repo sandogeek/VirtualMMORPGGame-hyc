@@ -17,7 +17,7 @@ public @interface ResDef {
     /**
      * 资源文件相对ClassPath的路径(需要带后缀)，推荐在资源文件上右键，Copy Relative Path
      * <p>通常情况不需要配置，如果不同目录下出现同名资源文件时通过配置此值区分使用哪一个资源文件</p>
-     * 配置此值后{@link ResDef#value()}不再生效
+     * 配置此值后{@link ResDef#value()}不再生效,等价于同时配置{@link ResDef#value()}+{@link ResDef#suffix()}
      */
     String relativePath() default "";
 

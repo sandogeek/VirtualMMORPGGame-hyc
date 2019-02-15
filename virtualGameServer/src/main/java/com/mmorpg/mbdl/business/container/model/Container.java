@@ -156,6 +156,16 @@ public class Container {
     }
 
     /**
+     * 获取背包中某类物品的总数量
+     * @param key
+     * @return
+     */
+    public int getAmountByKey(int key) {
+        NavigableSet<AbstractItem> abstractItems = key2ItemMultiMap.get(key);
+        return abstractItems.stream().map(AbstractItem::getAmount).reduce(0, Integer::sum);
+    }
+
+    /**
      * jackson反序列化时会调用以初始化 key2ItemMultiMap
      * @param id2ItemMap
      * @return

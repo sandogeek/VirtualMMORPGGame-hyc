@@ -19,6 +19,11 @@ public class UseItemResp extends AbstractPacket {
     public UseItemResp() {
     }
 
+    public UseItemResp setResult(boolean result) {
+        this.result = result;
+        return this;
+    }
+
     @Override
     public short getPacketId() {
         return PacketIdManager.USE_ITEM_RESP;

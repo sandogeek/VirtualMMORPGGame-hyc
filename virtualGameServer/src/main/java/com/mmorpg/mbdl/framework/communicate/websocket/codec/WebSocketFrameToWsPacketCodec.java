@@ -37,9 +37,17 @@ public class WebSocketFrameToWsPacketCodec extends MessageToMessageCodec<WebSock
         byteBuf.writeInt(packetLength);
         byteBuf.writeShort(packetId);
         byteBuf.writeBytes(wsPacketData);
+        // if (packetId == 10602) {
+        //     byte[] bytes = byteBuf.array();
+        //     List<String> int8String = new ArrayList<>(bytes.length);
+        //     for (int i = 0; i < bytes.length; i++) {
+        //         int8String.add(Integer.toString(bytes[i], 10));
+        //
+        //     }
+        //     logger.debug(StringUtils.join(int8String.toArray(),","));
+        // }
         WebSocketFrame webSocketFrame = new BinaryWebSocketFrame(byteBuf);
-        // logger.info(""+webSocketFrame);
-        out.add((WebSocketFrame)webSocketFrame);
+        out.add(webSocketFrame);
     }
 
     @Override

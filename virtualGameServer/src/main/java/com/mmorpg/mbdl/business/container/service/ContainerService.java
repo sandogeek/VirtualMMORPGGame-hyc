@@ -7,6 +7,7 @@ import com.mmorpg.mbdl.business.container.model.ContainerType;
 import com.mmorpg.mbdl.business.container.packet.GetPackContentReq;
 import com.mmorpg.mbdl.business.container.packet.GetPackContentResp;
 import com.mmorpg.mbdl.business.container.packet.UseItemReq;
+import com.mmorpg.mbdl.business.container.packet.UseItemResp;
 import com.mmorpg.mbdl.business.container.packet.VO.ItemUiInfo;
 import com.mmorpg.mbdl.business.container.res.ItemRes;
 import com.mmorpg.mbdl.business.role.event.RoleLogoutEvent;
@@ -54,7 +55,8 @@ public class ContainerService {
         List<ItemUiInfo> itemUiInfoList = getPackContentResp.getItemUiInfoList();
         for (AbstractItem abstractItem : abstractItems) {
             ItemRes itemRes = containerManager.getItemResByKey(abstractItem.getKey());
-            ItemUiInfo itemUiInfo = new ItemUiInfo(abstractItem.getObjectId(), abstractItem.getKey(), itemRes.getName(), abstractItem.getAmount());
+            ItemUiInfo itemUiInfo = new ItemUiInfo(abstractItem.getObjectId(), abstractItem.getKey(),
+                    itemRes.getName(), abstractItem.getAmount(), itemRes.getItemType());
             itemUiInfoList.add(itemUiInfo);
         }
         role.sendPacket(getPackContentResp);
@@ -62,14 +64,37 @@ public class ContainerService {
 
     public void handleUseItemReq(ISession session, UseItemReq useItemReq) {
         Role role = RoleManager.getInstance().getRoleBySession(session);
+        UseItemResp useItemResp = new UseItemResp();
+        Container packContainer = role.getContainerEntity().getType2ContainerMap().get(ContainerType.PACK);
+        // 只有物品最大堆叠数为1时物品使用请求提供ObjectId
         if (useItemReq.getObjectId() != 0) {
-            Container packContainer = role.getContainerEntity().getType2ContainerMap().get(ContainerType.PACK);
             AbstractItem abstractItem = packContainer.getItemByObjectId(useItemReq.getObjectId());
             if (abstractItem == null) {
-                throw new RuntimeException("客户端请求不正确，最大堆叠数不为一的物品使用请求应传入key而不是objectId");
+                throw new RuntimeException(String.format("找不到objectId为%s的物品",useItemReq.getObjectId()));
             }
             ItemRes itemRes = ContainerManager.getInstance().getItemResByKey(abstractItem.getKey());
-
+            if (itemRes.getMaxAmount() != 1) {
+                throw new RuntimeException("提供objectId的物品最大堆叠数不为1");
+            }
+            itemRes.getPropChangeAfterUse().
+                    forEach(((propType, delta) -> role.getPropManager().getPropTreeByType(propType).addRootNodeValue(delta)));
+            packContainer.removeItem(useItemReq.getObjectId(),1);
+            useItemResp.setResult(true);
+            ContainerManager.getInstance().mergeUpdateEntity(role.getContainerEntity());
+        } else {
+            ItemRes itemRes = ContainerManager.getInstance().getItemResByKey(useItemReq.getKey());
+            int amount = packContainer.getAmountByKey(useItemReq.getKey());
+            if (useItemReq.getAmount() > amount) {
+                throw new RuntimeException("剩余物品数量不足");
+            }
+            for (int i = 0; i < useItemReq.getAmount(); i++) {
+                itemRes.getPropChangeAfterUse().
+                        forEach(((propType, delta) -> role.getPropManager().getPropTreeByType(propType).addRootNodeValue(delta)));
+            }
+            packContainer.removeItem(useItemReq.getKey(),useItemReq.getAmount());
+            useItemResp.setResult(true);
+            ContainerManager.getInstance().mergeUpdateEntity(role.getContainerEntity());
         }
+        role.sendPacket(useItemResp);
     }
 }
