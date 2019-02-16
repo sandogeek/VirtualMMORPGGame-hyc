@@ -14,4 +14,9 @@ public class NormalItem extends AbstractItem {
     public NormalItem(int key, int amount) {
         super(key, amount);
     }
+
+    @Override
+    public ItemType getItemType() {
+        return ItemType.NORMAL;
+    }
 }

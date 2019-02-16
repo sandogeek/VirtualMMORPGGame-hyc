@@ -40,6 +40,8 @@ public abstract class AbstractItem implements Comparable<AbstractItem> {
         return this;
     }
 
+    public abstract ItemType getItemType();
+
     public long getObjectId() {
         return objectId;
     }
