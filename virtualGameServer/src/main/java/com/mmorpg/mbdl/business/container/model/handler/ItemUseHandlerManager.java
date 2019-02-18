@@ -29,7 +29,7 @@ public class ItemUseHandlerManager {
         return self;
     }
 
-    public void register(AbstractItemUseHandler abstractItemUseHandler) {
+    protected void register(AbstractItemUseHandler abstractItemUseHandler) {
         if (type2AbstractItemCreatorMap.get(abstractItemUseHandler.getItemType())!=null){
             throw new RuntimeException(String.format("%s重复", AbstractItemCreator.class.getSimpleName()));
         }

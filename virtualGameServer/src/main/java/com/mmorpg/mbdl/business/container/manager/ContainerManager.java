@@ -42,13 +42,13 @@ public class ContainerManager {
             // 赠送一点背包物品
             Container packContainer = new Container();
             // 放入5个小血瓶、5个小蓝瓶
-            packContainer.addItem(1,5);
-            packContainer.addItem(2,5);
+            packContainer.createItem(1, 5);
+            packContainer.createItem(2, 5);
             // 4中装备各发一把
-            packContainer.addItem(10000,1);
-            packContainer.addItem(10001,1);
-            packContainer.addItem(10002,1);
-            packContainer.addItem(10003,1);
+            packContainer.createItem(10000, 1);
+            packContainer.createItem(10001, 1);
+            packContainer.createItem(10002, 1);
+            packContainer.createItem(10003, 1);
             entity.getType2ContainerMap().put(ContainerType.PACK, packContainer);
             return entity;
         });

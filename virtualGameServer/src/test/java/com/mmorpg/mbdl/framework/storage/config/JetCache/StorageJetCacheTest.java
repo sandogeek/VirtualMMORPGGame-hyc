@@ -103,8 +103,8 @@ class StorageJetCacheTest extends TestWithSpring {
             // 赠送一点背包物品
             Container packContainer = new Container();
             // 放入5个小血瓶、5个小蓝瓶
-            packContainer.addItem(1,5);
-            packContainer.addItem(2,5);
+            packContainer.createItem(1, 5);
+            packContainer.createItem(2, 5);
             entity.getType2ContainerMap().put(ContainerType.PACK,packContainer);
             return entity;
         });
@@ -117,8 +117,8 @@ class StorageJetCacheTest extends TestWithSpring {
         // 赠送一点背包物品
         Container packContainer = new Container();
         // 放入5个小血瓶、5个小蓝瓶
-        packContainer.addItem(1,5);
-        packContainer.addItem(2,5);
+        packContainer.createItem(1, 5);
+        packContainer.createItem(2, 5);
         entity.getType2ContainerMap().put(ContainerType.PACK,packContainer);
         containerEntityIStorage.create(entity);
         containerEntityIStorage.update(entity);

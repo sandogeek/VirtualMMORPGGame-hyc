@@ -1,5 +1,6 @@
 package com.mmorpg.mbdl.business.equip.service;
 
+import com.mmorpg.mbdl.business.equip.manager.EquipManager;
 import com.mmorpg.mbdl.business.role.event.RoleLogoutEvent;
 import org.springframework.stereotype.Component;
 
@@ -25,6 +26,6 @@ public class EquipService {
     }
 
     public void handleRoleLogoutEvent(RoleLogoutEvent roleLogoutEvent) {
-
+        EquipManager.getInstance().updateEntity(roleLogoutEvent.getRole().getEquipEntity());
     }
 }

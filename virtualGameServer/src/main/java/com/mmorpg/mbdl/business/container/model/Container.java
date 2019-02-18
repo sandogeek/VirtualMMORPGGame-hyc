@@ -30,12 +30,12 @@ public class Container {
     private TreeMultimap<Integer, AbstractItem> key2ItemMultiMap = TreeMultimap.create();
 
     /**
-     * 添加物品
+     * 创建原本不存在的物品
      * @param key 配置表中的
      * @param amount 数量
      * @return 添加成功返回true，失败返回false
      */
-    public boolean addItem(int key, int amount) {
+    public boolean createItem(int key, int amount) {
         ItemRes itemRes = ContainerManager.getInstance().getItemResByKey(key);
         int maxAmount = itemRes.getMaxAmount();
         if (maxAmount == 1) {
@@ -44,11 +44,27 @@ public class Container {
             }
             return true;
         }
-        addItemHelper1(key, amount, maxAmount);
+        createItemHelper1(key, amount, maxAmount);
         return true;
     }
 
-    private void addItemHelper1(int key, int amount, int maxAmount) {
+    /**
+     * 放入已存在的物品
+     *
+     * @param abstractItem
+     * @return
+     */
+    public boolean addItem(AbstractItem abstractItem) {
+        ItemRes itemRes = ContainerManager.getInstance().getItemResByKey(abstractItem.getKey());
+        int maxAmount = itemRes.getMaxAmount();
+        if (maxAmount == 1) {
+            doAddItem(abstractItem);
+            return true;
+        }
+        return createItem(abstractItem.getKey(), abstractItem.getAmount());
+    }
+
+    private void createItemHelper1(int key, int amount, int maxAmount) {
         ItemRes itemRes = ContainerManager.getInstance().getItemResByKey(key);
         AbstractItem abstractItem = ItemCreatorManager.getInstance().getCreatorByItemType(itemRes.getItemType()).create(key, amount);
         // 找到id最新的同类物品，判断其是否达到最大堆叠数，没达到就把物品放到这个物品上
@@ -66,28 +82,30 @@ public class Container {
                     lastAbstractItem.setAmount(lastAbstractItem.getAmount() + abstractItem.getAmount());
                 } else {
                     lastAbstractItem.setAmount(maxAmount);
-                    addItemHelper1(key, amount - amountLeft,maxAmount);
+                    createItemHelper1(key, amount - amountLeft, maxAmount);
                 }
             } else {
-                addItemHelper2(key, amount, abstractItem, maxAmount);
+                createItemHelper2(key, amount, abstractItem, maxAmount);
             }
         } else {
-            addItemHelper2(key, amount, abstractItem, maxAmount);
+            createItemHelper2(key, amount, abstractItem, maxAmount);
         }
     }
 
-    private void addItemHelper2(int key, int amount, AbstractItem abstractItem, int maxAmount) {
+    private void createItemHelper2(int key, int amount, AbstractItem abstractItem, int maxAmount) {
         if (amount > maxAmount) {
             abstractItem.setAmount(maxAmount);
             doAddItem(abstractItem);
-            addItemHelper1(key,amount - maxAmount,maxAmount);
+            createItemHelper1(key, amount - maxAmount, maxAmount);
         } else {
             doAddItem(abstractItem);
         }
     }
 
     private void doAddItem(AbstractItem abstractItem) {
-        abstractItem.init();
+        if (abstractItem.getObjectId() == 0) {
+            abstractItem.init();
+        }
         id2ItemMap.put(abstractItem.getObjectId(), abstractItem);
         key2ItemMultiMap.put(abstractItem.getKey(), abstractItem);
     }

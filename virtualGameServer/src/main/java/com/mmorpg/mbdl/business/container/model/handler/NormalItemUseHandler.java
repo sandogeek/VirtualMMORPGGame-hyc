@@ -1,7 +1,10 @@
 package com.mmorpg.mbdl.business.container.model.handler;
 
+import com.mmorpg.mbdl.business.container.manager.ContainerManager;
+import com.mmorpg.mbdl.business.container.model.AbstractItem;
 import com.mmorpg.mbdl.business.container.model.Container;
 import com.mmorpg.mbdl.business.container.model.ItemType;
+import com.mmorpg.mbdl.business.container.res.ItemRes;
 import com.mmorpg.mbdl.business.role.model.Role;
 import org.springframework.stereotype.Component;
 
@@ -19,7 +22,22 @@ public class NormalItemUseHandler extends AbstractItemUseHandler {
     }
 
     @Override
-    public boolean use(Role role, Container container) {
+    public boolean useById(Role role, Container packContainer, AbstractItem abstractItem, ItemRes itemRes, long objectId) {
+        itemRes.getPropChangeAfterUse().
+                forEach(((propType, delta) -> role.getPropManager().getPropTreeByType(propType).addRootNodeValue(delta)));
+        packContainer.removeItem(objectId, 1);
+        ContainerManager.getInstance().mergeUpdateEntity(role.getContainerEntity());
         return false;
+    }
+
+    @Override
+    public boolean useByKey(Role role, Container packContainer, int key, int amount, ItemRes itemRes) {
+        for (int i = 0; i < amount; i++) {
+            itemRes.getPropChangeAfterUse().
+                    forEach(((propType, delta) -> role.getPropManager().getPropTreeByType(propType).addRootNodeValue(delta)));
+        }
+        packContainer.removeItem(key, amount);
+        ContainerManager.getInstance().mergeUpdateEntity(role.getContainerEntity());
+        return true;
     }
 }

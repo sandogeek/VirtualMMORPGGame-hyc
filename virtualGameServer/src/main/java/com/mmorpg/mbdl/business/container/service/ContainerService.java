@@ -4,6 +4,7 @@ import com.mmorpg.mbdl.business.container.manager.ContainerManager;
 import com.mmorpg.mbdl.business.container.model.AbstractItem;
 import com.mmorpg.mbdl.business.container.model.Container;
 import com.mmorpg.mbdl.business.container.model.ContainerType;
+import com.mmorpg.mbdl.business.container.model.handler.ItemUseHandlerManager;
 import com.mmorpg.mbdl.business.container.packet.GetPackContentReq;
 import com.mmorpg.mbdl.business.container.packet.GetPackContentResp;
 import com.mmorpg.mbdl.business.container.packet.UseItemReq;
@@ -76,24 +77,20 @@ public class ContainerService {
             if (itemRes.getMaxAmount() != 1) {
                 throw new RuntimeException("提供objectId的物品最大堆叠数不为1");
             }
-            itemRes.getPropChangeAfterUse().
-                    forEach(((propType, delta) -> role.getPropManager().getPropTreeByType(propType).addRootNodeValue(delta)));
-            packContainer.removeItem(useItemReq.getObjectId(),1);
-            useItemResp.setResult(true);
-            ContainerManager.getInstance().mergeUpdateEntity(role.getContainerEntity());
+            boolean result = ItemUseHandlerManager.getInstance().
+                    getItemUseHandlerByType(abstractItem.getItemType())
+                    .useById(role, packContainer, abstractItem, itemRes, useItemReq.getObjectId());
+            useItemResp.setResult(result);
         } else {
             ItemRes itemRes = ContainerManager.getInstance().getItemResByKey(useItemReq.getKey());
             int amount = packContainer.getAmountByKey(useItemReq.getKey());
             if (useItemReq.getAmount() > amount) {
                 throw new RuntimeException("剩余物品数量不足");
             }
-            for (int i = 0; i < useItemReq.getAmount(); i++) {
-                itemRes.getPropChangeAfterUse().
-                        forEach(((propType, delta) -> role.getPropManager().getPropTreeByType(propType).addRootNodeValue(delta)));
-            }
-            packContainer.removeItem(useItemReq.getKey(),useItemReq.getAmount());
-            useItemResp.setResult(true);
-            ContainerManager.getInstance().mergeUpdateEntity(role.getContainerEntity());
+            boolean result = ItemUseHandlerManager.getInstance().
+                    getItemUseHandlerByType(itemRes.getItemType())
+                    .useByKey(role, packContainer, useItemReq.getKey(), amount, itemRes);
+            useItemResp.setResult(result);
         }
         role.sendPacket(useItemResp);
     }

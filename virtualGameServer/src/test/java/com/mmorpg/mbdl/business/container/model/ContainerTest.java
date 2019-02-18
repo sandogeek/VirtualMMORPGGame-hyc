@@ -28,9 +28,9 @@ class ContainerTest extends TestWithSpring {
             // 赠送一点背包物品
             Container packContainer = new Container();
             // 放入90个小血瓶
-            packContainer.addItem(1,90);
+            packContainer.createItem(1, 90);
             // 两把木剑
-            packContainer.addItem(10000,2);
+            packContainer.createItem(10000, 2);
             entity.getType2ContainerMap().put(ContainerType.PACK,packContainer);
             return entity;
         });
@@ -40,8 +40,8 @@ class ContainerTest extends TestWithSpring {
     @Test
     void 添加key不在集合中的物品() {
         Container container = new Container();
-        container.addItem(1,49*3+1);
-        container.addItem(10000,2);
+        container.createItem(1, 49 * 3 + 1);
+        container.createItem(10000, 2);
         Collection<AbstractItem> abstractItems = container.getAll();
         AbstractItem lastAbstractItem = Iterables.getLast(abstractItems);
         Assertions.assertEquals(6, abstractItems.size());
@@ -51,8 +51,8 @@ class ContainerTest extends TestWithSpring {
     @Test
     void 在原本有key的情况下添加物品但不增加物品id数() {
         Container container = new Container();
-        container.addItem(1,49*3+1);
-        container.addItem(1,20);
+        container.createItem(1, 49 * 3 + 1);
+        container.createItem(1, 20);
         Collection<AbstractItem> abstractItems = container.getAll();
         AbstractItem lastAbstractItem = Iterables.getLast(abstractItems);
         Assertions.assertEquals(4, abstractItems.size());
@@ -62,8 +62,8 @@ class ContainerTest extends TestWithSpring {
     @Test
     void 在原本有key的情况下添加物品并增加物品id数() {
         Container container = new Container();
-        container.addItem(1,49*3+1);
-        container.addItem(1,49+21);
+        container.createItem(1, 49 * 3 + 1);
+        container.createItem(1, 49 + 21);
         Collection<AbstractItem> abstractItems = container.getAll();
         AbstractItem lastAbstractItem = Iterables.getLast(abstractItems);
         Assertions.assertEquals(5, abstractItems.size());
@@ -73,8 +73,8 @@ class ContainerTest extends TestWithSpring {
     @Test
     void 前三个物品刚好满的() {
         Container container = new Container();
-        container.addItem(1,3*49);
-        container.addItem(1,20);
+        container.createItem(1, 3 * 49);
+        container.createItem(1, 20);
         Collection<AbstractItem> abstractItems = container.getAll();
         AbstractItem lastAbstractItem = Iterables.getLast(abstractItems);
         Assertions.assertEquals(4, abstractItems.size());
@@ -86,7 +86,7 @@ class ContainerTest extends TestWithSpring {
         container.removeItem(1,49+41);
         Collection<AbstractItem> abstractItems = container.getAll();
         Assertions.assertThrows(NoSuchElementException.class, () -> Iterables.getLast(abstractItems));
-        container.addItem(1,49+41);
+        container.createItem(1, 49 + 41);
     }
 
 

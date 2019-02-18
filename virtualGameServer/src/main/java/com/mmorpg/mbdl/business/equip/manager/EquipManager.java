@@ -1,7 +1,10 @@
 package com.mmorpg.mbdl.business.equip.manager;
 
 import com.mmorpg.mbdl.business.common.IRoleEntityManager;
+import com.mmorpg.mbdl.business.container.manager.ContainerManager;
+import com.mmorpg.mbdl.business.container.res.ItemRes;
 import com.mmorpg.mbdl.business.equip.entity.EquipEntity;
+import com.mmorpg.mbdl.business.equip.model.Equip;
 import com.mmorpg.mbdl.business.role.model.Role;
 import com.mmorpg.mbdl.framework.storage.core.IStorage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,5 +48,17 @@ public class EquipManager implements IRoleEntityManager<EquipEntity> {
     @Override
     public void mergeUpdateEntity(EquipEntity entity) {
         equipEntityIStorage.mergeUpdate(entity);
+    }
+
+    /**
+     * 穿戴装备
+     *
+     * @param role    穿戴装备的人
+     * @param toEquip 待穿戴的装备
+     * @return 被替换下来的装备，如果原来没有装备则返回null
+     */
+    public Equip equip(Role role, Equip toEquip) {
+        ItemRes itemRes = ContainerManager.getInstance().getItemResByKey(toEquip.getKey());
+        return EquipHandlerManager.getInstance().getEquipHandlerByEquipType(itemRes.getEquipType()).equip(role, toEquip);
     }
 }

@@ -1,7 +1,9 @@
 package com.mmorpg.mbdl.business.container.model.handler;
 
+import com.mmorpg.mbdl.business.container.model.AbstractItem;
 import com.mmorpg.mbdl.business.container.model.Container;
 import com.mmorpg.mbdl.business.container.model.ItemType;
+import com.mmorpg.mbdl.business.container.res.ItemRes;
 import com.mmorpg.mbdl.business.role.model.Role;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -29,10 +31,18 @@ public abstract class AbstractItemUseHandler {
     public abstract ItemType getItemType();
 
     /**
-     * 使用物品
+     * 使用最大堆叠数为1的物品时调用（此时请求传入的是objectId）
      * @param role 使用物品的角色
-     * @param container 物品所在的容器
+     * @param packContainer
+     * @param abstractItem
+     * @param itemRes
+     * @param objectId
      * @return 使用成功返回true,否则返回false
      */
-    public abstract boolean use(Role role, Container container);
+    public abstract boolean useById(Role role, Container packContainer, AbstractItem abstractItem, ItemRes itemRes, long objectId);
+
+    /**
+     * 使用最大堆叠数不为1的物品时调用（此时请求传入的是key）
+     */
+    public abstract boolean useByKey(Role role, Container packContainer, int key, int amount, ItemRes itemRes);
 }
