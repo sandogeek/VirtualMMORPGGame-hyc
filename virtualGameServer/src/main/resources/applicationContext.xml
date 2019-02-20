@@ -86,4 +86,22 @@
     <aop:aspectj-autoproxy proxy-target-class="true" />
     <bean class="org.springframework.aop.aspectj.annotation.AnnotationAwareAspectJAutoProxyCreator"/>
 
+    <bean id="cloner" class="com.rits.cloning.Cloner">
+        <property name="dumpClonedClasses" value="true"/>
+        <!--<property name="extraImmutables">-->
+            <!--<set>-->
+                <!--<value>... class full name ....</value>-->
+                <!--<value>... class full name ....</value>-->
+            <!--</set>-->
+        <!--</property>-->
+        <!--<property name="extraNullInsteadOfClone">-->
+            <!--<set>-->
+                <!--<value>org.hibernate.engine.SessionImplementor</value>-->
+                <!--<value>org.hibernate.impl.SessionImpl</value>-->
+                <!--<value>org.hibernate.impl.StatelessSessionImpl</value>-->
+                <!--<value>org.hibernate.transaction.JDBCTransaction</value>-->
+            <!--</set>-->
+        <!--</property>-->
+    </bean>
+
 </beans>

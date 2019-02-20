@@ -8,7 +8,7 @@ import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.usertype.UserType;
 import org.springframework.util.ObjectUtils;
 
-import java.io.Serializable;
+import java.io.*;
 import java.lang.reflect.Field;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -76,7 +76,10 @@ public class JsonType implements UserType {
         if (value == null) {
             return null;
         }
-        return JsonUtil.string2Object(JsonUtil.object2String(value),value.getClass());
+        Object o = ClonerComponent.getInstance().deepClone(value);
+        // Object object = JsonUtil.string2Object(JsonUtil.object2String(value), objectThreadLocal.get());
+        // objectThreadLocal.set(null);
+        return o;
     }
 
     @Override
