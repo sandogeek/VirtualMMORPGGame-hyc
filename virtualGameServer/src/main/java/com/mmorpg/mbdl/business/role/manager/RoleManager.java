@@ -130,8 +130,8 @@ public class RoleManager {
         Role role = new Role(roleEntity.getId(),roleEntity.getName());
         role.setSession(session);
         role.setRoleEntity(roleEntity);
-        role.bindEntity();
         role.init();
+        role.bindEntity();
         if (getSession2Role().values().contains(role)){
             logger.error("玩家[roleId={}]重复初始化",role.getRoleId());
             return null;

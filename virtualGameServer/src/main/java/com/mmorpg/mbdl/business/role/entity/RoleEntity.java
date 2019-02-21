@@ -40,8 +40,8 @@ public class RoleEntity extends AbstractEntity<Long> {
 
     @Column(nullable = false,columnDefinition = "tinyint(1)")
     private byte roleTypeCode;
-    @Transient
-    private RoleType roleType;
+
+    private transient RoleType roleType;
     @Column(nullable = false)
     private int sceneId;
 

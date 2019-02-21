@@ -63,6 +63,7 @@ public class PacketIdManager {
     public static final short GET_PACK_CONTENT_RESP = 10602;
     public static final short USE_ITEM_REQ = 10603;
     public static final short USE_ITEM_RESP = 10604;
+    public static final short ITEM_ADD_RESP = 10605;
 
     private static PacketIdManager self;
     public static PacketIdManager getInstance(){

@@ -37,7 +37,7 @@ public class JsonType implements UserType {
 
     @Override
     public boolean equals(Object x, Object y) throws HibernateException {
-        return ObjectUtils.nullSafeEquals(x,y);
+        return JsonUtil.object2String(x).equals(JsonUtil.object2String(y));
     }
 
     @Override
@@ -58,8 +58,7 @@ public class JsonType implements UserType {
         } catch (NoSuchFieldException e) {
             throw new RuntimeException(String.format("反序列化时发现实体类[%s]中不存在字段名为[%s]的字段",owner.getClass().getSimpleName(),columnName),e);
         }
-        Object object = JsonUtil.string2Object(json, field.getGenericType());
-        return object;
+        return JsonUtil.string2Object(json, field.getGenericType());
     }
 
     @Override
@@ -76,10 +75,7 @@ public class JsonType implements UserType {
         if (value == null) {
             return null;
         }
-        Object o = ClonerComponent.getInstance().deepClone(value);
-        // Object object = JsonUtil.string2Object(JsonUtil.object2String(value), objectThreadLocal.get());
-        // objectThreadLocal.set(null);
-        return o;
+        return ClonerComponent.getInstance().deepClone(value);
     }
 
     @Override

@@ -16,7 +16,7 @@ public class PropTree {
     /**
      * 最大属性值
      */
-    private Long maxValue;
+    Long maxValue;
     /** 属性树根节点 */
     private PropNode rootNode = new PropNode(this, doGetPropValue(),"根节点");
     /**
@@ -88,7 +88,12 @@ public class PropTree {
     }
 
     public PropTree setMaxValue(Long maxValue) {
-        this.maxValue = maxValue;
+        try {
+            treeRWLock.writeLock().lock();
+            this.maxValue = maxValue;
+        } finally {
+            treeRWLock.writeLock().unlock();
+        }
         return this;
     }
 

@@ -1,12 +1,15 @@
 package com.mmorpg.mbdl.business.equip.entity;
 
 import com.mmorpg.mbdl.business.equip.model.Equip;
+import com.mmorpg.mbdl.business.equip.model.EquipType;
 import com.mmorpg.mbdl.framework.storage.annotation.JetCacheConfig;
 import com.mmorpg.mbdl.framework.storage.core.AbstractEntity;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 装备实体
@@ -37,6 +40,13 @@ public class EquipEntity extends AbstractEntity<Long> {
         this.roleId = roleId;
     }
 
+    public Map<EquipType, Equip> getEquipTypeEquipMap() {
+        Map<EquipType, Equip> equipTypeEquipMap = new HashMap<>(2);
+        addEquip(equipTypeEquipMap, getWeapon());
+        addEquip(equipTypeEquipMap, getArmor());
+        return equipTypeEquipMap;
+    }
+
     public Equip getWeapon() {
         return weapon;
     }
@@ -53,6 +63,10 @@ public class EquipEntity extends AbstractEntity<Long> {
     public EquipEntity setArmor(Equip armor) {
         this.armor = armor;
         return this;
+    }
+
+    private void addEquip(Map<EquipType, Equip> equipTypeEquipMap,Equip equip) {
+        equipTypeEquipMap.put(equip.getEquipType(),equip);
     }
 
     @Override

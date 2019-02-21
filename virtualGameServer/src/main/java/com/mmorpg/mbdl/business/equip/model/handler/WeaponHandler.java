@@ -20,12 +20,9 @@ public class WeaponHandler extends AbstractEquipHandler {
     }
 
     @Override
-    public Equip equip(Role role, Equip toEquip) {
+    public Equip doEquip(Role role, Equip toEquip) {
         Equip oldWeapon = role.getEquipEntity().getWeapon();
-        role.getEquipEntity().setArmor(toEquip);
-        itemReses.get(toEquip.getKey()).getPropChangeAfterUse().forEach((propType, aLong) -> {
-            role.getPropManager().getOrCreateTree(propType).getOrCreateChild("equip").getOrCreateChild("武器").set(aLong);
-        });
+        role.getEquipEntity().setWeapon(toEquip);
         return oldWeapon;
     }
 }

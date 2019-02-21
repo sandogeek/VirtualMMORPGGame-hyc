@@ -1,5 +1,7 @@
 package com.mmorpg.mbdl.business.role.model;
 
+import com.mmorpg.mbdl.business.container.model.ItemType;
+import com.mmorpg.mbdl.business.equip.model.EquipType;
 import com.mmorpg.mbdl.business.role.model.prop.PropNode;
 import com.mmorpg.mbdl.business.role.model.prop.PropTree;
 import org.junit.jupiter.api.Assertions;
@@ -16,6 +18,7 @@ class PropNodeTest {
         PropNode testNode2 = propTree.getOrCreateChild("testNode2").set(200L);
         testNode1.getOrCreateChild("node1_1").set(50L);
         testNode1.getOrCreateChild("node1_2").set(50L);
+        propTree.getOrCreateChild(ItemType.EQUIP.name()).getOrCreateChild(EquipType.WEAPON.name()).set(100L);
     }
 
     @Test

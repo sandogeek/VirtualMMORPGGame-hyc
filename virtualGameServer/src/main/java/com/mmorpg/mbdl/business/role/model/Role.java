@@ -162,6 +162,17 @@ public class Role extends AbstractCreature {
         }
 
     }
+
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
     @Override
     public SceneObjectType getObjectType() {
         return SceneObjectType.PLAYER;

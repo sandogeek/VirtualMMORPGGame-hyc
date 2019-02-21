@@ -88,7 +88,7 @@ public enum PropType {
         @Override
         public PropTree create(AbstractCreature abstractCreature) {
             Role role = (Role) abstractCreature;
-            EntityPropTree entityPropTree = new EntityPropTree() {
+            return new EntityPropTree() {
                 @Override
                 protected void doSetPropValue(long newValue) {
                     RoleEntity roleEntity = role.getRoleEntity();
@@ -101,7 +101,6 @@ public enum PropType {
                     return role.getRoleEntity().getSceneId();
                 }
             };
-            return entityPropTree;
         }
     },
     /**
@@ -111,7 +110,7 @@ public enum PropType {
         @Override
         public PropTree create(AbstractCreature abstractCreature) {
             Role role = (Role) abstractCreature;
-            EntityPropTree entityPropTree = new EntityPropTree() {
+            return new EntityPropTree() {
                 @Override
                 protected void doSetPropValue(long newValue) {
                     RoleEntity roleEntity = role.getRoleEntity();
@@ -124,7 +123,6 @@ public enum PropType {
                     return role.getRoleEntity().getExp();
                 }
             };
-            return entityPropTree;
         }
     }
     ;

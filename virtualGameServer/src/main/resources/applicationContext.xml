@@ -87,7 +87,8 @@
     <bean class="org.springframework.aop.aspectj.annotation.AnnotationAwareAspectJAutoProxyCreator"/>
 
     <bean id="cloner" class="com.rits.cloning.Cloner">
-        <property name="dumpClonedClasses" value="true"/>
+        <!--调试时推荐打开，以防止复制的类过多造成性能问题-->
+        <property name="dumpClonedClasses" value="false"/>
         <!--<property name="extraImmutables">-->
             <!--<set>-->
                 <!--<value>... class full name ....</value>-->

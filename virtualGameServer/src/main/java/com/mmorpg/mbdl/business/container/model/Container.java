@@ -55,6 +55,9 @@ public class Container {
      * @return
      */
     public boolean addItem(AbstractItem abstractItem) {
+        if (abstractItem == null) {
+            return false;
+        }
         ItemRes itemRes = ContainerManager.getInstance().getItemResByKey(abstractItem.getKey());
         int maxAmount = itemRes.getMaxAmount();
         if (maxAmount == 1) {

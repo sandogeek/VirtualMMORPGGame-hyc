@@ -2,7 +2,9 @@ package com.mmorpg.mbdl.business.role.model.prop;
 
 import com.google.common.base.MoreObjects;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -50,6 +52,27 @@ public class PropNode {
             }
         }
         handleAddAndGet(-propNode.getValue());
+    }
+
+    private long getTotal(PropNode propNode) {
+        List<PropNode> propNodeList = new ArrayList<>();
+        getAllNode(propNode,propNodeList);
+        long total = 0;
+        for (PropNode propNodeTemp : propNodeList) {
+            total += propNodeTemp.getValue();
+        }
+        return total;
+    }
+
+    /**
+     * 获取所有子节点以及自身的集合
+     * @return
+     */
+    private void getAllNode(PropNode propNode,List<PropNode> propNodeList) {
+        propNodeList.add(propNode);
+        if (!propNode.childPropNodeMap.isEmpty()) {
+            propNode.childPropNodeMap.values().forEach(propNodeTemp -> getAllNode(propNodeTemp,propNodeList));
+        }
     }
 
     /**
@@ -102,7 +125,12 @@ public class PropNode {
     }
 
     private long handleSet(long newValue) {
-        this.value = newValue;
+        // TODO 通过增加字段nodeMaxValue实现限制所有子节点之和小于最大值，或者有最大值的属性树只允许有一个节点
+        if (propTree.maxValue!=null && newValue > propTree.maxValue) {
+            this.value = propTree.maxValue;
+        } else {
+            this.value = newValue;
+        }
         return this.value;
     }
 
@@ -172,6 +200,7 @@ public class PropNode {
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("value", value)
+                .add("当前节点以及所有子节点数值和", getTotal(this))
                 .toString();
     }
 }

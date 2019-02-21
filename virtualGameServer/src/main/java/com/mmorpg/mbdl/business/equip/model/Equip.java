@@ -1,6 +1,6 @@
 package com.mmorpg.mbdl.business.equip.model;
 
-import com.google.common.base.MoreObjects;
+import com.mmorpg.mbdl.business.container.manager.ContainerManager;
 import com.mmorpg.mbdl.business.container.model.AbstractItem;
 import com.mmorpg.mbdl.business.container.model.ItemType;
 
@@ -26,10 +26,14 @@ public class Equip extends AbstractItem {
         return ItemType.EQUIP;
     }
 
+    public EquipType getEquipType() {
+        return ContainerManager.getInstance().getItemResByKey(getKey()).getEquipType();
+    }
+
     @Override
     public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("currentDurability", currentDurability)
-                .toString();
+        return "Equip{" +
+                "currentDurability=" + currentDurability +
+                "} " + super.toString();
     }
 }

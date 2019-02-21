@@ -3,6 +3,7 @@ package com.mmorpg.mbdl.business.container.model;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.google.common.base.MoreObjects;
+import com.mmorpg.mbdl.business.container.manager.ContainerManager;
 import com.mmorpg.mbdl.business.equip.model.Equip;
 import com.mmorpg.mbdl.framework.common.generator.IdGeneratorFactory;
 
@@ -101,6 +102,7 @@ public abstract class AbstractItem implements Comparable<AbstractItem> {
         return MoreObjects.toStringHelper(this)
                 .add("objectId", objectId)
                 .add("key", key)
+                .add("name", ContainerManager.getInstance().getItemResByKey(key).getName())
                 .add("amount", amount)
                 .toString();
     }

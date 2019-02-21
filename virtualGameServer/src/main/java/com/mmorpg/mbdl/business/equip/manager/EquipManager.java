@@ -1,12 +1,12 @@
 package com.mmorpg.mbdl.business.equip.manager;
 
 import com.mmorpg.mbdl.business.common.IRoleEntityManager;
-import com.mmorpg.mbdl.business.container.manager.ContainerManager;
-import com.mmorpg.mbdl.business.container.res.ItemRes;
 import com.mmorpg.mbdl.business.equip.entity.EquipEntity;
 import com.mmorpg.mbdl.business.equip.model.Equip;
 import com.mmorpg.mbdl.business.role.model.Role;
 import com.mmorpg.mbdl.framework.storage.core.IStorage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -20,6 +20,7 @@ import javax.annotation.PostConstruct;
  **/
 @Component
 public class EquipManager implements IRoleEntityManager<EquipEntity> {
+    private static Logger logger = LoggerFactory.getLogger(EquipManager.class);
     private static EquipManager self;
 
     @Autowired
@@ -38,6 +39,8 @@ public class EquipManager implements IRoleEntityManager<EquipEntity> {
     public void bindEntity(Role role) {
         EquipEntity equipEntity = equipEntityIStorage.getOrCreate(role.getRoleId(), EquipEntity::new);
         role.setEquipEntity(equipEntity);
+        equipEntity.getEquipTypeEquipMap().values().forEach(equip -> equip(role,equip));
+        logger.debug("");
     }
 
     @Override
@@ -58,7 +61,6 @@ public class EquipManager implements IRoleEntityManager<EquipEntity> {
      * @return 被替换下来的装备，如果原来没有装备则返回null
      */
     public Equip equip(Role role, Equip toEquip) {
-        ItemRes itemRes = ContainerManager.getInstance().getItemResByKey(toEquip.getKey());
-        return EquipHandlerManager.getInstance().getEquipHandlerByEquipType(itemRes.getEquipType()).equip(role, toEquip);
+        return EquipHandlerManager.getInstance().getEquipHandlerByEquipType(toEquip.getEquipType()).equip(role, toEquip);
     }
 }

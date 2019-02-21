@@ -20,12 +20,9 @@ public class ArmorHandler extends AbstractEquipHandler {
     }
 
     @Override
-    public Equip equip(Role role, Equip toEquip) {
-        Equip oldWeapon = role.getEquipEntity().getArmor();
+    public Equip doEquip(Role role, Equip toEquip) {
+        Equip oldEquip = role.getEquipEntity().getArmor();
         role.getEquipEntity().setArmor(toEquip);
-        itemReses.get(toEquip.getKey()).getPropChangeAfterUse().forEach((propType, aLong) -> {
-            role.getPropManager().getOrCreateTree(propType).getOrCreateChild("equip").getOrCreateChild("防具").set(aLong);
-        });
-        return oldWeapon;
+        return oldEquip;
     }
 }

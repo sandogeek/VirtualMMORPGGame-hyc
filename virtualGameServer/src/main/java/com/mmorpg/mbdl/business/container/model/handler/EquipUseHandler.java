@@ -4,6 +4,8 @@ import com.mmorpg.mbdl.business.container.manager.ContainerManager;
 import com.mmorpg.mbdl.business.container.model.AbstractItem;
 import com.mmorpg.mbdl.business.container.model.Container;
 import com.mmorpg.mbdl.business.container.model.ItemType;
+import com.mmorpg.mbdl.business.container.packet.ItemAddResp;
+import com.mmorpg.mbdl.business.container.packet.VO.ItemUiInfo;
 import com.mmorpg.mbdl.business.container.res.ItemRes;
 import com.mmorpg.mbdl.business.equip.manager.EquipManager;
 import com.mmorpg.mbdl.business.equip.model.Equip;
@@ -27,7 +29,12 @@ public class EquipUseHandler extends AbstractItemUseHandler {
     public boolean useById(Role role, Container packContainer, AbstractItem abstractItem, ItemRes itemRes, long objectId) {
         Equip oldEquip = EquipManager.getInstance().equip(role, (Equip) abstractItem);
         packContainer.removeItem(abstractItem.getObjectId(), 1);
-        packContainer.addItem(oldEquip);
+        if (packContainer.addItem(oldEquip)) {
+            ItemAddResp itemAddResp = new ItemAddResp();
+            ItemUiInfo itemUiInfo = new ItemUiInfo(oldEquip.getObjectId(), oldEquip.getKey(), 1);
+            itemAddResp.getItemUiInfoList().add(itemUiInfo);
+            role.sendPacket(itemAddResp);
+        }
         ContainerManager.getInstance().mergeUpdateEntity(role.getContainerEntity());
         EquipManager.getInstance().mergeUpdateEntity(role.getEquipEntity());
         return true;

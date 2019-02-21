@@ -1,7 +1,9 @@
 package com.mmorpg.mbdl.business.container.packet.VO;
 
 import com.baidu.bjf.remoting.protobuf.annotation.Protobuf;
+import com.mmorpg.mbdl.business.container.manager.ContainerManager;
 import com.mmorpg.mbdl.business.container.model.ItemType;
+import com.mmorpg.mbdl.business.container.res.ItemRes;
 
 /**
  * 物品前端能拿到的信息
@@ -22,6 +24,15 @@ public class ItemUiInfo {
     private ItemType itemType;
 
     public ItemUiInfo() {
+    }
+
+    public ItemUiInfo(long objectId, int key, int amount) {
+        this.objectId = objectId;
+        this.key = key;
+        this.amount = amount;
+        ItemRes itemResByKey = ContainerManager.getInstance().getItemResByKey(key);
+        this.name = itemResByKey.getName();
+        this.itemType = itemResByKey.getItemType();
     }
 
     public ItemUiInfo(long objectId, int key, String name, int amount, ItemType itemType) {
