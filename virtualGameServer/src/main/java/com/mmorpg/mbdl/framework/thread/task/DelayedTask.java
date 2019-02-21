@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.concurrent.TimeUnit;
 
 /**
- * 延迟执行的任务
+ * 延迟执行的任务,由于任务延迟执行，所以不能放到玩家队列上，否则将导致玩家请求处理长时间延后
  */
 public abstract class DelayedTask extends AbstractTask {
     private long delay;

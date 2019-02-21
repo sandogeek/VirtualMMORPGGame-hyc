@@ -74,17 +74,16 @@ public class StorageJetCache <PK extends Serializable &Comparable<PK>,E extends 
     }
 
     private E doInsert(E entity) {
-        entityManager.persist(entity);
-        cache.put(entity.getId(),entity);
-        return entity;
+        E e = saveAndFlush(entity);
+        cache.put(entity.getId(),e);
+        return e;
     }
 
     private void doUpdate(E entity){
-        // TODO merge返回的实体和参数的实体不一致
+        // merge返回的实体和参数的实体不一致,原因在于merge方法会调用userType的deepCopy来构造复制的对象，而使用jackson序列化时JsonType中deepCopy无法获取泛型
         PK id = entity.getId();
-        entityManager.merge(entity);
-        cache.put(id, entity);
-        entityManager.flush();
+        E merge = saveAndFlush(entity);
+        cache.put(id, merge);
     }
 
     @Override

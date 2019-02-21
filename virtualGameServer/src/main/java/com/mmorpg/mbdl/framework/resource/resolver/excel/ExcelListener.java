@@ -46,7 +46,13 @@ public class ExcelListener extends AnalysisEventListener<ArrayList<String>> {
     private boolean foundFieldNameLine= false;
     private boolean tableHeadHandleOver = false;
     private Integer idFieldIndex;
-    private Map<Integer,String> index2JsonPropertyName = new HashMap<>(16);
+    /**
+     * Excel中下标到字段名的映射
+     */
+    private Map<Integer,String> index2FieldJsonName = new HashMap<>(16);
+    /**
+     * 下标到字段类型的映射
+     */
     private Map<Integer,Class<?>> index2FieldType = new HashMap<>(16);
     @Override
     @SuppressWarnings("unchecked")
@@ -70,7 +76,7 @@ public class ExcelListener extends AnalysisEventListener<ArrayList<String>> {
                 for (int i = excelFormat.ignoreFirstNColumn(); i < list.size(); i++) {
                     String content = list.get(i);
                     if (content !=null){
-                        index2JsonPropertyName.put(i, content);
+                        index2FieldJsonName.put(i, content);
                         if (idFieldIndex==null && content.equals(idFieldJsonName) ) {
                             idFieldIndex = i;
                         }
@@ -87,7 +93,7 @@ public class ExcelListener extends AnalysisEventListener<ArrayList<String>> {
 
         }else {
             if (index2FieldType.size()==0){
-                initIndex2FieldType();
+                initAndCheck();
             }
             // 跳过id字段为空的行
             if (list.get(idFieldIndex)==null){
@@ -96,7 +102,7 @@ public class ExcelListener extends AnalysisEventListener<ArrayList<String>> {
             // vClass实例的json数据形式
             ArrayList<String> vClassObjectInJsonArray=new ArrayList<>(16);
             int max = list.size()-1;
-            for (Integer integer : index2JsonPropertyName.keySet()) {
+            for (Integer integer : index2FieldJsonName.keySet()) {
                 if (integer > max){
                     break;
                 }
@@ -109,7 +115,7 @@ public class ExcelListener extends AnalysisEventListener<ArrayList<String>> {
                     // 枚举或者字符串前后要加引号
                     content = "\"" + content + "\"";
                 }
-                vClassObjectInJsonArray.add("\"" + index2JsonPropertyName.get(integer) + "\":" + content);
+                vClassObjectInJsonArray.add("\"" + index2FieldJsonName.get(integer) + "\":" + content);
             }
             String vClassObjectInJson ="{" + String.join("," ,vClassObjectInJsonArray) + "}";
             try {
@@ -135,23 +141,42 @@ public class ExcelListener extends AnalysisEventListener<ArrayList<String>> {
     }
 
     /**
-     * 初始化index2FieldType
+     * 初始化index2FieldType并检查类字段与表的字段能否一一对应
      */
-    private void initIndex2FieldType() {
+    private void initAndCheck() {
         Field[] declaredFields = staticResDefinition.getvClass().getDeclaredFields();
-        Map<String,Field> string2Field = new HashMap<>(16);
+        Map<String,Field> fieldJsonName2Field = new HashMap<>(16);
         Arrays.stream(declaredFields).forEach(field -> {
             String fieldJsonName = Optional.ofNullable(field.getAnnotation(JsonProperty.class))
                     .map(JsonProperty::value)
                     .orElseGet(field::getName);
-            string2Field.put(fieldJsonName,field);
+            fieldJsonName2Field.put(fieldJsonName,field);
         });
-        index2JsonPropertyName.keySet().forEach(integer -> {
-            String jsonPropertyName = index2JsonPropertyName.get(integer);
-            Field field = string2Field.get(jsonPropertyName);
+        Set<String> tempSet = new HashSet<>(fieldJsonName2Field.keySet());
+        tempSet.removeAll(index2FieldJsonName.values());
+        if (tempSet.size() != 0) {
+            throw new RuntimeException(String.format("类[%s]中名为[%s]的字段在资源文件[%s]找不到对应的字段",
+                            staticResDefinition.getvClass().getSimpleName(),
+                            StringUtils.join(tempSet,","),
+                            staticResDefinition.getFullFileName()
+                            ));
+        }
+        tempSet.clear();
+        tempSet.addAll(index2FieldJsonName.values());
+        tempSet.removeAll(fieldJsonName2Field.keySet());
+        if (tempSet.size() != 0) {
+            throw new RuntimeException(String.format("资源文件[%s]中名为[%s]的字段在类[%s]中找不到对应的字段",
+                    staticResDefinition.getFullFileName(),
+                    StringUtils.join(tempSet,","),
+                    staticResDefinition.getvClass().getSimpleName()
+            ));
+        }
+        index2FieldJsonName.keySet().forEach(integer -> {
+            String fieldJsonName = index2FieldJsonName.get(integer);
+            Field field = fieldJsonName2Field.get(fieldJsonName);
             if (field==null){
                 throw new RuntimeException(String.format("资源文件[%s]字段名为[%s]的列在关联的类[%s]中没有找到对应的字段",
-                        staticResDefinition.getFullFileName(),jsonPropertyName,staticResDefinition.getvClass().getSimpleName()));
+                        staticResDefinition.getFullFileName(),fieldJsonName,staticResDefinition.getvClass().getSimpleName()));
             }
             index2FieldType.put(integer, field.getType());
         });

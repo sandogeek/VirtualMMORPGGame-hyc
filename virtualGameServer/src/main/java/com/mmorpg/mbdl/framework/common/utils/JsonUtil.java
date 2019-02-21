@@ -36,6 +36,8 @@ public class JsonUtil {
         mapper.configure(MapperFeature.AUTO_DETECT_GETTERS, false);
         // 不自动检测is getter
         mapper.configure(MapperFeature.AUTO_DETECT_IS_GETTERS, false);
+        // 忽略transient修饰的字段
+        mapper.configure(MapperFeature.PROPAGATE_TRANSIENT_MARKER, true);
     }
 
     /**

@@ -2,7 +2,6 @@ package com.mmorpg.mbdl.framework.storage.core;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import javax.persistence.Transient;
 import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -14,8 +13,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  **/
 public abstract class AbstractEntity<PK extends Serializable &Comparable<PK>> implements IEntity<PK> {
     @JsonIgnore
-    @Transient
-    private AtomicBoolean canCreateMergeUpdateTask = new AtomicBoolean(true);
+    private transient AtomicBoolean canCreateMergeUpdateTask = new AtomicBoolean(true);
     // @JsonIgnore
     // @Transient
     // private AtomicReference<ScheduledFuture> mergeUpdateTaskFutureAtomic = new AtomicReference<>(null);
