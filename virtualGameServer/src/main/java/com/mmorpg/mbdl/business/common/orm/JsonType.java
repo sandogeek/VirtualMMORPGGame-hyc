@@ -1,19 +1,27 @@
 package com.mmorpg.mbdl.business.common.orm;
 
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.Table;
 import com.mmorpg.mbdl.framework.common.utils.JsonUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.HibernateException;
+import org.hibernate.annotations.Type;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.usertype.UserType;
+import org.reflections.ReflectionUtils;
 import org.springframework.util.ObjectUtils;
 
-import java.io.*;
+import javax.persistence.Column;
+import java.io.Serializable;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.Set;
 
 /**
  * 自定义hibernate字段类型
@@ -24,6 +32,9 @@ import java.sql.Types;
  * @since v1.0 2019/1/2
  **/
 public class JsonType implements UserType {
+
+    private static Table<Class,String,Field> class2ColumnName2FieldTable = HashBasedTable.create();
+    public static final String NAME = "json";
 
     @Override
     public int[] sqlTypes() {
@@ -52,11 +63,9 @@ public class JsonType implements UserType {
             return null;
         }
         String columnName = rs.getMetaData().getColumnName(rs.findColumn(names[0]));
-        Field field;
-        try {
-            field = owner.getClass().getDeclaredField(columnName);
-        } catch (NoSuchFieldException e) {
-            throw new RuntimeException(String.format("反序列化时发现实体类[%s]中不存在字段名为[%s]的字段",owner.getClass().getSimpleName(),columnName),e);
+        Field field = getFieldByClassAndColumnName(owner.getClass(), columnName);
+        if (field==null) {
+            throw new RuntimeException(String.format("反序列化时发现实体类[%s]中不存在字段名为[%s]的字段",owner.getClass().getSimpleName(),columnName));
         }
         return JsonUtil.string2Object(json, field.getGenericType());
     }
