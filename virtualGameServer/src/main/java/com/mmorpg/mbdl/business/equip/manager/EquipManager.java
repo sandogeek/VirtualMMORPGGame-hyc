@@ -40,7 +40,6 @@ public class EquipManager implements IRoleEntityManager<EquipEntity> {
         EquipEntity equipEntity = equipEntityIStorage.getOrCreate(role.getRoleId(), EquipEntity::new);
         role.setEquipEntity(equipEntity);
         equipEntity.getEquipTypeEquipMap().values().forEach(equip -> equip(role,equip));
-        logger.debug("");
     }
 
     @Override

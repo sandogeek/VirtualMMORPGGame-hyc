@@ -65,7 +65,7 @@ public class JsonType implements UserType {
         String columnName = rs.getMetaData().getColumnName(rs.findColumn(names[0]));
         Field field = getFieldByClassAndColumnName(owner.getClass(), columnName);
         if (field==null) {
-            throw new RuntimeException(String.format("反序列化时发现实体类[%s]中不存在字段名为[%s]的字段",owner.getClass().getSimpleName(),columnName));
+            throw new RuntimeException(String.format("实体类[%s]中不存在字段名为[%s]的带@Type字段",owner.getClass().getSimpleName(),columnName));
         }
         return JsonUtil.string2Object(json, field.getGenericType());
     }

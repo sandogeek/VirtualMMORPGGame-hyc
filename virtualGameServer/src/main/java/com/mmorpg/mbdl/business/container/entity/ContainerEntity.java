@@ -1,5 +1,6 @@
 package com.mmorpg.mbdl.business.container.entity;
 
+import com.mmorpg.mbdl.business.common.orm.JsonType;
 import com.mmorpg.mbdl.business.container.model.Container;
 import com.mmorpg.mbdl.business.container.model.ContainerType;
 import com.mmorpg.mbdl.framework.storage.annotation.JetCacheConfig;
@@ -22,7 +23,7 @@ import java.util.Map;
 public class ContainerEntity extends AbstractEntity<Long> {
     @Id
     private Long roleId;
-    @Type(type = "json")
+    @Type(type = JsonType.NAME)
     private Map<ContainerType, Container> type2ContainerMap = new HashMap<>(8);
 
     public Long getRoleId() {

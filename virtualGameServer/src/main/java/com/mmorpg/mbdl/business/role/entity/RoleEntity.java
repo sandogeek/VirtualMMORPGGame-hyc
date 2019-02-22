@@ -16,7 +16,7 @@ import javax.persistence.*;
 @JetCacheConfig
 @Table(indexes = {
         @Index(name = "index_account",columnList = "account"),
-        @Index(name = "index_name_serverId",columnList = "name,serverToken",unique = true)
+        @Index(name = "index_name_serverId",columnList = "NAME,serverToken",unique = true)
 })
 public class RoleEntity extends AbstractEntity<Long> {
     @Id

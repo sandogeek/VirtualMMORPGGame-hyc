@@ -1,5 +1,6 @@
 package com.mmorpg.mbdl.business.equip.entity;
 
+import com.mmorpg.mbdl.business.common.orm.JsonType;
 import com.mmorpg.mbdl.business.equip.model.Equip;
 import com.mmorpg.mbdl.business.equip.model.EquipType;
 import com.mmorpg.mbdl.framework.storage.annotation.JetCacheConfig;
@@ -25,12 +26,12 @@ public class EquipEntity extends AbstractEntity<Long> {
     /**
      * 武器
      */
-    @Type(type = "json")
+    @Type(type = JsonType.NAME)
     private Equip weapon;
     /**
      * 防具
      */
-    @Type(type = "json")
+    @Type(type = JsonType.NAME)
     private Equip armor;
 
     public EquipEntity() {

@@ -1,5 +1,5 @@
 @TypeDefs({
-    @TypeDef(name = "json", typeClass = JsonType.class)
+    @TypeDef(name = JsonType.NAME, typeClass = JsonType.class)
 })
 package com.mmorpg.mbdl.business;
 /**
