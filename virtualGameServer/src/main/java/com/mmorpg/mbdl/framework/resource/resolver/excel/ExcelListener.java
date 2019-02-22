@@ -54,6 +54,11 @@ public class ExcelListener extends AnalysisEventListener<ArrayList<String>> {
      * 下标到字段类型的映射
      */
     private Map<Integer,Class<?>> index2FieldType = new HashMap<>(16);
+    /**
+     * 用于检查key是否唯一
+     */
+    private Map<Object,Integer> key2RowNumber = new HashMap<>(16);
+
     @Override
     @SuppressWarnings("unchecked")
     public void invoke(ArrayList<String> list, AnalysisContext context) {
@@ -118,12 +123,24 @@ public class ExcelListener extends AnalysisEventListener<ArrayList<String>> {
                 vClassObjectInJsonArray.add("\"" + index2FieldJsonName.get(integer) + "\":" + content);
             }
             String vClassObjectInJson ="{" + String.join("," ,vClassObjectInJsonArray) + "}";
+            Object resource = JsonUtil.string2Object(vClassObjectInJson, staticResDefinition.getvClass());
+            Object obj = null;
             try {
-                Object resource = JsonUtil.string2Object(vClassObjectInJson, staticResDefinition.getvClass());
-                key2ResourceBuilder.put(staticResDefinition.getIdField().get(resource),resource);
-            } catch (Exception e) {
-                throw new RuntimeException(String.format("生成资源类[%s]实例时发生IO异常,通常是由于单元格json格式错误或与类字段类型不对应",staticResDefinition.getvClass().getSimpleName()),e);
+                obj = staticResDefinition.getIdField().get(resource);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
             }
+            if (key2RowNumber.containsKey(obj)) {
+                throw new RuntimeException(String.format("资源文件[%s]主键列[%s]，主键不唯一，第[%s]行与第[%s]行重复,重复值[%s]",
+                        staticResDefinition.getFullFileName(),
+                        idFieldJsonName,
+                        key2RowNumber.get(obj)+1,
+                        context.getCurrentRowNum()+1,
+                        obj
+                ));
+            }
+            key2RowNumber.put(obj,context.getCurrentRowNum());
+            key2ResourceBuilder.put(obj,resource);
         }
     }
 
