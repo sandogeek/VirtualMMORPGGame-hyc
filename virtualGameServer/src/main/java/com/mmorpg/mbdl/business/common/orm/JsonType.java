@@ -70,6 +70,32 @@ public class JsonType implements UserType {
         return JsonUtil.string2Object(json, field.getGenericType());
     }
 
+    private Field getFieldByClassAndColumnName(Class clz,String columnName) {
+        if (!class2ColumnName2FieldTable.containsRow(clz)) {
+            Set<Field> fieldsWithJsonType = ReflectionUtils.getFields(clz, withJsonTypeAnnotation());
+            fieldsWithJsonType.forEach(fieldTemp -> {
+                String columnNameResult;
+                if (fieldTemp.isAnnotationPresent(Column.class)) {
+                    Column column = fieldTemp.getAnnotation(Column.class);
+                    columnNameResult = StringUtils.isEmpty(column.name())?fieldTemp.getName():column.name();
+                } else {
+                    columnNameResult = fieldTemp.getName();
+                }
+                class2ColumnName2FieldTable.put(clz, columnNameResult, fieldTemp);
+            });
+        }
+        return class2ColumnName2FieldTable.get(clz, columnName);
+    }
+
+    private <T extends AnnotatedElement> Predicate<T> withJsonTypeAnnotation() {
+        return input -> input != null && input.isAnnotationPresent(Type.class) &&
+                areJsonType(input.getAnnotation(Type.class));
+    }
+
+    private boolean areJsonType(Type type) {
+        return NAME.equals(type.type());
+    }
+
     @Override
     public void nullSafeSet(PreparedStatement st, Object value, int index, SharedSessionContractImplementor session) throws HibernateException, SQLException {
         if (value == null){
