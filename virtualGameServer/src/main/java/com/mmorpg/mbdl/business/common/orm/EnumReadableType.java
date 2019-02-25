@@ -1,8 +1,6 @@
 package com.mmorpg.mbdl.business.common.orm;
 
-
-import com.mmorpg.mbdl.framework.common.utils.JsonUtil;
-import org.apache.commons.lang3.StringUtils;
+import com.baidu.bjf.remoting.protobuf.EnumReadable;
 import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.usertype.UserType;
@@ -16,31 +14,27 @@ import java.sql.SQLException;
 import java.sql.Types;
 
 /**
- * 自定义hibernate字段类型
- * 注意：对于集合类型，仅支持{@code Map<K,V>及map的子类型，Collection<E>，其中K,V不能是map,E不能是Collection及其子类，
- * K,V中不能包含Map或者Collection的子类，如有需要，要变成字符串，再自行转换}
+ * 枚举出入库转换
  *
  * @author Sando Geek
- * @since v1.0 2019/1/2
+ * @since v1.0 2019/2/25
  **/
-public class JsonType implements UserType {
-
-
-    public static final String NAME = "json";
+public class EnumReadableType implements UserType {
+    public static final String NAME = "enum";
 
     @Override
     public int[] sqlTypes() {
-        return new int[]{Types.CLOB};
+        return new int[] {Types.INTEGER};
     }
 
     @Override
     public Class returnedClass() {
-        return Object.class;
+        return EnumReadable.class;
     }
 
     @Override
     public boolean equals(Object x, Object y) throws HibernateException {
-        return JsonUtil.object2String(x).equals(JsonUtil.object2String(y));
+        return ((EnumReadable) x).value() == ((EnumReadable) y).value();
     }
 
     @Override
@@ -50,25 +44,32 @@ public class JsonType implements UserType {
 
     @Override
     public Object nullSafeGet(ResultSet rs, String[] names, SharedSessionContractImplementor session, Object owner) throws HibernateException, SQLException {
-        String json = rs.getString(names[0]);
-        if (StringUtils.isEmpty(json)){
-            return null;
+        int value = rs.getInt(names[0]);
+        if (owner == null) {
+            return value;
         }
         String columnName = rs.getMetaData().getColumnName(rs.findColumn(names[0]));
         Field field = OrmUtil.getFieldByClassAndColumnName(owner.getClass(), columnName);
-        if (field==null) {
-            throw new RuntimeException(String.format("实体类[%s]中不存在字段名为[%s]的带@Type字段",owner.getClass().getSimpleName(),columnName));
+        Class<?> type = field.getType();
+        if (!type.isEnum()) {
+            throw new RuntimeException(String.format("类[%s]中的字段[%s]类型不是枚举",owner.getClass().getSimpleName(),field.getName()));
         }
-        return JsonUtil.string2Object(json, field.getGenericType());
+        for (Enum e :
+                (Enum[]) type.getEnumConstants()) {
+            if (((EnumReadable) e).value() == value) {
+                return e;
+            }
+        }
+        throw new RuntimeException(String.format("枚举类型[%s]中不存在EnumReadable.value()==%s的枚举",type.getSimpleName(),value));
     }
 
     @Override
     public void nullSafeSet(PreparedStatement st, Object value, int index, SharedSessionContractImplementor session) throws HibernateException, SQLException {
-        if (value == null){
-            st.setString(index,"");
-        } else {
-            st.setString(index, JsonUtil.object2String(value));
+        if (value==null) {
+            st.setNull(index,Types.INTEGER);
+            return;
         }
+        st.setInt(index, ((EnumReadable) value).value());
     }
 
     @Override
@@ -81,7 +82,7 @@ public class JsonType implements UserType {
 
     @Override
     public boolean isMutable() {
-        return true;
+        return false;
     }
 
     @Override

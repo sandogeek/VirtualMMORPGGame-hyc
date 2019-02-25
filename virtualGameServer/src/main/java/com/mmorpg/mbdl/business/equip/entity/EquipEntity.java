@@ -67,6 +67,9 @@ public class EquipEntity extends AbstractEntity<Long> {
     }
 
     private void addEquip(Map<EquipType, Equip> equipTypeEquipMap,Equip equip) {
+        if (equip == null) {
+            return;
+        }
         equipTypeEquipMap.put(equip.getEquipType(),equip);
     }
 

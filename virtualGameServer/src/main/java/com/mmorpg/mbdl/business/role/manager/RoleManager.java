@@ -103,7 +103,7 @@ public class RoleManager {
         roleEntityToCreate.setAccount(session.getAccount())
                 .setName(addRoleReq.getRoleName())
                 .setRoleId(IdGeneratorFactory.getIntance().getRoleIdGenerator().generate())
-                .setRoleTypeCode(addRoleReq.getRoleType().getCode())
+                .setRoleType(addRoleReq.getRoleType())
                 .setSceneId(globalSettingResIStaticRes.get("InitMapId").getValue())
                 .setServerToken(SERVER_TOKEN);
         roleEntityDao.create(roleEntityToCreate);

@@ -1,8 +1,10 @@
 package com.mmorpg.mbdl.business.role.entity;
 
+import com.mmorpg.mbdl.business.common.orm.EnumReadableType;
 import com.mmorpg.mbdl.business.role.model.RoleType;
 import com.mmorpg.mbdl.framework.storage.annotation.JetCacheConfig;
 import com.mmorpg.mbdl.framework.storage.core.AbstractEntity;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 
@@ -38,10 +40,9 @@ public class RoleEntity extends AbstractEntity<Long> {
     @Column(nullable = false)
     private int serverToken;
 
-    @Column(nullable = false,columnDefinition = "tinyint(1)")
-    private byte roleTypeCode;
+    @Type(type = EnumReadableType.NAME)
+    private RoleType roleType;
 
-    private transient RoleType roleType;
     @Column(nullable = false)
     private int sceneId;
 
@@ -60,9 +61,9 @@ public class RoleEntity extends AbstractEntity<Long> {
     }
 
     public RoleType getRoleType() {
-        if (roleType == null) {
-            roleType = RoleType.getRoleTypeByCode(roleTypeCode);
-        }
+        // if (roleType == null) {
+        //     roleType = RoleType.getRoleTypeByCode(roleType);
+        // }
         return roleType;
     }
 
@@ -116,8 +117,13 @@ public class RoleEntity extends AbstractEntity<Long> {
         return this;
     }
 
-    public RoleEntity setRoleTypeCode(byte roleTypeCode) {
-        this.roleTypeCode = roleTypeCode;
+    public RoleEntity setRoleType(RoleType roleType) {
+        this.roleType = roleType;
         return this;
     }
+
+    // public RoleEntity setRoleTypeCode(byte roleType) {
+    //     // this.roleType = roleType;
+    //     return this;
+    // }
 }
