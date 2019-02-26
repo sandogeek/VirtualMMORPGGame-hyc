@@ -30,6 +30,8 @@ public class PacketIdManager {
 
     public static final short PING_HEART_BEAT = 1001;
     public static final short PONG_HEART_BEAT = 1002;
+
+    public static final short GLOBAL_MESSAGE = 1003;
     /** login */
     public static final short LOGIN_AUTH_REQ = 10001;
     public static final short LOGIN_RESULT_RESP = 10002;
@@ -64,6 +66,10 @@ public class PacketIdManager {
     public static final short USE_ITEM_REQ = 10603;
     public static final short USE_ITEM_RESP = 10604;
     public static final short ITEM_ADD_RESP = 10605;
+    /**
+     * skill
+     */
+    public static final short USE_SKILL_REQ = 10701;
 
     private static PacketIdManager self;
     public static PacketIdManager getInstance(){

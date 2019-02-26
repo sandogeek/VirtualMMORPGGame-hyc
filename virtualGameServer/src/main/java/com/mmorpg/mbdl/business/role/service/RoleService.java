@@ -1,11 +1,10 @@
 package com.mmorpg.mbdl.business.role.service;
 
-import com.mmorpg.mbdl.business.role.model.prop.PropType;
-import com.mmorpg.mbdl.business.role.model.Role;
 import com.mmorpg.mbdl.business.object.packet.CustomRoleUiInfoResp;
 import com.mmorpg.mbdl.business.role.entity.RoleEntity;
 import com.mmorpg.mbdl.business.role.event.RoleLogoutEvent;
 import com.mmorpg.mbdl.business.role.manager.RoleManager;
+import com.mmorpg.mbdl.business.role.model.Role;
 import com.mmorpg.mbdl.business.role.packet.*;
 import com.mmorpg.mbdl.business.role.packet.vo.RoleInfo;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.ISession;
@@ -85,21 +84,15 @@ public class RoleService {
         Role role = roleManager.initRole(session, roleEntity);
         if (role!=null){
             chooseRoleResp.setResult(true);
-            CustomRoleUiInfoResp customRoleUiInfoResp = new CustomRoleUiInfoResp()
-                    .setMaxHp(role.getPropManager().getPropValueOf(PropType.MAX_HP))
-                    .setMaxMp(role.getPropManager().getPropValueOf(PropType.MAX_MP))
-                    .setCurrentHp(role.getPropManager().getPropValueOf(PropType.CURRENT_HP))
-                    .setCurrentMp(role.getPropManager().getPropValueOf(PropType.CURRENT_MP));
-            customRoleUiInfoResp.setRoleId(role.getRoleId())
-                    .setName(role.getName())
-                    .setLevel(role.getRoleEntity().getLevel())
-                    .setRoleType(roleEntity.getRoleType());
+            CustomRoleUiInfoResp customRoleUiInfoResp = role.getCustomRoleUiInfoResp();
             chooseRoleResp.setCustomRoleUiInfoResp(customRoleUiInfoResp);
         }
         session.setRoleId(roleEntity.getId());
         session.setState(SessionState.GAMEING);
         return chooseRoleResp;
     }
+
+
 
     /**
      * 处理session关闭事件

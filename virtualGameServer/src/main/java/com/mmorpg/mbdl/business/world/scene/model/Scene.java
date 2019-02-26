@@ -28,6 +28,10 @@ public class Scene {
     private Map<Long, AbstractVisibleSceneObject> objectId2VisibleObject = new ConcurrentHashMap<>(64);
     private Map<Long, Role> objId2Role = new ConcurrentHashMap<>(32);
 
+    public AbstractVisibleSceneObject getVisibleObjById(long objId) {
+        return objectId2VisibleObject.get(objId);
+    }
+
     /**
      * 出现在场景中
      * @param visibleSceneObject 进入场景的可见物

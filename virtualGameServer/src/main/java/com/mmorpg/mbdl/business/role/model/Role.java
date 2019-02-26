@@ -8,11 +8,14 @@ import com.mmorpg.mbdl.business.equip.manager.EquipManager;
 import com.mmorpg.mbdl.business.object.model.AbstractCreature;
 import com.mmorpg.mbdl.business.object.model.AbstractVisibleSceneObject;
 import com.mmorpg.mbdl.business.object.model.SceneObjectType;
+import com.mmorpg.mbdl.business.object.packet.CustomRoleUiInfoResp;
 import com.mmorpg.mbdl.business.object.packet.RoleUiInfoResp;
 import com.mmorpg.mbdl.business.role.entity.RoleEntity;
 import com.mmorpg.mbdl.business.role.manager.RoleManager;
 import com.mmorpg.mbdl.business.role.model.prop.PropType;
 import com.mmorpg.mbdl.business.role.resource.RoleLevelRes;
+import com.mmorpg.mbdl.business.skill.entity.SkillEntity;
+import com.mmorpg.mbdl.business.skill.manager.SkillManager;
 import com.mmorpg.mbdl.business.world.manager.SceneManager;
 import com.mmorpg.mbdl.business.world.scene.model.Scene;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.AbstractPacket;
@@ -35,6 +38,7 @@ public class Role extends AbstractCreature {
     private RoleEntity roleEntity;
     private ContainerEntity containerEntity;
     private EquipEntity equipEntity;
+    private SkillEntity skillEntity;
 
     public Role(Long objectId, String name) {
         super(objectId,name);
@@ -46,6 +50,7 @@ public class Role extends AbstractCreature {
     public void bindEntity() {
         ContainerManager.getInstance().bindContainerEntity(this);
         EquipManager.getInstance().bindEntity(this);
+        SkillManager.getInstance().bindEntity(this);
     }
 
     /**
@@ -83,6 +88,24 @@ public class Role extends AbstractCreature {
                 .setRoleType(roleEntity.getRoleType());
     }
 
+    /**
+     * 获取角色的用于前端的显示信息
+     * @return
+     */
+    public CustomRoleUiInfoResp getCustomRoleUiInfoResp() {
+        RoleEntity roleEntity = this.getRoleEntity();
+        CustomRoleUiInfoResp customRoleUiInfoResp = new CustomRoleUiInfoResp()
+                .setMaxHp(this.getPropManager().getPropValueOf(PropType.MAX_HP))
+                .setMaxMp(this.getPropManager().getPropValueOf(PropType.MAX_MP))
+                .setCurrentHp(this.getPropManager().getPropValueOf(PropType.CURRENT_HP))
+                .setCurrentMp(this.getPropManager().getPropValueOf(PropType.CURRENT_MP));
+        customRoleUiInfoResp.setRoleId(this.getRoleId())
+                .setName(this.getName())
+                .setLevel(roleEntity.getLevel())
+                .setRoleType(roleEntity.getRoleType());
+        return customRoleUiInfoResp;
+    }
+
     @Override
     public AbstractVisibleSceneObject setSceneId(int sceneId) {
         this.getPropManager().setRootNodeValueOnType(PropType.SCENE_ID,sceneId);
@@ -113,6 +136,15 @@ public class Role extends AbstractCreature {
 
     public Role setContainerEntity(ContainerEntity containerEntity) {
         this.containerEntity = containerEntity;
+        return this;
+    }
+
+    public SkillEntity getSkillEntity() {
+        return skillEntity;
+    }
+
+    public Role setSkillEntity(SkillEntity skillEntity) {
+        this.skillEntity = skillEntity;
         return this;
     }
 

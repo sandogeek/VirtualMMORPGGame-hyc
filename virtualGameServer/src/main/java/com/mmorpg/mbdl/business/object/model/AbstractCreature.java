@@ -34,10 +34,4 @@ public abstract class AbstractCreature extends AbstractVisibleSceneObject {
     public PropManager getPropManager() {
         return propManager;
     }
-
-    public AbstractCreature setPropManager(PropManager propManager) {
-        this.propManager = propManager;
-        return this;
-    }
-
 }

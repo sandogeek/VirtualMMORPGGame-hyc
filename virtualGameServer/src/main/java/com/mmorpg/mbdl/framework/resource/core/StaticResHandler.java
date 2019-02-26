@@ -167,8 +167,7 @@ public class StaticResHandler implements BeanFactoryPostProcessor {
         });
         stopWatch.stop();
         forkJoinPool.shutdown();
-        checkNullResStaticResDefinition(beanFactory
-                .getBean(StaticResDefinitionFactory.class).getFullFileNameStaticResDefinition());
+        checkNullResStaticResDefinition(beanFactory.getBean(StaticResDefinitionFactory.class).getFullFileNameStaticResDefinition());
         logger.info("静态资源解析完毕，耗时{}ms",stopWatch.getTime());
     }
 
