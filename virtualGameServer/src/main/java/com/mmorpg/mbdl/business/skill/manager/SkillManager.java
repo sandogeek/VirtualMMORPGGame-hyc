@@ -8,6 +8,7 @@ import com.mmorpg.mbdl.business.role.model.Role;
 import com.mmorpg.mbdl.business.role.model.prop.PropType;
 import com.mmorpg.mbdl.business.skill.entity.SkillEntity;
 import com.mmorpg.mbdl.business.skill.res.SkillRes;
+import com.mmorpg.mbdl.business.skill.util.GameMathUtil;
 import com.mmorpg.mbdl.framework.resource.exposed.IStaticRes;
 import com.mmorpg.mbdl.framework.storage.core.IStorage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +50,12 @@ public class SkillManager implements IRoleEntityManager<SkillEntity> {
             role.sendPacket(new GlobalMessage("蓝量不足,技能释放失败"));
             return;
         }
-        propManager.setRootNodeValueOnType(PropType.CURRENT_MP,currentMp - mpCost);
+        role.changeMp(-mpCost);
+        // 给目标造成的血量扣除
+        long hpDown = GameMathUtil.computeDamage(skillRes.getBasicDamage(),
+                (int) propManager.getPropValueOf(PropType.ATTACK),
+                skillRes.getAttackPercent(),
+                (int) target.getPropManager().getPropValueOf(PropType.DEFENCE));
 
     }
 
@@ -59,11 +65,8 @@ public class SkillManager implements IRoleEntityManager<SkillEntity> {
 
     @Override
     public void bindEntity(Role role) {
-        SkillEntity entity = skillEntityIStorage.getOrCreate(role.getRoleId(), id -> {
-            SkillEntity skillEntity = new SkillEntity();
-            skillEntity.setOwner(role);
-            return skillEntity;
-        });
+        SkillEntity entity = skillEntityIStorage.getOrCreate(role.getRoleId(), id -> new SkillEntity(id));
+        entity.setOwner(role);
         role.setSkillEntity(entity);
     }
 

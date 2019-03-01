@@ -24,10 +24,18 @@ public class SkillEntity extends AbstractEntity<Long> {
     @Id
     private Long roleId;
     /**
+     * 控制cd
      * 技能id -> 技能上次使用时间(毫秒)
      */
     @Type(type = JsonType.NAME)
     private ConcurrentHashMap<Integer,Long> skillId2time = new ConcurrentHashMap<>();
+
+    public SkillEntity() {
+    }
+
+    public SkillEntity(Long roleId) {
+        this.roleId = roleId;
+    }
 
     public SkillEntity setOwner(Role owner) {
         this.owner = owner;
