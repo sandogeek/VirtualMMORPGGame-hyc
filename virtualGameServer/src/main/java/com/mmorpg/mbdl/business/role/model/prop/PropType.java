@@ -4,6 +4,7 @@ import com.mmorpg.mbdl.business.object.model.AbstractCreature;
 import com.mmorpg.mbdl.business.role.entity.RoleEntity;
 import com.mmorpg.mbdl.business.role.manager.RoleManager;
 import com.mmorpg.mbdl.business.role.model.Role;
+import com.mmorpg.mbdl.business.role.packet.*;
 
 /**
  * 属性类型，每个类型对应一颗属性树
@@ -15,11 +16,37 @@ public enum PropType {
     /**
      * 当前血量
      */
-    CURRENT_HP,
+    CURRENT_HP() {
+        @Override
+        public PropTree create(AbstractCreature abstractCreature) {
+            return new PropTree() {
+                @Override
+                protected void doSetPropValue(long newValue) {
+                    super.doSetPropValue(newValue);
+                    if (abstractCreature instanceof Role) {
+                        ((Role) abstractCreature).sendPacket(new CurrentHpUpdate(newValue));
+                    }
+                }
+            };
+        }
+    },
     /**
      * 当前蓝量
      */
-    CURRENT_MP,
+    CURRENT_MP() {
+        @Override
+        public PropTree create(AbstractCreature abstractCreature) {
+            return new PropTree() {
+                @Override
+                protected void doSetPropValue(long newValue) {
+                    super.doSetPropValue(newValue);
+                    if (abstractCreature instanceof Role) {
+                        ((Role) abstractCreature).sendPacket(new CurrentMpUpdate(newValue));
+                    }
+                }
+            };
+        }
+    },
     /**
      * 最大血量
      */
@@ -31,6 +58,12 @@ public enum PropType {
                 protected void doSetPropValue(long newValue) {
                     super.doSetPropValue(newValue);
                     abstractCreature.getPropManager().getOrCreateTree(PropType.CURRENT_HP).setMaxValue(newValue);
+                    if (abstractCreature instanceof Role) {
+                        ((Role) abstractCreature).sendPacket(new MaxHpUpdate(newValue));
+                        if (abstractCreature.getPropManager().getPropValueOf(PropType.CURRENT_HP) > maxValue) {
+                            abstractCreature.getPropManager().getOrCreateTree(PropType.CURRENT_HP).setRootNodeValue(maxValue);
+                        }
+                    }
                 }
             };
         }
@@ -46,6 +79,12 @@ public enum PropType {
                 protected void doSetPropValue(long newValue) {
                     super.doSetPropValue(newValue);
                     abstractCreature.getPropManager().getOrCreateTree(PropType.CURRENT_MP).setMaxValue(newValue);
+                    if (abstractCreature instanceof Role) {
+                        ((Role) abstractCreature).sendPacket(new MaxMpUpdate(newValue));
+                        if (abstractCreature.getPropManager().getPropValueOf(PropType.CURRENT_HP) > maxValue) {
+                            abstractCreature.getPropManager().getOrCreateTree(PropType.CURRENT_HP).setRootNodeValue(maxValue);
+                        }
+                    }
                 }
             };
         }
@@ -70,6 +109,7 @@ public enum PropType {
                 protected void doSetPropValue(long newValue) {
                     RoleEntity roleEntity = role.getRoleEntity();
                     roleEntity.setLevel((short)newValue);
+                    role.sendPacket(new LevelUpdate((int)newValue));
                     RoleManager.getInstance().mergeUpdateRoleEntity(roleEntity);
                 }
 
@@ -115,6 +155,7 @@ public enum PropType {
                 protected void doSetPropValue(long newValue) {
                     RoleEntity roleEntity = role.getRoleEntity();
                     roleEntity.setExp((short)newValue);
+                    role.sendPacket(new ExpUpdate(newValue));
                     RoleManager.getInstance().mergeUpdateRoleEntity(roleEntity);
                 }
 

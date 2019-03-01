@@ -31,6 +31,28 @@ public abstract class AbstractCreature extends AbstractVisibleSceneObject {
         propManager.getPropTreeByType(PropType.CURRENT_MP).setRootNodeValue(propManager.getPropValueOf(PropType.MAX_MP));
     }
 
+    /**
+     * 当前血量变更
+     * @param n 改变量，正数表示添加，负数表示减少
+     */
+    public void changeHp(long n){
+        if (n==0) {
+            return;
+        }
+        propManager.getPropTreeByType(PropType.CURRENT_HP).addRootNodeValue(n);
+    }
+
+    /**
+     * 当前蓝量变更
+     * @param n 改变量，正数表示添加，负数表示减少
+     */
+    public void changeMp(long n) {
+        if (n==0) {
+            return;
+        }
+        propManager.getPropTreeByType(PropType.CURRENT_MP).addRootNodeValue(n);
+    }
+
     public PropManager getPropManager() {
         return propManager;
     }

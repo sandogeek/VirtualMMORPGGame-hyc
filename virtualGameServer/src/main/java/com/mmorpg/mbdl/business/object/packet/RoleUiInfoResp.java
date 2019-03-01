@@ -25,6 +25,8 @@ public class RoleUiInfoResp extends AbstractPacket {
     @Protobuf(required = true,description = "角色类型")
     private RoleType roleType;
 
+
+
     public RoleUiInfoResp setRoleId(long roleId) {
         this.roleId = roleId;
         return this;

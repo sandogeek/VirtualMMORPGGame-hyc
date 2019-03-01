@@ -9,7 +9,6 @@ import com.mmorpg.mbdl.business.object.model.AbstractCreature;
 import com.mmorpg.mbdl.business.object.model.AbstractVisibleSceneObject;
 import com.mmorpg.mbdl.business.object.model.SceneObjectType;
 import com.mmorpg.mbdl.business.object.packet.CustomRoleUiInfoResp;
-import com.mmorpg.mbdl.business.object.packet.RoleUiInfoResp;
 import com.mmorpg.mbdl.business.role.entity.RoleEntity;
 import com.mmorpg.mbdl.business.role.manager.RoleManager;
 import com.mmorpg.mbdl.business.role.model.prop.PropType;
@@ -79,17 +78,19 @@ public class Role extends AbstractCreature {
         return (int)propManager.getPropValueOf(PropType.SCENE_ID);
     }
 
+    /**
+     * 展示给其他人的ui信息
+     * @param witness 得到可见信息的角色
+     * @return
+     */
     @Override
     public AbstractPacket getUiInfoResp(Role witness) {
-        return new RoleUiInfoResp()
-                .setRoleId(roleEntity.getId())
-                .setName(roleEntity.getName())
-                .setLevel(roleEntity.getLevel())
-                .setRoleType(roleEntity.getRoleType());
+        return getCustomRoleUiInfoResp();
     }
 
+
     /**
-     * 获取角色的用于前端的显示信息
+     * 展示给自己的信息
      * @return
      */
     public CustomRoleUiInfoResp getCustomRoleUiInfoResp() {

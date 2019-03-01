@@ -51,6 +51,12 @@ public class PacketIdManager {
     public static final short DELETE_ROLE_RESP = 10306;
     public static final short CHOOSE_ROLE_REQ = 10307;
     public static final short CHOOSE_ROLE_RESP = 10308;
+    public static final short CURRENT_HP_UPDATE = 10309;
+    public static final short CURRENT_MP_UPDATE = 10310;
+    public static final short MAX_HP_UPDATE = 10311;
+    public static final short MAX_MP_UPDATE = 10312;
+    public static final short LEVEL_UPDATE = 10313;
+    public static final short EXP_UPDATE = 10314;
     /** world */
     public static final short SWITCH_SCENE_REQ = 10401;
     public static final short OBJECT_DISAPPEAR_RESP = 10402;

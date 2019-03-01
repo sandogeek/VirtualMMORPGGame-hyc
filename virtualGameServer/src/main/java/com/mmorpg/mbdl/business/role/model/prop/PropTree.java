@@ -74,15 +74,18 @@ public class PropTree {
     }
 
     /**
-     * 修改属性的真实值
+     * 修改属性的真实值,需要保持为唯一赋值属性的入口，不能新增其它方法修改属性值
      * @param newValue
      * @return
      */
     void setPropValue(long newValue) {
         if (newValue < 0 ) {
             throw new RuntimeException("属性值不能为负值");
+        } else if (doGetPropValue()==newValue) {
+            return;
         } else if (maxValue!=null && newValue > maxValue) {
             doSetPropValue(maxValue);
+            return;
         }
         doSetPropValue(newValue);
     }

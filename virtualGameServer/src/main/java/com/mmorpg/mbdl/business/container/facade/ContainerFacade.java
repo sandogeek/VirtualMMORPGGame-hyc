@@ -25,7 +25,7 @@ public class ContainerFacade {
 
     @Subscribe
     @AllowConcurrentEvents
-    public void handleLogoutEvent(RoleLogoutEvent roleLogoutEvent){
+    public void handleLogoutEvent(RoleLogoutEvent roleLogoutEvent) {
         ContainerService.getInstance().handleRoleLogoutEvent(roleLogoutEvent);
     }
 }

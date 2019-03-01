@@ -2,9 +2,7 @@ package com.mmorpg.mbdl.business.role.model;
 
 import com.baidu.bjf.remoting.protobuf.EnumReadable;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.mmorpg.mbdl.business.common.jsonserializer.EnumReadableDeserializer;
-import com.mmorpg.mbdl.business.common.jsonserializer.EnumReadableSerializer;
 
 import java.util.Arrays;
 
@@ -14,7 +12,6 @@ import java.util.Arrays;
  * @author Sando Geek
  * @since v1.0 2018/12/13
  **/
-@JsonSerialize(using = EnumReadableSerializer.class)
 @JsonDeserialize(using = EnumReadableDeserializer.class)
 public enum RoleType implements EnumReadable {
     /**

@@ -23,8 +23,7 @@ public class NormalItemUseHandler extends AbstractItemUseHandler {
 
     @Override
     public boolean useById(Role role, Container packContainer, AbstractItem abstractItem, ItemRes itemRes, long objectId) {
-        itemRes.getPropChangeAfterUse().
-                forEach(((propType, delta) -> role.getPropManager().getPropTreeByType(propType).addRootNodeValue(delta)));
+        applyPropChange(role,itemRes.getPropChangeAfterUse());
         packContainer.removeItem(objectId, 1);
         ContainerManager.getInstance().mergeUpdateEntity(role.getContainerEntity());
         return false;
@@ -32,10 +31,7 @@ public class NormalItemUseHandler extends AbstractItemUseHandler {
 
     @Override
     public boolean useByKey(Role role, Container packContainer, int key, int amount, ItemRes itemRes) {
-        for (int i = 0; i < amount; i++) {
-            itemRes.getPropChangeAfterUse().
-                    forEach(((propType, delta) -> role.getPropManager().getPropTreeByType(propType).addRootNodeValue(delta)));
-        }
+        applyPropChange(role,itemRes.getPropChangeAfterUse());
         packContainer.removeItem(key, amount);
         ContainerManager.getInstance().mergeUpdateEntity(role.getContainerEntity());
         return true;
