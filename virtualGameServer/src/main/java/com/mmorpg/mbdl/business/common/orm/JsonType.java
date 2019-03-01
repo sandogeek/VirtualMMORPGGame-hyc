@@ -17,8 +17,6 @@ import java.sql.Types;
 
 /**
  * 自定义hibernate字段类型
- * 注意：对于集合类型，仅支持{@code Map<K,V>及map的子类型，Collection<E>，其中K,V不能是map,E不能是Collection及其子类，
- * K,V中不能包含Map或者Collection的子类，如有需要，要变成字符串，再自行转换}
  *
  * @author Sando Geek
  * @since v1.0 2019/1/2

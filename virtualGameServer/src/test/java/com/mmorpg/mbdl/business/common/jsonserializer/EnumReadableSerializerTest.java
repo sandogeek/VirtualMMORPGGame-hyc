@@ -26,14 +26,14 @@ class EnumReadableSerializerTest {
 
     @Test
     void 测试序列化() {
-        CustomSerializeTest customSerializeTest = new CustomSerializeTest(RoleType.DEVIL);
+        CustomSerializeTest customSerializeTest = new CustomSerializeTest(RoleType.SAINT);
         String s = JsonUtil.object2String(customSerializeTest);
         logger.debug(s);
     }
 
     @Test
     void 测试反序列化() {
-        CustomSerializeTest customSerializeTest = JsonUtil.string2Object("{\"roleType\":2}", CustomSerializeTest.class);
-        Assertions.assertEquals(RoleType.DEVIL,customSerializeTest.getRoleType());
+        CustomSerializeTest customSerializeTest = JsonUtil.string2Object("{\"roleType\":3}", CustomSerializeTest.class);
+        Assertions.assertEquals(RoleType.SAINT,customSerializeTest.getRoleType());
     }
 }
