@@ -10,6 +10,7 @@ import com.mmorpg.mbdl.business.object.model.AbstractVisibleSceneObject;
 import com.mmorpg.mbdl.business.object.model.SceneObjectType;
 import com.mmorpg.mbdl.business.object.packet.CustomRoleUiInfoResp;
 import com.mmorpg.mbdl.business.role.entity.RoleEntity;
+import com.mmorpg.mbdl.business.role.manager.PropManager;
 import com.mmorpg.mbdl.business.role.manager.RoleManager;
 import com.mmorpg.mbdl.business.role.model.prop.PropType;
 import com.mmorpg.mbdl.business.role.resource.RoleLevelRes;
@@ -55,7 +56,15 @@ public class Role extends AbstractCreature {
     /**
      * 角色初始化
       */
+    @Override
     public void init() {
+        propManager = new PropManager(this);
+        propManager.getOrCreateTree(PropType.CURRENT_HP);
+        propManager.getOrCreateTree(PropType.CURRENT_MP);
+        propManager.getOrCreateTree(PropType.MAX_HP);
+        propManager.getOrCreateTree(PropType.MAX_MP);
+        propManager.getOrCreateTree(PropType.ATTACK);
+        propManager.getOrCreateTree(PropType.DEFENCE);
         for (PropType propType :
                 PropType.values()) {
             propManager.getOrCreateTree(propType);

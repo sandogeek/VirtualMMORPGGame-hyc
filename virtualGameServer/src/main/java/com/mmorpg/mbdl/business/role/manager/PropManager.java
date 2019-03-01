@@ -15,8 +15,6 @@ import java.util.Map;
 public class PropManager {
     private AbstractCreature owner;
     private Map<PropType, PropTree> type2Tree = new HashMap<>(12);
-    /** 节点名称到其对应的所有节点的集合，方便快速找到所有节点 */
-    // private Multimap<String, PropNode> name2Node = ArrayListMultimap.create();
 
     public PropManager(AbstractCreature owner) {
         this.owner = owner;
@@ -28,6 +26,12 @@ public class PropManager {
             return type2Tree.put(propType, propType.create(owner));
         }
         return propTree;
+    }
+
+    public void setPropTreeOnPropType(PropTree propTree, PropType propType) {
+        if (type2Tree.containsKey(propType)){
+            throw new RuntimeException(String.format(""));
+        }
     }
 
     public PropTree getPropTreeByType(PropType propType) {
