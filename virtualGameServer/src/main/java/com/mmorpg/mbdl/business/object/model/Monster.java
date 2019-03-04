@@ -26,6 +26,16 @@ public class Monster extends AbstractCreature {
     }
 
     @Override
+    public void init() {
+        propManager.getOrCreateTree(PropType.CURRENT_HP);
+        propManager.getOrCreateTree(PropType.CURRENT_MP);
+        propManager.getOrCreateTree(PropType.MAX_HP);
+        propManager.getOrCreateTree(PropType.MAX_MP);
+        propManager.getOrCreateTree(PropType.ATTACK);
+        propManager.getOrCreateTree(PropType.DEFENCE);
+    }
+
+    @Override
     public SceneObjectType getObjectType() {
         return SceneObjectType.MONSTER;
     }

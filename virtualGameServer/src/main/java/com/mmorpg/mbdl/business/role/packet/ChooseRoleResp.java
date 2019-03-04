@@ -2,7 +2,7 @@ package com.mmorpg.mbdl.business.role.packet;
 
 import com.baidu.bjf.remoting.protobuf.annotation.Protobuf;
 import com.mmorpg.mbdl.business.common.PacketIdManager;
-import com.mmorpg.mbdl.business.object.packet.CustomRoleUiInfoResp;
+import com.mmorpg.mbdl.business.object.packet.RoleUiInfoResp;
 import com.mmorpg.mbdl.framework.communicate.websocket.annotation.ProtoDesc;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.AbstractPacket;
 import org.springframework.stereotype.Component;
@@ -18,10 +18,10 @@ public class ChooseRoleResp extends AbstractPacket {
     @Protobuf(description = "结果",required = true)
     private boolean result;
     @Protobuf(description = "玩家自身详细信息")
-    private CustomRoleUiInfoResp customRoleUiInfoResp;
+    private RoleUiInfoResp roleUiInfoResp;
 
-    public ChooseRoleResp setCustomRoleUiInfoResp(CustomRoleUiInfoResp customRoleUiInfoResp) {
-        this.customRoleUiInfoResp = customRoleUiInfoResp;
+    public ChooseRoleResp setRoleUiInfoResp(RoleUiInfoResp roleUiInfoResp) {
+        this.roleUiInfoResp = roleUiInfoResp;
         return this;
     }
 

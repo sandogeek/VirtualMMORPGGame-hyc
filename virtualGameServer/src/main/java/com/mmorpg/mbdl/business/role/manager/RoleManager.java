@@ -127,9 +127,9 @@ public class RoleManager {
      * @return 成功，true,失败,false
      */
     public Role initRole(ISession session,RoleEntity roleEntity){
-        Role role = new Role(roleEntity.getId(),roleEntity.getName());
-        role.setSession(session);
+        Role role = new Role(roleEntity.getId(), roleEntity.getName());
         role.setRoleEntity(roleEntity);
+        role.setSession(session);
         role.init();
         role.bindEntity();
         if (getSession2Role().values().contains(role)){

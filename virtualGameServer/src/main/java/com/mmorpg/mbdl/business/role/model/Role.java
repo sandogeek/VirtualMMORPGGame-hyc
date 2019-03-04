@@ -10,9 +10,11 @@ import com.mmorpg.mbdl.business.object.model.AbstractVisibleSceneObject;
 import com.mmorpg.mbdl.business.object.model.SceneObjectType;
 import com.mmorpg.mbdl.business.object.packet.CustomRoleUiInfoResp;
 import com.mmorpg.mbdl.business.role.entity.RoleEntity;
-import com.mmorpg.mbdl.business.role.manager.PropManager;
 import com.mmorpg.mbdl.business.role.manager.RoleManager;
+import com.mmorpg.mbdl.business.role.model.prop.EntityPropTree;
+import com.mmorpg.mbdl.business.role.model.prop.PropTree;
 import com.mmorpg.mbdl.business.role.model.prop.PropType;
+import com.mmorpg.mbdl.business.role.packet.*;
 import com.mmorpg.mbdl.business.role.resource.RoleLevelRes;
 import com.mmorpg.mbdl.business.skill.entity.SkillEntity;
 import com.mmorpg.mbdl.business.skill.manager.SkillManager;
@@ -58,17 +60,89 @@ public class Role extends AbstractCreature {
       */
     @Override
     public void init() {
-        propManager = new PropManager(this);
-        propManager.getOrCreateTree(PropType.CURRENT_HP);
-        propManager.getOrCreateTree(PropType.CURRENT_MP);
-        propManager.getOrCreateTree(PropType.MAX_HP);
-        propManager.getOrCreateTree(PropType.MAX_MP);
+        propManager.setPropTreeOnPropType(new PropTree() {
+            @Override
+            protected void doSetPropValue(long newValue) {
+                super.doSetPropValue(newValue);
+                sendPacket(new CurrentHpUpdate(newValue));
+            }
+        }, PropType.CURRENT_HP);
+        propManager.setPropTreeOnPropType(new PropTree() {
+            @Override
+            protected void doSetPropValue(long newValue) {
+                super.doSetPropValue(newValue);
+                sendPacket(new CurrentMpUpdate(newValue));
+            }
+        }, PropType.CURRENT_MP);
+        propManager.setPropTreeOnPropType(new PropTree() {
+            @Override
+            protected void doSetPropValue(long newValue) {
+                super.doSetPropValue(newValue);
+                PropTree propTree = getPropManager().getOrCreateTree(PropType.CURRENT_HP);
+                propTree.setMaxValue(newValue);
+                Long maxValue = propTree.getMaxValue();
+                sendPacket(new MaxHpUpdate(newValue));
+                if (getPropManager().getPropValueOf(PropType.CURRENT_HP) > maxValue) {
+                    propTree.setRootNodeValue(maxValue);
+                }
+            }
+        }, PropType.MAX_HP);
+        propManager.setPropTreeOnPropType(new PropTree() {
+            @Override
+            protected void doSetPropValue(long newValue) {
+                super.doSetPropValue(newValue);
+                PropTree propTree = getPropManager().getOrCreateTree(PropType.CURRENT_MP);
+                propTree.setMaxValue(newValue);
+                Long maxValue = propTree.getMaxValue();
+                sendPacket(new MaxMpUpdate(newValue));
+                if (getPropManager().getPropValueOf(PropType.CURRENT_MP) > maxValue) {
+                    propTree.setRootNodeValue(maxValue);
+                }
+            }
+        }, PropType.MAX_MP);
         propManager.getOrCreateTree(PropType.ATTACK);
         propManager.getOrCreateTree(PropType.DEFENCE);
-        for (PropType propType :
-                PropType.values()) {
-            propManager.getOrCreateTree(propType);
-        }
+        propManager.setPropTreeOnPropType(new EntityPropTree() {
+            @Override
+            protected void doSetPropValue(long newValue) {
+                RoleEntity roleEntity = getRoleEntity();
+                roleEntity.setLevel((short) newValue);
+                sendPacket(new LevelUpdate((int) newValue));
+                RoleManager.getInstance().mergeUpdateRoleEntity(roleEntity);
+            }
+
+            @Override
+            public long doGetPropValue() {
+                return getRoleEntity().getLevel();
+            }
+        }, PropType.LEVEL);
+        propManager.setPropTreeOnPropType(new EntityPropTree() {
+            @Override
+            protected void doSetPropValue(long newValue) {
+                RoleEntity roleEntity = getRoleEntity();
+                roleEntity.setSceneId((short) newValue);
+                RoleManager.getInstance().mergeUpdateRoleEntity(roleEntity);
+            }
+
+            @Override
+            public long doGetPropValue() {
+                return getRoleEntity().getSceneId();
+            }
+        }, PropType.SCENE_ID);
+        propManager.setPropTreeOnPropType(new EntityPropTree() {
+            @Override
+            protected void doSetPropValue(long newValue) {
+                RoleEntity roleEntity = getRoleEntity();
+                roleEntity.setExp((short) newValue);
+                sendPacket(new ExpUpdate(newValue));
+                RoleManager.getInstance().mergeUpdateRoleEntity(roleEntity);
+            }
+
+            @Override
+            public long doGetPropValue() {
+                return getRoleEntity().getExp();
+            }
+        }, PropType.EXP);
         updatePropForLevel();
         fullHP();
         fullMP();

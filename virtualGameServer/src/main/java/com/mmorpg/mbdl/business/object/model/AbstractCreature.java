@@ -10,17 +10,16 @@ import com.mmorpg.mbdl.business.role.model.prop.PropType;
  * @since v1.0 2018/12/11
  **/
 public abstract class AbstractCreature extends AbstractVisibleSceneObject {
-    protected PropManager propManager;
+    protected PropManager propManager = new PropManager(this);
 
     public AbstractCreature(Long objectId, String name) {
         super(objectId, name);
-        init();
     }
 
     /**
      * 初始化属性管理器等初始化工作
      */
-    protected abstract void init();
+    public abstract void init();
 
     public void fullHP() {
         propManager.getPropTreeByType(PropType.CURRENT_HP).setRootNodeValue(propManager.getPropValueOf(PropType.MAX_HP));

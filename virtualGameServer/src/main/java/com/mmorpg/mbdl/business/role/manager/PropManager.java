@@ -30,8 +30,9 @@ public class PropManager {
 
     public void setPropTreeOnPropType(PropTree propTree, PropType propType) {
         if (type2Tree.containsKey(propType)){
-            throw new RuntimeException(String.format(""));
+            throw new RuntimeException(String.format("属性类型[%s]的属性树重复设置", propType));
         }
+        type2Tree.put(propType, propTree);
     }
 
     public PropTree getPropTreeByType(PropType propType) {
