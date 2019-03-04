@@ -13,13 +13,16 @@ import com.mmorpg.mbdl.framework.communicate.websocket.model.AbstractPacket;
  **/
 @ProtoDesc(description = "当前血量更新包")
 public class CurrentHpUpdate extends AbstractPacket {
-    @Protobuf(description = "当前血量")
+    @Protobuf(description = "角色id", required = true)
+    private long roleId;
+    @Protobuf(description = "当前血量", required = true)
     private long currentHp;
 
     public CurrentHpUpdate() {
     }
 
-    public CurrentHpUpdate(long currentHp) {
+    public CurrentHpUpdate(long roleId, long currentHp) {
+        this.roleId = roleId;
         this.currentHp = currentHp;
     }
 

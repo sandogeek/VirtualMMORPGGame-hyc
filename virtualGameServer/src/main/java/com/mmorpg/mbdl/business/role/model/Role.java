@@ -26,6 +26,8 @@ import io.netty.channel.ChannelFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collection;
+
 /**
  * 角色
  *
@@ -64,14 +66,14 @@ public class Role extends AbstractCreature {
             @Override
             protected void doSetPropValue(long newValue) {
                 super.doSetPropValue(newValue);
-                sendPacket(new CurrentHpUpdate(newValue));
+                broadcast(new CurrentHpUpdate(getRoleId(), newValue), true);
             }
         }, PropType.CURRENT_HP);
         propManager.setPropTreeOnPropType(new PropTree() {
             @Override
             protected void doSetPropValue(long newValue) {
                 super.doSetPropValue(newValue);
-                sendPacket(new CurrentMpUpdate(newValue));
+                broadcast(new CurrentMpUpdate(getRoleId(), newValue), true);
             }
         }, PropType.CURRENT_MP);
         propManager.setPropTreeOnPropType(new PropTree() {
@@ -81,7 +83,7 @@ public class Role extends AbstractCreature {
                 PropTree propTree = getPropManager().getOrCreateTree(PropType.CURRENT_HP);
                 propTree.setMaxValue(newValue);
                 Long maxValue = propTree.getMaxValue();
-                sendPacket(new MaxHpUpdate(newValue));
+                broadcast(new MaxHpUpdate(getRoleId(), newValue), true);
                 if (getPropManager().getPropValueOf(PropType.CURRENT_HP) > maxValue) {
                     propTree.setRootNodeValue(maxValue);
                 }
@@ -94,7 +96,7 @@ public class Role extends AbstractCreature {
                 PropTree propTree = getPropManager().getOrCreateTree(PropType.CURRENT_MP);
                 propTree.setMaxValue(newValue);
                 Long maxValue = propTree.getMaxValue();
-                sendPacket(new MaxMpUpdate(newValue));
+                broadcast(new MaxMpUpdate(getRoleId(), newValue), true);
                 if (getPropManager().getPropValueOf(PropType.CURRENT_MP) > maxValue) {
                     propTree.setRootNodeValue(maxValue);
                 }
@@ -107,7 +109,7 @@ public class Role extends AbstractCreature {
             protected void doSetPropValue(long newValue) {
                 RoleEntity roleEntity = getRoleEntity();
                 roleEntity.setLevel((short) newValue);
-                sendPacket(new LevelUpdate((int) newValue));
+                broadcast(new LevelUpdate(getRoleId(), (int) newValue), true);
                 RoleManager.getInstance().mergeUpdateRoleEntity(roleEntity);
             }
 
@@ -268,12 +270,17 @@ public class Role extends AbstractCreature {
      */
     public void broadcast(AbstractPacket abstractPacket,boolean includeSelf){
         Scene scene = SceneManager.getInstance().getSceneBySceneId(getSceneId());
+        Collection<Role> values = scene.getObjId2Role().values();
         if (includeSelf){
-            for (Role role : scene.getObjId2Role().values()) {
+            // 处理刚上线初始化时尚未加入到场景中的情况
+            if (!values.contains(this)) {
+                this.sendPacket(abstractPacket);
+            }
+            for (Role role : values) {
                 role.sendPacket(abstractPacket);
             }
         }else {
-            scene.getObjId2Role().values().stream()
+            values.stream()
                     .filter(role -> role.equals(this)).forEach(role -> role.sendPacket(abstractPacket));
         }
 

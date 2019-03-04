@@ -13,13 +13,16 @@ import com.mmorpg.mbdl.framework.communicate.websocket.model.AbstractPacket;
  **/
 @ProtoDesc(description = "最大蓝量更新包")
 public class MaxMpUpdate extends AbstractPacket {
-    @Protobuf(description = "最大蓝量")
+    @Protobuf(description = "角色id", required = true)
+    private long roleId;
+    @Protobuf(description = "最大蓝量", required = true)
     private long maxMp;
 
     public MaxMpUpdate() {
     }
 
-    public MaxMpUpdate(long maxMp) {
+    public MaxMpUpdate(long roleId, long maxMp) {
+        this.roleId = roleId;
         this.maxMp = maxMp;
     }
 

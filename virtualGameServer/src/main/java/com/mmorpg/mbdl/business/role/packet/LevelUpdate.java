@@ -13,13 +13,16 @@ import com.mmorpg.mbdl.framework.communicate.websocket.model.AbstractPacket;
  **/
 @ProtoDesc(description = "等级属性更新包")
 public class LevelUpdate extends AbstractPacket {
+    @Protobuf(description = "角色id", required = true)
+    private long roleId;
     @Protobuf(description = "等级")
     private int level;
 
     public LevelUpdate() {
     }
 
-    public LevelUpdate(int level) {
+    public LevelUpdate(long roleId, int level) {
+        this.roleId = roleId;
         this.level = level;
     }
 

@@ -13,13 +13,16 @@ import com.mmorpg.mbdl.framework.communicate.websocket.model.AbstractPacket;
  **/
 @ProtoDesc(description = "最大血量更新包")
 public class MaxHpUpdate extends AbstractPacket {
-    @Protobuf(description = "")
+    @Protobuf(description = "角色id", required = true)
+    private long roleId;
+    @Protobuf(description = "最大血量", required = true)
     private long maxHp;
 
     public MaxHpUpdate() {
     }
 
-    public MaxHpUpdate(long maxHp) {
+    public MaxHpUpdate(long roleId, long maxHp) {
+        this.roleId = roleId;
         this.maxHp = maxHp;
     }
 
