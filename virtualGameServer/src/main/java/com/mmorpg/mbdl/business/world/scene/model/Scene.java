@@ -69,6 +69,15 @@ public class Scene {
         objectId2VisibleObject.remove(visibleSceneObject.getObjectId());
     }
 
+    /**
+     * 在场景中广播包(给场景中的所有玩家发包)
+     *
+     * @param abstractPacket
+     */
+    public void broadcast(AbstractPacket abstractPacket) {
+        objId2Role.forEach((id, role) -> role.sendPacket(abstractPacket));
+    }
+
     public int getSceneId() {
         return sceneId;
     }

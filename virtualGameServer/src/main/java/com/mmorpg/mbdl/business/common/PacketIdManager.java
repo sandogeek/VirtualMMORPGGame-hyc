@@ -66,6 +66,8 @@ public class PacketIdManager {
     public static final short ROLE_UI_INFO_RESP = 10501;
     public static final short CUSTOM_ROLE_UI_INFO_RESP = 10502;
     public static final short MONSTER_UI_INFO_RESP = 10503;
+    public static final short MONSTER_HP_UPDATE = 10504;
+    public static final short MONSTER_MAX_HP_UPDATE = 10505;
     /** container */
     public static final short GET_PACK_CONTENT_REQ = 10601;
     public static final short GET_PACK_CONTENT_RESP = 10602;
