@@ -163,6 +163,24 @@ public class Role extends AbstractCreature {
         return (int)propManager.getPropValueOf(PropType.SCENE_ID);
     }
 
+    // public void useSkillOnTarget(int skillId, AbstractCreature target) {
+    //     SkillRes skillRes = SkillManager.getInstance().getSkillResById(skillId);
+    //     int mpCost = skillRes.getMpCost();
+    //     long damage = GameMathUtil.computeDamage(skillRes.getBasicDamage(),
+    //             (int) propManager.getPropValueOf(PropType.ATTACK),
+    //             skillRes.getAttackPercent(),
+    //             (int) target.getPropManager().getPropValueOf(PropType.DEFENCE));
+    //     // TODO 目前没有其它途径消耗蓝，如果有要注意是否会出现线程安全问题,可能需要把后续判断等操作放到回调中，以便上锁
+    //     long currentMp = propManager.getPropValueOf(PropType.CURRENT_MP);
+    //     if (mpCost > currentMp) {
+    //         this.sendPacket(new GlobalMessage("蓝量不足,技能释放失败"));
+    //         return;
+    //     }
+    //     this.changeMp(-mpCost);
+    //     // 给目标造成的血量扣除
+    //     target.changeHp(-damage);
+    // }
+
     /**
      * 展示给其他人的ui信息
      * @param witness 得到可见信息的角色

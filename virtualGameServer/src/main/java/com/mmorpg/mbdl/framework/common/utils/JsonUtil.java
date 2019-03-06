@@ -1,6 +1,5 @@
 package com.mmorpg.mbdl.framework.common.utils;
 
-import com.baidu.bjf.remoting.protobuf.EnumReadable;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
@@ -11,7 +10,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
-import com.mmorpg.mbdl.business.common.jsonserializer.EnumReadableSerializer;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,9 +40,6 @@ public class JsonUtil {
         // 忽略transient修饰的字段
         mapper.configure(MapperFeature.PROPAGATE_TRANSIENT_MARKER, true);
         SimpleModule module = new SimpleModule();
-        module.addSerializer(EnumReadable.class, new EnumReadableSerializer());
-        // 这里无法成功，枚举反序列化对应到了Jackson内的EnumDeserializer，而不会使用自己的，因此要通过注解方式
-        // module.addDeserializer(EnumReadable.class,new EnumReadableDeserializer());
         mapper.registerModule(module);
     }
 

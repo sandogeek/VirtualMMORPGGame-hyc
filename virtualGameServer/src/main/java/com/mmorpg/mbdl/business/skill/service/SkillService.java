@@ -5,10 +5,13 @@ import com.mmorpg.mbdl.business.object.model.AbstractVisibleSceneObject;
 import com.mmorpg.mbdl.business.role.manager.RoleManager;
 import com.mmorpg.mbdl.business.role.model.Role;
 import com.mmorpg.mbdl.business.role.model.prop.PropType;
+import com.mmorpg.mbdl.business.skill.manager.SkillManager;
 import com.mmorpg.mbdl.business.skill.packet.UseSkillReq;
+import com.mmorpg.mbdl.business.skill.res.SkillRes;
 import com.mmorpg.mbdl.business.world.manager.SceneManager;
 import com.mmorpg.mbdl.business.world.scene.model.Scene;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.ISession;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -22,6 +25,9 @@ import javax.annotation.PostConstruct;
 @Component
 public class SkillService {
     private static SkillService self;
+
+    @Autowired
+    private SkillManager skillManager;
 
     @PostConstruct
     private void init() {
@@ -40,9 +46,15 @@ public class SkillService {
         if (visibleObj==null) {
             return;
         }
+
         if (!(visibleObj instanceof AbstractCreature)) {
             return;
         }
 
+        SkillRes skillRes = skillManager.getSkillResById(useSkillReq.getSkillId());
+        if (skillRes == null) {
+            return;
+        }
+        skillManager.useSkill(role, skillRes, (AbstractCreature) visibleObj);
     }
 }
