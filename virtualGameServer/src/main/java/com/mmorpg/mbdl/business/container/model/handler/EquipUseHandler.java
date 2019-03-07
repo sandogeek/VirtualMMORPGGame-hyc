@@ -46,12 +46,12 @@ public class EquipUseHandler extends AbstractItemUseHandler {
      * @param role
      * @param packContainer
      * @param key
-     * @param amount
+     * @param amountToUse
      * @param itemRes
      * @return
      */
     @Override
-    public boolean useByKey(Role role, Container packContainer, int key, int amount, ItemRes itemRes) {
+    public boolean useByKey(Role role, Container packContainer, int key, int amountToUse, ItemRes itemRes) {
         return false;
     }
 }

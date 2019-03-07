@@ -19,16 +19,6 @@ import java.util.Set;
  * @since v1.0 2019/2/15
  **/
 public abstract class AbstractItemUseHandler {
-    /**
-     * 需要与前端同步的属性类型
-      */
-    // protected static Set<PropType> propTypesNeedSync = new HashSet<>();
-    // static {
-    //     propTypesNeedSync.add(PropType.CURRENT_HP);
-    //     propTypesNeedSync.add(PropType.CURRENT_MP);
-    //     propTypesNeedSync.add(PropType.MAX_HP);
-    //     propTypesNeedSync.add(PropType.MAX_MP);
-    // }
     @Autowired
     private ItemUseHandlerManager itemUseHandlerManager;
 
@@ -44,18 +34,12 @@ public abstract class AbstractItemUseHandler {
     public abstract ItemType getItemType();
 
     protected void applyPropChange(Role role,Map<PropType,Long> propTypeLongMap) {
-        // boolean customUiInfoChange = false;
         Set<Map.Entry<PropType, Long>> entries = propTypeLongMap.entrySet();
         for (Map.Entry<PropType, Long> entry :
                 entries) {
-            // if (!customUiInfoChange && propTypesNeedSync.contains(entry.getKey())) {
-            //     customUiInfoChange = true;
-            // }
+
             role.getPropManager().getPropTreeByType(entry.getKey()).addRootNodeValue(entry.getValue());
         }
-        // if (customUiInfoChange) {
-        //     role.sendPacket(role.getCustomRoleUiInfoResp());
-        // }
     }
 
     /**
@@ -72,5 +56,5 @@ public abstract class AbstractItemUseHandler {
     /**
      * 使用最大堆叠数不为1的物品时调用（此时请求传入的是key）
      */
-    public abstract boolean useByKey(Role role, Container packContainer, int key, int amount, ItemRes itemRes);
+    public abstract boolean useByKey(Role role, Container packContainer, int key, int amountToUse, ItemRes itemRes);
 }

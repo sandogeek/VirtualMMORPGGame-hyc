@@ -83,13 +83,12 @@ public class ContainerService {
             useItemResp.setResult(result);
         } else {
             ItemRes itemRes = ContainerManager.getInstance().getItemResByKey(useItemReq.getKey());
-            int amount = packContainer.getAmountByKey(useItemReq.getKey());
-            if (useItemReq.getAmount() > amount) {
+            int amountLeft = packContainer.getAmountByKey(useItemReq.getKey());
+            if (useItemReq.getAmount() > amountLeft) {
                 throw new RuntimeException("剩余物品数量不足");
             }
-            boolean result = ItemUseHandlerManager.getInstance().
-                    getItemUseHandlerByType(itemRes.getItemType())
-                    .useByKey(role, packContainer, useItemReq.getKey(), amount, itemRes);
+            boolean result = ItemUseHandlerManager.getInstance().getItemUseHandlerByType(itemRes.getItemType())
+                    .useByKey(role, packContainer, useItemReq.getKey(), useItemReq.getAmount(), itemRes);
             useItemResp.setResult(result);
         }
         role.sendPacket(useItemResp);

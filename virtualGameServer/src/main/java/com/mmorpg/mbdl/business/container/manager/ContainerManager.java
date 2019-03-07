@@ -42,8 +42,8 @@ public class ContainerManager {
             // 赠送一点背包物品
             Container packContainer = new Container();
             // 放入5个小血瓶、5个小蓝瓶
-            packContainer.createItem(1, 5);
-            packContainer.createItem(2, 5);
+            packContainer.createItem(1, 66);
+            packContainer.createItem(2, 66);
             // 4中装备各发一把
             packContainer.createItem(10000, 1);
             packContainer.createItem(10001, 1);

@@ -30,9 +30,9 @@ public class NormalItemUseHandler extends AbstractItemUseHandler {
     }
 
     @Override
-    public boolean useByKey(Role role, Container packContainer, int key, int amount, ItemRes itemRes) {
+    public boolean useByKey(Role role, Container packContainer, int key, int amountToUse, ItemRes itemRes) {
         applyPropChange(role,itemRes.getPropChangeAfterUse());
-        packContainer.removeItem(key, amount);
+        packContainer.removeItem(key, amountToUse);
         ContainerManager.getInstance().mergeUpdateEntity(role.getContainerEntity());
         return true;
     }
