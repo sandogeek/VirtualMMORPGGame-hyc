@@ -16,7 +16,7 @@ public class UseSkillReq extends AbstractPacket {
     @Protobuf(required = true, description = "技能id")
     private int skillId;
     @Protobuf(required = true,description = "目标对象的id")
-    private long objId;
+    private long targetId;
 
     public UseSkillReq() {
     }
@@ -30,12 +30,12 @@ public class UseSkillReq extends AbstractPacket {
         return this;
     }
 
-    public long getObjId() {
-        return objId;
+    public long getTargetId() {
+        return targetId;
     }
 
-    public UseSkillReq setObjId(long objId) {
-        this.objId = objId;
+    public UseSkillReq setTargetId(long targetId) {
+        this.targetId = targetId;
         return this;
     }
 

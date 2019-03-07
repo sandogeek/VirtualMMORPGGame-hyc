@@ -42,8 +42,8 @@ public class SkillService {
         Role role = RoleManager.getInstance().getRoleBySession(session);
         long sceneId = role.getPropManager().getPropValueOf(PropType.SCENE_ID);
         Scene scene = SceneManager.getInstance().getSceneBySceneId((int) sceneId);
-        AbstractVisibleSceneObject visibleObj = scene.getVisibleObjById(useSkillReq.getObjId());
-        if (visibleObj==null) {
+        AbstractVisibleSceneObject visibleObj = scene.getVisibleObjById(useSkillReq.getTargetId());
+        if (visibleObj == null) {
             return;
         }
 

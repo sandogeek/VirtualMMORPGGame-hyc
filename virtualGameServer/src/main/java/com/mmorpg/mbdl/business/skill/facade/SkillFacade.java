@@ -18,7 +18,7 @@ public class SkillFacade {
         if (useSkillReq.getSkillId()< 1) {
             return;
         }
-        if (useSkillReq.getObjId() < 1) {
+        if (useSkillReq.getTargetId() < 1) {
             return;
         }
         SkillService.getInstance().handleUseSkillReq(session,useSkillReq);
