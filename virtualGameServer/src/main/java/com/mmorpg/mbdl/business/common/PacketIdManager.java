@@ -78,6 +78,7 @@ public class PacketIdManager {
      * skill
      */
     public static final short USE_SKILL_REQ = 10701;
+    public static final short SKILL_LIST_UPDATE = 10702;
 
     private static PacketIdManager self;
     public static PacketIdManager getInstance(){

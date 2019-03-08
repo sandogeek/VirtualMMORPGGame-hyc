@@ -12,6 +12,6 @@ public class GameMathUtil {
      * @return
      */
     public static long computeDamage(int basicDamage,int attack,int attackPercent,int defence) {
-        return ((long) ((basicDamage + attack * attackPercent / 100.0) * defence / (100.0 + defence)));
+        return ((long) ((basicDamage + attack * attackPercent / 100.0) * defence / (300.0 + defence)));
     }
 }

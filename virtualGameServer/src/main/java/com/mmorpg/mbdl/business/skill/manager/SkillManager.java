@@ -9,6 +9,8 @@ import com.mmorpg.mbdl.business.object.model.AbstractCreature;
 import com.mmorpg.mbdl.business.role.model.Role;
 import com.mmorpg.mbdl.business.role.model.prop.PropType;
 import com.mmorpg.mbdl.business.skill.entity.SkillEntity;
+import com.mmorpg.mbdl.business.skill.packet.SkillListUpdate;
+import com.mmorpg.mbdl.business.skill.packet.vo.SkillUiInfo;
 import com.mmorpg.mbdl.business.skill.res.SkillRes;
 import com.mmorpg.mbdl.business.skill.util.GameMathUtil;
 import com.mmorpg.mbdl.framework.resource.exposed.IStaticRes;
@@ -17,6 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
@@ -98,6 +102,12 @@ public class SkillManager implements IRoleEntityManager<SkillEntity> {
         SkillEntity entity = skillEntityIStorage.getOrCreate(role.getRoleId(), SkillEntity::new);
         entity.setOwner(role);
         role.setSkillEntity(entity);
+        // 发送技能列表信息
+        List<SkillUiInfo> skillUiInfoList = new ArrayList<>(4);
+        for (SkillRes skillRes : skillId2SkillRes.values()) {
+            skillUiInfoList.add(new SkillUiInfo(skillRes.getSkillId(), skillRes.getSkillName()));
+        }
+        role.sendPacket(new SkillListUpdate(skillUiInfoList));
     }
 
     @Override
