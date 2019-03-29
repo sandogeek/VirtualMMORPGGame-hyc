@@ -1,4 +1,4 @@
-package com.mmorpg.mbdl.business.common.jsonserializer;
+package com.mmorpg.mbdl.common.jsonserializer;
 
 import com.mmorpg.mbdl.business.role.model.RoleType;
 import com.mmorpg.mbdl.framework.common.utils.JsonUtil;

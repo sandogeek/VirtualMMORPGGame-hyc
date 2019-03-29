@@ -1,6 +1,6 @@
 package com.mmorpg.mbdl.business.equip.entity;
 
-import com.mmorpg.mbdl.business.common.orm.JsonType;
+import com.mmorpg.mbdl.common.orm.JsonType;
 import com.mmorpg.mbdl.business.equip.model.Equip;
 import com.mmorpg.mbdl.business.equip.model.EquipType;
 import com.mmorpg.mbdl.framework.storage.annotation.JetCacheConfig;

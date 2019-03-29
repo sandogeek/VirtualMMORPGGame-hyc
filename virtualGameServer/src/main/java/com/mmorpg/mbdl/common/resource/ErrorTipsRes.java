@@ -1,4 +1,4 @@
-package com.mmorpg.mbdl.business.common.resource;
+package com.mmorpg.mbdl.common.resource;
 
 import com.mmorpg.mbdl.framework.resource.annotation.Key;
 import com.mmorpg.mbdl.framework.resource.annotation.ResDef;

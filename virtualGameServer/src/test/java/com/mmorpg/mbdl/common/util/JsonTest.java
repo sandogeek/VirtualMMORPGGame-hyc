@@ -1,4 +1,4 @@
-package com.mmorpg.mbdl.business.common.util;
+package com.mmorpg.mbdl.common.util;
 
 import com.alibaba.fastjson.JSONObject;
 

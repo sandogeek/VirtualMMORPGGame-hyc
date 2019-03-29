@@ -1,4 +1,4 @@
-package com.mmorpg.mbdl.business.common.orm;
+package com.mmorpg.mbdl.common.orm;
 
 
 import com.mmorpg.mbdl.framework.common.utils.JsonUtil;

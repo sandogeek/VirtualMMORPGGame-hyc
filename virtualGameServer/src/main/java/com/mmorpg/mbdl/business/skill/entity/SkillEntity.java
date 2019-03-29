@@ -1,6 +1,6 @@
 package com.mmorpg.mbdl.business.skill.entity;
 
-import com.mmorpg.mbdl.business.common.orm.JsonType;
+import com.mmorpg.mbdl.common.orm.JsonType;
 import com.mmorpg.mbdl.business.role.model.Role;
 import com.mmorpg.mbdl.business.skill.manager.SkillManager;
 import com.mmorpg.mbdl.framework.storage.annotation.JetCacheConfig;

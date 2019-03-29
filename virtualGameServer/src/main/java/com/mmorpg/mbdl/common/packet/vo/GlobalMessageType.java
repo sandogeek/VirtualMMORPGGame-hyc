@@ -1,4 +1,4 @@
-package com.mmorpg.mbdl.business.common.packet.vo;
+package com.mmorpg.mbdl.common.packet.vo;
 
 import com.baidu.bjf.remoting.protobuf.EnumReadable;
 

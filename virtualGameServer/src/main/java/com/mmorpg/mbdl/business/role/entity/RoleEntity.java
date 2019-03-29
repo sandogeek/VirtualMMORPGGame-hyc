@@ -1,6 +1,6 @@
 package com.mmorpg.mbdl.business.role.entity;
 
-import com.mmorpg.mbdl.business.common.orm.EnumReadableType;
+import com.mmorpg.mbdl.common.orm.EnumReadableType;
 import com.mmorpg.mbdl.business.role.model.RoleType;
 import com.mmorpg.mbdl.framework.storage.annotation.JetCacheConfig;
 import com.mmorpg.mbdl.framework.storage.core.AbstractEntity;

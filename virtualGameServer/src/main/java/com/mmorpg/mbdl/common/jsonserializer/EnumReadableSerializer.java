@@ -1,4 +1,4 @@
-package com.mmorpg.mbdl.business.common.jsonserializer;
+package com.mmorpg.mbdl.common.jsonserializer;
 
 import com.baidu.bjf.remoting.protobuf.EnumReadable;
 import com.fasterxml.jackson.core.JsonGenerator;

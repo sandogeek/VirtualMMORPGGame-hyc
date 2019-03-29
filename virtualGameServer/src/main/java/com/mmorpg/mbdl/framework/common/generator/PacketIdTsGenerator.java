@@ -1,7 +1,7 @@
 package com.mmorpg.mbdl.framework.common.generator;
 
 import com.google.common.base.CaseFormat;
-import com.mmorpg.mbdl.business.common.PacketIdManager;
+import com.mmorpg.mbdl.common.PacketIdManager;
 import com.mmorpg.mbdl.framework.communicate.websocket.annotation.ProtoDesc;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.AbstractPacket;
 import org.slf4j.Logger;

@@ -1,8 +1,8 @@
-package com.mmorpg.mbdl.business.common.packet;
+package com.mmorpg.mbdl.common.packet;
 
 import com.baidu.bjf.remoting.protobuf.annotation.Protobuf;
-import com.mmorpg.mbdl.business.common.PacketIdManager;
-import com.mmorpg.mbdl.business.common.packet.vo.GlobalMessageType;
+import com.mmorpg.mbdl.common.PacketIdManager;
+import com.mmorpg.mbdl.common.packet.vo.GlobalMessageType;
 import com.mmorpg.mbdl.framework.communicate.websocket.annotation.ProtoDesc;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.AbstractPacket;
 

@@ -21,6 +21,29 @@ public class Equip extends AbstractItem {
         this.currentDurability = currentDurability;
     }
 
+    public int getCurrentDurability() {
+        return currentDurability;
+    }
+
+    public Equip setCurrentDurability(int currentDurability) {
+        this.currentDurability = currentDurability;
+        return this;
+    }
+
+    /**
+     * 减少此装备的耐久度
+     *
+     * @param delta
+     */
+    public void reduceCurrentDurability(int delta) {
+        int durability = this.currentDurability - delta;
+        if (durability < 0) {
+            this.setCurrentDurability(0);
+        } else {
+            this.setCurrentDurability(durability);
+        }
+    }
+
     @Override
     public ItemType getItemType() {
         return ItemType.EQUIP;

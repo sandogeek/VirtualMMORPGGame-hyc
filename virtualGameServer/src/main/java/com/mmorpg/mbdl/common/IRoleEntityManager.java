@@ -1,4 +1,4 @@
-package com.mmorpg.mbdl.business.common;
+package com.mmorpg.mbdl.common;
 
 import com.mmorpg.mbdl.business.role.model.Role;
 import com.mmorpg.mbdl.framework.storage.core.AbstractEntity;

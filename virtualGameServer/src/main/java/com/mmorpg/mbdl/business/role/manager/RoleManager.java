@@ -1,6 +1,6 @@
 package com.mmorpg.mbdl.business.role.manager;
 
-import com.mmorpg.mbdl.business.common.resource.GlobalSettingRes;
+import com.mmorpg.mbdl.common.resource.GlobalSettingRes;
 import com.mmorpg.mbdl.business.role.dao.RoleEntityDao;
 import com.mmorpg.mbdl.business.role.entity.RoleEntity;
 import com.mmorpg.mbdl.business.role.model.Role;

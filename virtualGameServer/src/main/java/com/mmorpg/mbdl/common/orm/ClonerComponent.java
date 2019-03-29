@@ -1,4 +1,4 @@
-package com.mmorpg.mbdl.business.common.orm;
+package com.mmorpg.mbdl.common.orm;
 
 import com.rits.cloning.Cloner;
 import com.rits.cloning.ICloningStrategy;

@@ -1,6 +1,6 @@
 package com.mmorpg.mbdl.business.equip.manager;
 
-import com.mmorpg.mbdl.business.common.IRoleEntityManager;
+import com.mmorpg.mbdl.common.IRoleEntityManager;
 import com.mmorpg.mbdl.business.equip.entity.EquipEntity;
 import com.mmorpg.mbdl.business.equip.model.Equip;
 import com.mmorpg.mbdl.business.role.model.Role;

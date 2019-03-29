@@ -2,9 +2,13 @@ package com.mmorpg.mbdl.business.skill.manager;
 
 import com.alicp.jetcache.Cache;
 import com.alicp.jetcache.embedded.CaffeineCacheBuilder;
-import com.mmorpg.mbdl.business.common.IRoleEntityManager;
-import com.mmorpg.mbdl.business.common.packet.GlobalMessage;
-import com.mmorpg.mbdl.business.common.packet.vo.GlobalMessageType;
+import com.mmorpg.mbdl.common.IRoleEntityManager;
+import com.mmorpg.mbdl.common.packet.GlobalMessage;
+import com.mmorpg.mbdl.common.packet.vo.GlobalMessageType;
+import com.mmorpg.mbdl.common.resource.GlobalSettingRes;
+import com.mmorpg.mbdl.business.equip.entity.EquipEntity;
+import com.mmorpg.mbdl.business.equip.manager.EquipManager;
+import com.mmorpg.mbdl.business.equip.model.Equip;
 import com.mmorpg.mbdl.business.object.model.AbstractCreature;
 import com.mmorpg.mbdl.business.role.model.Role;
 import com.mmorpg.mbdl.business.role.model.prop.PropType;
@@ -39,6 +43,8 @@ public class SkillManager implements IRoleEntityManager<SkillEntity> {
 
     @Autowired
     private IStaticRes<Integer, SkillRes> skillId2SkillRes;
+    @Autowired
+    private IStaticRes<String, GlobalSettingRes> globalSettingRes;
     /**
      * 角色id -> map 技能key -> 技能使用毫秒
      * 技能最长cd不超过20分钟
@@ -76,6 +82,16 @@ public class SkillManager implements IRoleEntityManager<SkillEntity> {
             role.sendPacket(new GlobalMessage(GlobalMessageType.ERROR, "蓝量不足,技能释放失败"));
             return;
         }
+        EquipEntity equipEntity = role.getEquipEntity();
+        Equip weapon = equipEntity.getWeapon();
+        int currentDurability = weapon.getCurrentDurability();
+        if (currentDurability == 0) {
+            role.sendPacket(new GlobalMessage(GlobalMessageType.ERROR, "武器耐久度不足，需要维修后才能使用"));
+            return;
+        }
+        // 扣除耐久度
+        weapon.reduceCurrentDurability(globalSettingRes.get("DurabilityDownPerAttack").getValue());
+        EquipManager.getInstance().mergeUpdateEntity(equipEntity);
         long currentHp = role.getPropManager().getPropValueOf(PropType.CURRENT_HP);
         if (damage < currentHp) {
             target.changeHp(-damage);

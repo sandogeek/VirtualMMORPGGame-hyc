@@ -1,4 +1,4 @@
-package com.mmorpg.mbdl.business.common;
+package com.mmorpg.mbdl.common;
 
 import com.baidu.bjf.remoting.protobuf.Codec;
 import com.baidu.bjf.remoting.protobuf.ProtobufProxy;

@@ -1,4 +1,4 @@
-package com.mmorpg.mbdl.business.common.orm;
+package com.mmorpg.mbdl.common.orm;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.HashBasedTable;
