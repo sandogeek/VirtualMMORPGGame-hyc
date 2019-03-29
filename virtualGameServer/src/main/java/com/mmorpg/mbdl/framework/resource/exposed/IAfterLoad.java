@@ -7,5 +7,8 @@ package com.mmorpg.mbdl.framework.resource.exposed;
  * @since v1.0 2019/3/29
  **/
 public interface IAfterLoad {
+    /**
+     * 资源对象生成后调用
+     */
     void afterLoad();
 }

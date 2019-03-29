@@ -151,7 +151,12 @@ public class StaticResHandler implements BeanFactoryPostProcessor {
                     return staticResDefinitionResult;
                 }).filter(Objects::nonNull).forEach((staticResDefinition -> {
                     logger.debug("静态资源{}成功关联到类[{}]",staticResDefinition.getFullFileName(),staticResDefinition.getvClass().getSimpleName());
-                    iResResolver.resolve(staticResDefinition);
+                    try {
+                        iResResolver.resolve(staticResDefinition);
+                    } catch (Exception e) {
+                        throw new RuntimeException(String.format("静态资源[%s]解析失败", staticResDefinition.getFullFileName()), e);
+                    }
+
                 }));
             };
 
