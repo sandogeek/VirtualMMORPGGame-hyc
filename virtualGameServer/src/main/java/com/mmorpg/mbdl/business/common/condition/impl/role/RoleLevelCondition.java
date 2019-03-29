@@ -1,5 +1,6 @@
 package com.mmorpg.mbdl.business.common.condition.impl.role;
 
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.mmorpg.mbdl.business.role.model.Role;
 import com.mmorpg.mbdl.business.role.model.prop.PropType;
 import com.mmorpg.mbdl.business.common.condition.anno.ConditionDesc;
@@ -11,7 +12,22 @@ import com.mmorpg.mbdl.business.common.condition.anno.ConditionDesc;
  * @since v1.0 2019/3/29
  **/
 @ConditionDesc("只配置minLevel则只检查最低等级，只配置maxLevel则只检查最高等级，否则同时检查最高最低等级")
+@JsonTypeName("roleLevel")
 public class RoleLevelCondition extends BaseRoleCondition {
+    enum CheckType {
+        /**
+         * 只检查最低等级
+         */
+        checkMin,
+        /**
+         * 只检查最高等级
+         */
+        checkMax,
+        /**
+         * 同时检查最高最低等级
+         */
+        checkAll
+    }
     private Integer minLevel;
     private Integer maxLevel;
     private transient CheckType checkType;
@@ -61,19 +77,4 @@ public class RoleLevelCondition extends BaseRoleCondition {
     public void setMaxLevel(Integer maxLevel) {
         this.maxLevel = maxLevel;
     }
-}
-
-enum CheckType {
-    /**
-     * 只检查最低等级
-     */
-    checkMin,
-    /**
-     * 只检查最高等级
-     */
-    checkMax,
-    /**
-     * 同时检查最高最低等级
-     */
-    checkAll
 }

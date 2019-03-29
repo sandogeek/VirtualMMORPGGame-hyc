@@ -19,7 +19,7 @@ import com.mmorpg.mbdl.business.common.condition.impl.role.RoleLevelCondition;
  **/
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME)
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = RoleLevelCondition.class, name = "roleLevel"),
+        @JsonSubTypes.Type(value = RoleLevelCondition.class),
 })
 public interface ICondition<T> {
     /**
