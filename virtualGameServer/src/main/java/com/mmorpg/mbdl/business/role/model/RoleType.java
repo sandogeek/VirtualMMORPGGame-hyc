@@ -3,8 +3,8 @@ package com.mmorpg.mbdl.business.role.model;
 import com.baidu.bjf.remoting.protobuf.EnumReadable;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.mmorpg.mbdl.common.jsonserializer.EnumReadableDeserializer;
-import com.mmorpg.mbdl.common.jsonserializer.EnumReadableSerializer;
+import com.mmorpg.mbdl.business.common.jsonserializer.EnumReadableDeserializer;
+import com.mmorpg.mbdl.business.common.jsonserializer.EnumReadableSerializer;
 
 import java.util.Arrays;
 

@@ -1,7 +1,7 @@
 package com.mmorpg.mbdl.framework.communicate.websocket.handler;
 
 import com.baidu.bjf.remoting.protobuf.Codec;
-import com.mmorpg.mbdl.common.PacketIdManager;
+import com.mmorpg.mbdl.business.common.PacketIdManager;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.AbstractPacket;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.SessionManager;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.WsPacket;

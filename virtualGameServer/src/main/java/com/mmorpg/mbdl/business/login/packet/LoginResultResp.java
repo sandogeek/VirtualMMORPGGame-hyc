@@ -1,7 +1,7 @@
 package com.mmorpg.mbdl.business.login.packet;
 
 import com.baidu.bjf.remoting.protobuf.annotation.Protobuf;
-import com.mmorpg.mbdl.common.PacketIdManager;
+import com.mmorpg.mbdl.business.common.PacketIdManager;
 import com.mmorpg.mbdl.business.login.model.LoginResultType;
 import com.mmorpg.mbdl.framework.communicate.websocket.annotation.ProtoDesc;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.AbstractPacket;

@@ -1,8 +1,8 @@
 package com.mmorpg.mbdl.framework.resource.core;
 
 import com.mmorpg.mbdl.TestWithSpring;
-import com.mmorpg.mbdl.common.resource.GlobalSettingRes;
-import com.mmorpg.mbdl.common.resource.ErrorTipsRes;
+import com.mmorpg.mbdl.business.common.resource.GlobalSettingRes;
+import com.mmorpg.mbdl.business.common.resource.ErrorTipsRes;
 import com.mmorpg.mbdl.business.world.resource.BornRes;
 import com.mmorpg.mbdl.framework.resource.exposed.IStaticRes;
 import org.junit.jupiter.api.Assertions;

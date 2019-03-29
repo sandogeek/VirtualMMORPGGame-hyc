@@ -1,12 +1,13 @@
 package com.mmorpg.mbdl.business.role.manager;
 
-import com.mmorpg.mbdl.common.resource.GlobalSettingRes;
 import com.mmorpg.mbdl.business.role.dao.RoleEntityDao;
 import com.mmorpg.mbdl.business.role.entity.RoleEntity;
 import com.mmorpg.mbdl.business.role.model.Role;
 import com.mmorpg.mbdl.business.role.model.RoleType;
 import com.mmorpg.mbdl.business.role.packet.AddRoleReq;
 import com.mmorpg.mbdl.business.role.resource.RoleLevelRes;
+import com.mmorpg.mbdl.business.shop.res.ConditionTestRes;
+import com.mmorpg.mbdl.business.common.resource.GlobalSettingRes;
 import com.mmorpg.mbdl.framework.common.generator.IdGeneratorFactory;
 import com.mmorpg.mbdl.framework.common.utils.CommonUtils;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.ISession;
@@ -46,8 +47,14 @@ public class RoleManager {
     private IStaticRes<String, GlobalSettingRes> globalSettingResIStaticRes;
     @Autowired
     private IStaticRes<Short, RoleLevelRes> roleLevelResMap;
+    @Autowired
+    private IStaticRes<Integer, ConditionTestRes> conditionTestResIStaticRes;
 
     private Map<ISession, Role> session2Role = new ConcurrentHashMap<>(128);
+
+    public IStaticRes<Integer, ConditionTestRes> getConditionTestResIStaticRes() {
+        return conditionTestResIStaticRes;
+    }
 
     public RoleLevelRes getRoleLevelResByLevel(short level) {
         return roleLevelResMap.get(level);

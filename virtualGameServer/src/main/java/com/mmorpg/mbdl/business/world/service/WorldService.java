@@ -3,6 +3,7 @@ package com.mmorpg.mbdl.business.world.service;
 import com.mmorpg.mbdl.business.role.model.Role;
 import com.mmorpg.mbdl.business.role.event.RoleLogoutEvent;
 import com.mmorpg.mbdl.business.role.manager.RoleManager;
+import com.mmorpg.mbdl.business.shop.res.ConditionTestRes;
 import com.mmorpg.mbdl.business.world.World;
 import com.mmorpg.mbdl.business.world.manager.SceneManager;
 import com.mmorpg.mbdl.business.world.packet.EnterWorldReq;
@@ -47,6 +48,7 @@ public class WorldService {
 
     public void handleLogoutEvent(RoleLogoutEvent roleLogoutEvent) {
         Role role = roleLogoutEvent.getRole();
+        ConditionTestRes conditionTestRes = roleManager.getConditionTestResIStaticRes().get(1);
         SceneManager.getInstance().getSceneBySceneId(role.getSceneId()).disappearInScene(role);
     }
 }

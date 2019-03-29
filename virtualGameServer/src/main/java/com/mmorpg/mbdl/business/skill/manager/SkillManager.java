@@ -2,10 +2,10 @@ package com.mmorpg.mbdl.business.skill.manager;
 
 import com.alicp.jetcache.Cache;
 import com.alicp.jetcache.embedded.CaffeineCacheBuilder;
-import com.mmorpg.mbdl.common.IRoleEntityManager;
-import com.mmorpg.mbdl.common.packet.GlobalMessage;
-import com.mmorpg.mbdl.common.packet.vo.GlobalMessageType;
-import com.mmorpg.mbdl.common.resource.GlobalSettingRes;
+import com.mmorpg.mbdl.business.common.IRoleEntityManager;
+import com.mmorpg.mbdl.business.common.packet.GlobalMessage;
+import com.mmorpg.mbdl.business.common.packet.vo.GlobalMessageType;
+import com.mmorpg.mbdl.business.common.resource.GlobalSettingRes;
 import com.mmorpg.mbdl.business.equip.entity.EquipEntity;
 import com.mmorpg.mbdl.business.equip.manager.EquipManager;
 import com.mmorpg.mbdl.business.equip.model.Equip;
