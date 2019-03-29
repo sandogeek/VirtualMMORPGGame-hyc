@@ -166,7 +166,7 @@ public class StaticResHandler implements BeanFactoryPostProcessor {
             try {
                 forkJoinPool.submit(resourceLoadTask).get();
             } catch (InterruptedException | ExecutionException e) {
-                throw new RuntimeException("静态资源解析失败",e);
+                throw new RuntimeException(e);
             }
 
         });
