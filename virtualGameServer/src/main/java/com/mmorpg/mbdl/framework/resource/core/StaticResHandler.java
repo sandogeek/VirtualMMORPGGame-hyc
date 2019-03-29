@@ -154,7 +154,7 @@ public class StaticResHandler implements BeanFactoryPostProcessor {
                     try {
                         iResResolver.resolve(staticResDefinition);
                     } catch (Exception e) {
-                        throw new RuntimeException(String.format("静态资源[%s]解析失败", staticResDefinition.getFullFileName()), e);
+                        throw new RuntimeException(String.format("静态资源[%s]解析失败", staticResDefinition.getvClass().getSimpleName()), e);
                     }
 
                 }));
