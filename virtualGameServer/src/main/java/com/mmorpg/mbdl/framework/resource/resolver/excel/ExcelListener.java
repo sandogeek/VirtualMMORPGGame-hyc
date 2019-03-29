@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import com.mmorpg.mbdl.framework.common.utils.JsonUtil;
 import com.mmorpg.mbdl.framework.resource.core.StaticResDefinition;
+import com.mmorpg.mbdl.framework.resource.exposed.IAfterLoad;
 import com.mmorpg.mbdl.framework.resource.exposed.IExcelFormat;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -138,6 +139,10 @@ public class ExcelListener extends AnalysisEventListener<ArrayList<String>> {
                         context.getCurrentRowNum()+1,
                         obj
                 ));
+            }
+            if (resource instanceof IAfterLoad) {
+                IAfterLoad afterLoad = (IAfterLoad) resource;
+                afterLoad.afterLoad();
             }
             key2RowNumber.put(obj,context.getCurrentRowNum());
             key2ResourceBuilder.put(obj,resource);
