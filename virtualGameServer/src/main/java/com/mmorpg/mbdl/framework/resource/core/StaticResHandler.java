@@ -5,10 +5,7 @@ import com.mmorpg.mbdl.EnhanceStarter;
 import com.mmorpg.mbdl.framework.common.utils.SpringPropertiesUtil;
 import com.mmorpg.mbdl.framework.resource.annotation.Key;
 import com.mmorpg.mbdl.framework.resource.annotation.ResDef;
-import com.mmorpg.mbdl.framework.resource.exposed.AbstractBeanFactoryAwareResResolver;
-import com.mmorpg.mbdl.framework.resource.exposed.AbstractMetadataReaderPostProcessor;
-import com.mmorpg.mbdl.framework.resource.exposed.IResResolver;
-import com.mmorpg.mbdl.framework.resource.exposed.IStaticRes;
+import com.mmorpg.mbdl.framework.resource.exposed.*;
 import com.mmorpg.mbdl.framework.resource.impl.StaticRes;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import net.bytebuddy.ByteBuddy;
@@ -152,7 +149,9 @@ public class StaticResHandler implements BeanFactoryPostProcessor {
                 }).filter(Objects::nonNull).forEach((staticResDefinition -> {
                     logger.debug("静态资源{}成功关联到类[{}]",staticResDefinition.getFullFileName(),staticResDefinition.getvClass().getSimpleName());
                     try {
-                        iResResolver.resolve(staticResDefinition);
+                        List<Object> resList = iResResolver.resolve(staticResDefinition);
+                        Map<String, ResPostProcessor> resPostProcessorMap = beanFactory.getBeansOfType(ResPostProcessor.class);
+                        resPostProcessorMap.values().forEach(resPostProcessor -> resList.forEach(resPostProcessor::postProcess));
                     } catch (Exception e) {
                         throw new RuntimeException(String.format("静态资源[%s]解析失败", staticResDefinition.getvClass().getSimpleName()), e);
                     }

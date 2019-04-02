@@ -28,6 +28,7 @@ import java.util.*;
  **/
 public class ExcelListener extends AnalysisEventListener<ArrayList<String>> {
     private static Logger logger = LoggerFactory.getLogger(ExcelListener.class);
+    private List<Object> resList = new ArrayList<>(64);
     /**
      * ObjectMapper线程安全的，设为静态，避免频繁创建
      */
@@ -147,6 +148,7 @@ public class ExcelListener extends AnalysisEventListener<ArrayList<String>> {
             }
             key2RowNumber.put(obj,context.getCurrentRowNum());
             key2ResourceBuilder.put(obj,resource);
+            resList.add(resource);
         }
     }
 
@@ -206,5 +208,9 @@ public class ExcelListener extends AnalysisEventListener<ArrayList<String>> {
             }
             index2FieldType.put(integer, field.getType());
         });
+    }
+
+    public List<Object> getResList() {
+        return resList;
     }
 }

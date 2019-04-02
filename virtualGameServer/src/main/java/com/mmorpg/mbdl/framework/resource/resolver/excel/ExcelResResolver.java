@@ -28,16 +28,17 @@ public class ExcelResResolver extends AbstractBeanFactoryAwareResResolver {
     }
 
     @Override
-    public void resolve(StaticResDefinition staticResDefinition) {
+    public List<Object> resolve(StaticResDefinition staticResDefinition) {
         try (InputStream inputStream = staticResDefinition.getResource().getInputStream()){
             List<Object> context = new ArrayList<>(2);
             context.add(beanFactory);
             context.add(staticResDefinition);
             ExcelListener listener = new ExcelListener();
-            ExcelReader excelReader = new ExcelReader(inputStream, context,listener);
+            ExcelReader excelReader = new ExcelReader(inputStream, context, listener);
             excelReader.read();
+            return listener.getResList();
         } catch (IOException e) {
-            throw new RuntimeException(String.format("读取资源文件[%s]发生异常",staticResDefinition.getFullFileName()),e);
+            throw new RuntimeException(String.format("读取资源文件[%s]发生IO异常", staticResDefinition.getFullFileName()), e);
         }
     }
 
