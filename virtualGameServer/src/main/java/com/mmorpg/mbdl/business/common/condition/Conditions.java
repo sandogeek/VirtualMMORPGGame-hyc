@@ -3,13 +3,21 @@ package com.mmorpg.mbdl.business.common.condition;
 import java.util.List;
 
 /**
- * 条件集合
+ * 条件集合，为了保证{@link ICondition#check()}生效，其对象必须在{@link com.mmorpg.mbdl.framework.resource.annotation.ResDef}
+ * 标注的类中生成，通常在afterLoad中生成
  *
  * @author Sando Geek
  * @since v1.0 2019/3/29
  **/
 public class Conditions<T> {
     List<ICondition<T>> conditionList;
+
+    public Conditions() {
+    }
+
+    public Conditions(List<ICondition<T>> conditionList) {
+        this.conditionList = conditionList;
+    }
 
     /**
      * 验证条件集合是否全部通过
