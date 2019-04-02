@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.*;
 
 /**
@@ -168,7 +169,10 @@ public class ExcelListener extends AnalysisEventListener<ArrayList<String>> {
     private void initAndCheck() {
         Field[] declaredFields = staticResDefinition.getvClass().getDeclaredFields();
         Map<String,Field> fieldJsonName2Field = new HashMap<>(16);
-        Arrays.stream(declaredFields).forEach(field -> {
+        Arrays.stream(declaredFields)
+                // 过滤掉transient的字段
+                .filter(field -> !Modifier.isTransient(field.getModifiers()))
+                .forEach(field -> {
             String fieldJsonName = Optional.ofNullable(field.getAnnotation(JsonProperty.class))
                     .map(JsonProperty::value)
                     .orElseGet(field::getName);
