@@ -153,7 +153,7 @@ public class StaticResHandler implements BeanFactoryPostProcessor {
                         Map<String, ResPostProcessor> resPostProcessorMap = beanFactory.getBeansOfType(ResPostProcessor.class);
                         resPostProcessorMap.values().forEach(resPostProcessor -> resList.forEach(resPostProcessor::postProcess));
                     } catch (Exception e) {
-                        throw new RuntimeException(String.format("静态资源[%s]解析失败", staticResDefinition.getvClass().getSimpleName()), e);
+                        throw new RuntimeException(String.format("静态资源[%s]解析失败", staticResDefinition.getFullFileName()), e);
                     }
 
                 }));
