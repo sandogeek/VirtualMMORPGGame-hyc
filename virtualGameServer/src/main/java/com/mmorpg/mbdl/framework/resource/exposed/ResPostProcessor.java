@@ -9,7 +9,7 @@ package com.mmorpg.mbdl.framework.resource.exposed;
 public interface ResPostProcessor {
     /**
      * 对解析出来的每个静态资源对象进行后处理<br/>
-     * 注意：这个方法是并发运行的，注意规避并发问题
+     * 注意：这个方法是并发运行的（但obj.getClass()相同的类运行在同一线程中），注意规避并发问题
      *
      * @param obj
      */
