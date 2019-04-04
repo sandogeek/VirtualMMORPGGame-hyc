@@ -1,8 +1,6 @@
 package com.mmorpg.mbdl.business.common.condition;
 
-import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.mmorpg.mbdl.business.common.condition.impl.role.RoleLevelCondition;
 
 /**
  * 条件接口
@@ -18,9 +16,6 @@ import com.mmorpg.mbdl.business.common.condition.impl.role.RoleLevelCondition;
  * @since v1.0 2019/3/29
  **/
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "_type")
-@JsonSubTypes({
-        @JsonSubTypes.Type(value = RoleLevelCondition.class),
-})
 public interface ICondition<T> {
     /**
      * 验证条件是否通过

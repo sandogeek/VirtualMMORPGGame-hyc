@@ -2,6 +2,7 @@ package com.mmorpg.mbdl.framework.common.utils;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
@@ -10,12 +11,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
+import org.reflections.Reflections;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Collection;
+import java.util.Set;
 
 /**
  * 序列化反序列化工具
@@ -41,6 +44,11 @@ public class JsonUtil {
         mapper.configure(MapperFeature.PROPAGATE_TRANSIENT_MARKER, true);
         SimpleModule module = new SimpleModule();
         mapper.registerModule(module);
+        // TODO 使用property进行配置
+        Reflections reflections = new Reflections("com.mmorpg.mbdl.business");
+        // 自动注册JsonSubTypes
+        Set<Class<?>> classSet = reflections.getTypesAnnotatedWith(JsonTypeName.class);
+        mapper.registerSubtypes(classSet);
     }
 
     /**
