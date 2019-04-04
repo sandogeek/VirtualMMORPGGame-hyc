@@ -2,10 +2,7 @@ package com.mmorpg.mbdl.framework.resource.resolver.excel;
 
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import com.mmorpg.mbdl.framework.common.utils.JsonUtil;
 import com.mmorpg.mbdl.framework.resource.core.StaticResDefinition;
@@ -28,20 +25,15 @@ import java.util.*;
  **/
 public class ExcelListener extends AnalysisEventListener<ArrayList<String>> {
     private static Logger logger = LoggerFactory.getLogger(ExcelListener.class);
-    private List<Object> resList = new ArrayList<>(64);
     /**
-     * ObjectMapper线程安全的，设为静态，避免频繁创建
+     * 这个excel表解析出来的所有{@link com.mmorpg.mbdl.framework.resource.annotation.ResDef}标注的资源对象
      */
-    private static ObjectMapper mapper;
-    static  {
-        mapper = new ObjectMapper();
-        mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
-    }
+    private List<Object> resList = new ArrayList<>(64);
 
-    private ConfigurableListableBeanFactory beanFactory;
-    private StaticResDefinition staticResDefinition;
-    private IExcelFormat excelFormat;
-    private String idFieldJsonName;
+    ConfigurableListableBeanFactory beanFactory;
+    StaticResDefinition staticResDefinition;
+    IExcelFormat excelFormat;
+    String idFieldJsonName;
 
 
     private ImmutableMap.Builder key2ResourceBuilder = ImmutableMap.builder();
@@ -56,7 +48,7 @@ public class ExcelListener extends AnalysisEventListener<ArrayList<String>> {
     /**
      * 下标到字段类型的映射
      */
-    private Map<Integer,Class<?>> index2FieldType = new HashMap<>(16);
+    private Map<Integer, Class<?>> index2FieldType = new HashMap<>(16);
     /**
      * 用于检查key是否唯一
      */
@@ -65,43 +57,11 @@ public class ExcelListener extends AnalysisEventListener<ArrayList<String>> {
     @Override
     @SuppressWarnings("unchecked")
     public void invoke(ArrayList<String> list, AnalysisContext context) {
-        if (beanFactory==null){
-            List contextCustom = (List) context.getCustom();
-            beanFactory = (ConfigurableListableBeanFactory)contextCustom.get(0);
-            staticResDefinition = (StaticResDefinition)contextCustom.get(1);
-            try {
-                excelFormat = beanFactory.getBean(IExcelFormat.class);
-            } catch (Exception e) {
-                excelFormat = new ExcelFormat();
-            }
-            idFieldJsonName = Optional.ofNullable(staticResDefinition.getIdField().getAnnotation(JsonProperty.class))
-                    .map(JsonProperty::value)
-                    .orElseGet(() -> staticResDefinition.getIdField().getName());
-        }
         if (!tableHeadHandleOver){
-            if (excelFormat.isFieldNamesRow(list)){
-                foundFieldNameLine = true;
-                for (int i = excelFormat.ignoreFirstNColumn(); i < list.size(); i++) {
-                    String content = list.get(i);
-                    if (content !=null){
-                        index2FieldJsonName.put(i, content);
-                        if (idFieldIndex==null && content.equals(idFieldJsonName) ) {
-                            idFieldIndex = i;
-                        }
-                    }
-
-                }
-            }
-            if (excelFormat.isTableHeadLastLine(list)){
-                if (!foundFieldNameLine){
-                    throw new RuntimeException(String.format("资源文件[%s]格式有误，表头不包含字段名称行",staticResDefinition.getFullFileName()));
-                }
-                tableHeadHandleOver = true;
-            }
-
+            handleTableHead(list);
         }else {
             if (index2FieldType.size()==0){
-                initAndCheck();
+                initIndex2FieldTypeAndCheckOne2One();
             }
             // 跳过id字段为空的行
             if (list.get(idFieldIndex)==null){
@@ -127,28 +87,55 @@ public class ExcelListener extends AnalysisEventListener<ArrayList<String>> {
             }
             String vClassObjectInJson ="{" + String.join("," ,vClassObjectInJsonArray) + "}";
             Object resource = JsonUtil.string2Object(vClassObjectInJson, staticResDefinition.getvClass());
-            Object obj = null;
+            Object priKey = null;
             try {
-                obj = staticResDefinition.getIdField().get(resource);
+                priKey = staticResDefinition.getIdField().get(resource);
             } catch (IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
-            if (key2RowNumber.containsKey(obj)) {
+            if (key2RowNumber.containsKey(priKey)) {
                 throw new RuntimeException(String.format("资源文件[%s]主键列[%s]，主键不唯一，第[%s]行与第[%s]行重复,重复值[%s]",
                         staticResDefinition.getFullFileName(),
                         idFieldJsonName,
-                        key2RowNumber.get(obj)+1,
+                        key2RowNumber.get(priKey) + 1,
                         context.getCurrentRowNum()+1,
-                        obj
+                        priKey
                 ));
             }
             if (resource instanceof IAfterResLoad) {
                 IAfterResLoad afterLoad = (IAfterResLoad) resource;
                 afterLoad.afterLoad();
             }
-            key2RowNumber.put(obj,context.getCurrentRowNum());
-            key2ResourceBuilder.put(obj,resource);
+            key2RowNumber.put(priKey, context.getCurrentRowNum());
+            key2ResourceBuilder.put(priKey, resource);
             resList.add(resource);
+        }
+    }
+
+    /**
+     * 处理表头
+     *
+     * @param list
+     */
+    private void handleTableHead(ArrayList<String> list) {
+        if (excelFormat.isFieldNamesRow(list)) {
+            foundFieldNameLine = true;
+            for (int i = excelFormat.ignoreFirstNColumn(); i < list.size(); i++) {
+                String content = list.get(i);
+                if (content != null) {
+                    index2FieldJsonName.put(i, content);
+                    if (idFieldIndex == null && content.equals(idFieldJsonName)) {
+                        idFieldIndex = i;
+                    }
+                }
+
+            }
+        }
+        if (excelFormat.isTableHeadLastLine(list)) {
+            if (!foundFieldNameLine) {
+                throw new RuntimeException(String.format("资源文件[%s]格式有误，表头不包含字段名称行", staticResDefinition.getFullFileName()));
+            }
+            tableHeadHandleOver = true;
         }
     }
 
@@ -168,7 +155,7 @@ public class ExcelListener extends AnalysisEventListener<ArrayList<String>> {
     /**
      * 初始化index2FieldType并检查类字段与表的字段能否一一对应
      */
-    private void initAndCheck() {
+    private void initIndex2FieldTypeAndCheckOne2One() {
         Field[] declaredFields = staticResDefinition.getvClass().getDeclaredFields();
         Map<String,Field> fieldJsonName2Field = new HashMap<>(16);
         Arrays.stream(declaredFields)

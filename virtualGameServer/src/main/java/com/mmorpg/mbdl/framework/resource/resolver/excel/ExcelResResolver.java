@@ -1,8 +1,10 @@
 package com.mmorpg.mbdl.framework.resource.resolver.excel;
 
 import com.alibaba.excel.ExcelReader;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.mmorpg.mbdl.framework.resource.core.StaticResDefinition;
 import com.mmorpg.mbdl.framework.resource.exposed.AbstractBeanFactoryAwareResResolver;
+import com.mmorpg.mbdl.framework.resource.exposed.IExcelFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -11,6 +13,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Excel静态资源解析器
@@ -21,6 +24,15 @@ import java.util.List;
 @Component
 public class ExcelResResolver extends AbstractBeanFactoryAwareResResolver {
     private static final Logger logger = LoggerFactory.getLogger(ExcelResResolver.class);
+    private static IExcelFormat iExcelFormat;
+
+    static {
+        try {
+            iExcelFormat = beanFactory.getBean(IExcelFormat.class);
+        } catch (Exception e) {
+            iExcelFormat = new ExcelFormat();
+        }
+    }
 
     @Override
     public String suffix() {
@@ -31,9 +43,13 @@ public class ExcelResResolver extends AbstractBeanFactoryAwareResResolver {
     public List<Object> resolve(StaticResDefinition staticResDefinition) {
         try (InputStream inputStream = staticResDefinition.getResource().getInputStream()){
             List<Object> context = new ArrayList<>(2);
-            context.add(beanFactory);
-            context.add(staticResDefinition);
             ExcelListener listener = new ExcelListener();
+            listener.beanFactory = beanFactory;
+            listener.staticResDefinition = staticResDefinition;
+            listener.excelFormat = iExcelFormat;
+            listener.idFieldJsonName = Optional.ofNullable(staticResDefinition.getIdField().getAnnotation(JsonProperty.class))
+                    .map(JsonProperty::value)
+                    .orElseGet(() -> staticResDefinition.getIdField().getName());
             ExcelReader excelReader = new ExcelReader(inputStream, context, listener);
             excelReader.read();
             return listener.getResList();
