@@ -56,6 +56,12 @@
             <artifactId>logback-classic</artifactId>
             <version>1.2.3</version>
         </dependency>
+
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>1.2</version>
+        </dependency>
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-all</artifactId>
@@ -123,7 +129,7 @@
         <dependency>
             <groupId>com.baidu</groupId>
             <artifactId>jprotobuf</artifactId>
-            <version>2.2.8</version>
+            <version>2.2.9</version>
             <exclusions>
                 <exclusion>
                     <artifactId>guava</artifactId>
@@ -135,7 +141,7 @@
         <dependency>
             <groupId>com.baidu</groupId>
             <artifactId>jprotobuf-precompile-plugin</artifactId>
-            <version>1.2.8</version>
+            <version>2.0.8</version>
         </dependency>
         <!--数据库依赖-->
         <!--连接池-->
@@ -299,9 +305,9 @@
             <plugin>
                 <groupId>com.baidu</groupId>
                 <artifactId>jprotobuf-precompile-plugin</artifactId>
-                <version>1.2.8</version>
+                <version>2.0.8</version>
                 <configuration>
-                    <filterClassPackage>com.mmorpg</filterClassPackage>
+                    <filterClassPackage>com.mmorpg.mbdl</filterClassPackage>
                 </configuration>
                 <executions>
                     <execution>

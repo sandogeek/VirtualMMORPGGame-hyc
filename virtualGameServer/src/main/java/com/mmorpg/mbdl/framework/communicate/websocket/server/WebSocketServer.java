@@ -90,7 +90,7 @@ public class WebSocketServer {
             Channel channel = bootstrap.bind(netPort).sync().channel();
             logger.info("WebSocket服务器已启动完成");
             // 阻塞，直到channel.close
-            channel.closeFuture().sync();
+            // channel.closeFuture().sync();
         }  catch (Exception e){
             shutdown();
             throw e;

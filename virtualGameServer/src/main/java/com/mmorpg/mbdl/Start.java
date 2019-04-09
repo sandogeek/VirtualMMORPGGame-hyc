@@ -25,6 +25,7 @@ import org.springframework.core.type.ClassMetadata;
 import org.springframework.core.type.classreading.CachingMetadataReaderFactory;
 import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
+import org.springframework.util.StopWatch;
 import org.springframework.util.SystemPropertyUtils;
 
 import javax.persistence.Entity;
@@ -46,12 +47,16 @@ public class Start {
 
     public static void  main(String[] args) throws Exception {
         // generateDaoInterfaces();
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
         ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("applicationContext.xml");
         PacketIdTsGenerator.getInstance().generatePacketIdTs();
         removeAbstractPacketBean(ctx);
         logger.info("开始启动WebSocket服务器...");
         WebSocketServer webSocketServer = WebSocketServer.getInstance();
         webSocketServer.bind(WebSocketServer.PORT);
+        stopWatch.stop();
+        logger.info("一切准备就绪，总耗时{}秒", stopWatch.getTotalTimeSeconds());
     }
 
     /**

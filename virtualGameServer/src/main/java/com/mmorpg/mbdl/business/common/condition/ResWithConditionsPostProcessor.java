@@ -5,9 +5,9 @@ import org.reflections.ReflectionUtils;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 带Conditions字段的静态资源的后处理器
@@ -17,7 +17,7 @@ import java.util.Set;
  **/
 @Component
 public class ResWithConditionsPostProcessor implements ResPostProcessor {
-    private static Map<Class<?>, Set<Field>> class2Fields = new HashMap<>(8);
+    private static Map<Class<?>, Set<Field>> class2Fields = new ConcurrentHashMap<>(8);
 
     @SuppressWarnings("unchecked")
     @Override
@@ -32,6 +32,7 @@ public class ResWithConditionsPostProcessor implements ResPostProcessor {
         for (Field field : allFields) {
             try {
                 Conditions<ICondition<?>> conditions = (Conditions<ICondition<?>>) field.get(obj);
+                // 对于同一类资源对象是串行的，所以check是串行的
                 conditions.conditionList.forEach(ICondition::check);
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
