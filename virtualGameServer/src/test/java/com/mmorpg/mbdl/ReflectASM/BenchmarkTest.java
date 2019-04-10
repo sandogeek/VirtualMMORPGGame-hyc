@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-public class BenmarkTest {
+public class BenchmarkTest {
     @Test
     void injectStaticField() {
         UserService target = new UserService();

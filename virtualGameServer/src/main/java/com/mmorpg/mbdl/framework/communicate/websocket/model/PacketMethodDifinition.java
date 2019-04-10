@@ -43,7 +43,7 @@ public class PacketMethodDifinition {
     }
     public Object invoke(ISession session,AbstractPacket abstractPacket){
         /** 高性能反射调用
-         *  {@link com.mmorpg.mbdl.ReflectASM.BenmarkTest#main()}
+         *  {@link com.mmorpg.mbdl.ReflectASM.BenchMarkTest#main()}
          */
         Object obj= methodAccess.invoke(bean,methodIndex,session,abstractPacket);
         return obj;
