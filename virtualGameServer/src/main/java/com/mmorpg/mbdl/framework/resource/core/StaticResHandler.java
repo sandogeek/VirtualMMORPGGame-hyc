@@ -54,6 +54,7 @@ public class StaticResHandler implements BeanFactoryPostProcessor {
     private String packageToScan;
     private String suffix;
     private Map<Class, StaticResDefinition> class2StaticResDefinitionMap = new HashMap<>(32);
+    StaticResDefinitionFactory staticResDefinitionFactory;
     /**
      * 自定义的用于IO的ForkJoinPool
      */
@@ -98,6 +99,7 @@ public class StaticResHandler implements BeanFactoryPostProcessor {
         Preconditions.checkNotNull(packageToScan,"静态资源包扫描路径不能为空");
 
         classesScan(packageToScan,beanFactory);
+        this.staticResDefinitionFactory = beanFactory.getBean(StaticResDefinitionFactory.class);
         init(class2StaticResDefinitionMap,beanFactory);
         handleStaticRes(beanFactory);
     }
@@ -121,7 +123,7 @@ public class StaticResHandler implements BeanFactoryPostProcessor {
                 throw new RuntimeException(message);
             }
             Map<String, StaticResDefinition> fileName2StaticResDefinition = beanFactory
-                    .getBean(StaticResDefinitionFactory.class).getFullFileNameStaticResDefinition();
+                    .getBean(StaticResDefinitionFactory.class).getFullFileName2StaticResDefinition();
             // 利用ForkJoinPool并行处理，因为包含IO,所以使用自定义的ForkJoinPool
             Runnable resourceLoadTask = () -> {
                 Arrays.stream(resources).parallel().filter(Resource::isReadable).map((res)->{
@@ -171,7 +173,7 @@ public class StaticResHandler implements BeanFactoryPostProcessor {
         });
         stopWatch.stop();
         forkJoinPool.shutdown();
-        checkNullResStaticResDefinition(beanFactory.getBean(StaticResDefinitionFactory.class).getFullFileNameStaticResDefinition());
+        checkNullResStaticResDefinition(beanFactory.getBean(StaticResDefinitionFactory.class).getFullFileName2StaticResDefinition());
         logger.info("静态资源解析完毕，耗时{}ms",stopWatch.getTime());
     }
 
@@ -199,7 +201,7 @@ public class StaticResHandler implements BeanFactoryPostProcessor {
         if (class2StaticResDefinitionMap.size() == 0) {
             return;
         }
-        class2StaticResDefinitionMap.keySet().forEach((clazz)->{
+        class2StaticResDefinitionMap.keySet().stream().parallel().forEach((clazz) -> {
             ResDef resDef = (ResDef) clazz.getAnnotation(ResDef.class);
             StaticResDefinition staticResDefinition = class2StaticResDefinitionMap.get(clazz);
 
@@ -290,14 +292,13 @@ public class StaticResHandler implements BeanFactoryPostProcessor {
                     throw new RuntimeException(String.format("[%s]<%s,%s>类型的bean实例化失败",IStaticRes.class,idBoxedType.getSimpleName(),clazz.getSimpleName()),e);
                 }
             }
-            StaticResDefinitionFactory staticResDefinitionFactory = beanFactory.getBean(StaticResDefinitionFactory.class);
-            Map<String, StaticResDefinition> fullFileNameStaticResDefinition = staticResDefinitionFactory.getFullFileNameStaticResDefinition();
+            Map<String, StaticResDefinition> fullFileName2StaticResDefinition = staticResDefinitionFactory.getFullFileName2StaticResDefinition();
             String fullFileName = staticResDefinition.getFullFileName();
-            if (fullFileNameStaticResDefinition.keySet().contains(fullFileName)){
-                Class<?> oldClass = fullFileNameStaticResDefinition.get(fullFileName).getvClass();
+            if (fullFileName2StaticResDefinition.keySet().contains(fullFileName)) {
+                Class<?> oldClass = fullFileName2StaticResDefinition.get(fullFileName).getvClass();
                 throw new RuntimeException(String.format("类[%s]与类[%s]对应同一个资源文件名[%s]",clazz,oldClass,fullFileName));
             }
-            fullFileNameStaticResDefinition.put(fullFileName,staticResDefinition);
+            fullFileName2StaticResDefinition.put(fullFileName, staticResDefinition);
         });
     }
 
