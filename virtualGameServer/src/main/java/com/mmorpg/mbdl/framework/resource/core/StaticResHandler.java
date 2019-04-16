@@ -1,6 +1,7 @@
 package com.mmorpg.mbdl.framework.resource.core;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.mmorpg.mbdl.EnhanceStarter;
 import com.mmorpg.mbdl.framework.common.utils.SpringPropertiesUtil;
 import com.mmorpg.mbdl.framework.resource.annotation.Key;
@@ -124,6 +125,17 @@ public class StaticResHandler implements BeanFactoryPostProcessor {
             }
             Map<String, StaticResDefinition> fileName2StaticResDefinition = beanFactory
                     .getBean(StaticResDefinitionFactory.class).getFullFileName2StaticResDefinition();
+
+            Map<String, ResPostProcessor> resPostProcessorMap = beanFactory.getBeansOfType(ResPostProcessor.class);
+            ArrayList<ResPostProcessor> resPostProcessors = Lists.newArrayList(resPostProcessorMap.values());
+            resPostProcessors.sort((o1, o2) -> {
+                if (o1.order() > o2.order()) {
+                    return -1;
+                } else if (o1.order() < o2.order()) {
+                    return 1;
+                }
+                return 0;
+            });
             // 利用ForkJoinPool并行处理，因为包含IO,所以使用自定义的ForkJoinPool
             Runnable resourceLoadTask = () -> {
                 Arrays.stream(resources).parallel().filter(Resource::isReadable).map((res)->{
@@ -152,8 +164,7 @@ public class StaticResHandler implements BeanFactoryPostProcessor {
                     logger.debug("静态资源{}成功关联到类[{}]",staticResDefinition.getFullFileName(),staticResDefinition.getvClass().getSimpleName());
                     try {
                         List<Object> resList = iResResolver.resolve(staticResDefinition);
-                        Map<String, ResPostProcessor> resPostProcessorMap = beanFactory.getBeansOfType(ResPostProcessor.class);
-                        resPostProcessorMap.values().forEach(resPostProcessor -> resList.forEach(resPostProcessor::postProcess));
+                        resPostProcessors.forEach(resPostProcessor -> resList.forEach(resPostProcessor::postProcess));
                     } catch (Exception e) {
                         throw new RuntimeException(String.format("静态资源[%s]解析失败", staticResDefinition.getFullFileName()), e);
                     }

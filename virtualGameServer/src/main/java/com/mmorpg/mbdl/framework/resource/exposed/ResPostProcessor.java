@@ -14,4 +14,13 @@ public interface ResPostProcessor {
      * @param obj
      */
     void postProcess(Object obj);
+
+    /**
+     * 优先级，数值越大越先被应用到静态资源对象上
+     *
+     * @return
+     */
+    default int order() {
+        return Integer.MIN_VALUE;
+    }
 }

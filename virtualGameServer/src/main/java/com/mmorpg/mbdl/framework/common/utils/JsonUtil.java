@@ -48,6 +48,7 @@ public class JsonUtil {
         Reflections reflections = new Reflections("com.mmorpg.mbdl.business");
         // 自动注册JsonSubTypes
         Set<Class<?>> classSet = reflections.getTypesAnnotatedWith(JsonTypeName.class);
+        // TODO 新增MultiMap<JsonTypeInfo的class,JsonTypeName>用于校验JsonTypeName是否重复注册
         mapper.registerSubtypes(classSet);
     }
 

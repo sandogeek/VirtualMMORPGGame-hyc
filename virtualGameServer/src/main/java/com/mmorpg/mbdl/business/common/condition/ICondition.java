@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
  * 总说明：角色等级最低达到min级，最高达到max级，则条件验证成功<br/>
  * 模板：<br/>
  * <pre>
- *     {"@type": "roleLevel", "min": , "max": }
+ *     {"_type": "roleLevel", "min": , "max": }
  * </pre>
  *
  * @author Sando Geek
