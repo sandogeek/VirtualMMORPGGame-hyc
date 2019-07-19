@@ -1,7 +1,11 @@
 package com.mmorpg.mbdl.framework.resource.core;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.mmorpg.mbdl.framework.resource.exposed.IStaticRes;
 import com.mmorpg.mbdl.framework.resource.impl.StaticRes;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.core.io.Resource;
 
 import java.lang.reflect.Field;
@@ -30,8 +34,10 @@ public class StaticResDefinition {
      * 实际存储静态资源数据的对象
      */
     private StaticRes staticRes;
+    private ImmutableMap.Builder key2ResourceBuilder = ImmutableMap.builder();
     /** 待注册到容器中的IStaticRes子类的单例Bean */
     private IStaticRes iStaticRes;
+    private ConfigurableListableBeanFactory beanFactory;
 
     /**
      * TODO 初始化uniqueFieldName2Field，indexFieldName2Field
@@ -72,16 +78,20 @@ public class StaticResDefinition {
         this.vClass = vClass;
     }
 
-    public StaticRes getStaticRes() {
-        return staticRes;
-    }
-
     public void setStaticRes(StaticRes staticRes) {
         this.staticRes = staticRes;
     }
 
     public void setiStaticRes(IStaticRes iStaticRes) {
         this.iStaticRes = iStaticRes;
+    }
+
+    public void setBeanFactory(ConfigurableListableBeanFactory beanFactory) {
+        this.beanFactory = beanFactory;
+    }
+
+    public ConfigurableListableBeanFactory getBeanFactory() {
+        return beanFactory;
     }
 
     public Resource getResource() {
@@ -92,7 +102,22 @@ public class StaticResDefinition {
         this.resource = resource;
     }
 
-    public IStaticRes getiStaticRes() {
-        return iStaticRes;
+    public ImmutableMap finish() {
+        ImmutableMap immutableMap = key2ResourceBuilder.build();
+        staticRes.setKey2Resource(immutableMap);
+        String resBeanName = StringUtils.uncapitalize(iStaticRes.getClass().getSimpleName());
+        beanFactory.registerSingleton(resBeanName, iStaticRes);
+        return immutableMap;
+    }
+
+    @CanIgnoreReturnValue
+    public ImmutableMap.Builder add(Object value) {
+        try {
+            Object key = idField.get(value);
+            key2ResourceBuilder.put(key, value);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+        return key2ResourceBuilder;
     }
 }
