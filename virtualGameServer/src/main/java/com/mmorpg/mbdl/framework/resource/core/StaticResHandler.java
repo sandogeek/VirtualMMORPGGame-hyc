@@ -1,6 +1,7 @@
 package com.mmorpg.mbdl.framework.resource.core;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.mmorpg.mbdl.EnhanceStarter;
 import com.mmorpg.mbdl.framework.common.utils.SpringPropertiesUtil;
@@ -87,7 +88,6 @@ public class StaticResHandler implements BeanFactoryPostProcessor {
 
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
-        AbstractBeanFactoryAwareResResolver.setBeanFactory(beanFactory);
         /** 使SpringPropertiesUtil可用于{@link EnhanceStarter}中 */
         beanFactory.getBean(SpringPropertiesUtil.class);
         EnhanceStarter.setBeanFactory(beanFactory);
@@ -112,14 +112,14 @@ public class StaticResHandler implements BeanFactoryPostProcessor {
     private void handleStaticRes(ConfigurableListableBeanFactory beanFactory){
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
-        beanFactory.getBeansOfType(IResResolver.class).values().forEach(iResResolver -> {
+        beanFactory.getBeansOfType(BaseResResolver.class).values().forEach(baseResResolver -> {
             Resource[] resources;
             ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
             try {
                 resources = resourcePatternResolver.getResources(ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX +
-                        "**/*" + iResResolver.suffix());
+                        "**/*" + baseResResolver.suffix());
             } catch (IOException e) {
-                String message = String.format("获取后缀为[%s]的资源时发生IO异常", iResResolver.suffix());
+                String message = String.format("获取后缀为[%s]的资源时发生IO异常", baseResResolver.suffix());
                 logger.error(message);
                 throw new RuntimeException(message);
             }
@@ -163,8 +163,9 @@ public class StaticResHandler implements BeanFactoryPostProcessor {
                 }).filter(Objects::nonNull).forEach((staticResDefinition -> {
                     logger.debug("静态资源{}成功关联到类[{}]",staticResDefinition.getFullFileName(),staticResDefinition.getvClass().getSimpleName());
                     try {
-                        List<Object> resList = iResResolver.resolve(staticResDefinition);
-                        resPostProcessors.forEach(resPostProcessor -> resList.forEach(resPostProcessor::postProcess));
+                        baseResResolver.resolve(staticResDefinition);
+                        ImmutableMap immutableMap = staticResDefinition.finish();
+                        resPostProcessors.forEach(resPostProcessor -> immutableMap.values().forEach(resPostProcessor::postProcess));
                     } catch (Exception e) {
                         throw new RuntimeException(String.format("静态资源[%s]解析失败", staticResDefinition.getFullFileName()), e);
                     }

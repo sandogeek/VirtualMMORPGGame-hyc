@@ -3,14 +3,12 @@ package com.mmorpg.mbdl.framework.resource.resolver.excel;
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.common.collect.ImmutableMap;
 import com.mmorpg.mbdl.framework.common.utils.JsonUtil;
 import com.mmorpg.mbdl.framework.resource.core.StaticResDefinition;
 import com.mmorpg.mbdl.framework.resource.exposed.IExcelFormat;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -24,18 +22,10 @@ import java.util.*;
  **/
 public class ExcelListener extends AnalysisEventListener<ArrayList<String>> {
     private static Logger logger = LoggerFactory.getLogger(ExcelListener.class);
-    /**
-     * 这个excel表解析出来的所有{@link com.mmorpg.mbdl.framework.resource.annotation.ResDef}标注的资源对象
-     */
-    private List<Object> resList = new ArrayList<>(64);
 
-    ConfigurableListableBeanFactory beanFactory;
     StaticResDefinition staticResDefinition;
     IExcelFormat excelFormat;
     String idFieldJsonName;
-
-
-    private ImmutableMap.Builder key2ResourceBuilder = ImmutableMap.builder();
 
     private boolean foundFieldNameLine= false;
     private boolean tableHeadHandleOver = false;
@@ -102,8 +92,7 @@ public class ExcelListener extends AnalysisEventListener<ArrayList<String>> {
                 ));
             }
             key2RowNumber.put(priKey, context.getCurrentRowNum());
-            key2ResourceBuilder.put(priKey, resource);
-            resList.add(resource);
+            staticResDefinition.add(resource);
         }
     }
 
@@ -141,10 +130,6 @@ public class ExcelListener extends AnalysisEventListener<ArrayList<String>> {
         }else if (!tableHeadHandleOver) {
             throw new RuntimeException(String.format("资源文件[%s]表头处理失败，未找到表头字段名称行和表头结束行",staticResDefinition.getFullFileName()));
         }
-        ImmutableMap key2Resource = key2ResourceBuilder.build();
-        staticResDefinition.getStaticRes().setKey2Resource(key2Resource);
-        String resBeanName = StringUtils.uncapitalize(staticResDefinition.getiStaticRes().getClass().getSimpleName());
-        beanFactory.registerSingleton(resBeanName,staticResDefinition.getiStaticRes());
     }
 
     /**
@@ -190,9 +175,5 @@ public class ExcelListener extends AnalysisEventListener<ArrayList<String>> {
             }
             index2FieldType.put(integer, field.getType());
         });
-    }
-
-    public List<Object> getResList() {
-        return resList;
     }
 }

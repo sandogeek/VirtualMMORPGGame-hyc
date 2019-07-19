@@ -25,7 +25,9 @@ public class ResdefMetadataReaderPostProcessor extends AbstractMetadataReaderPos
         try {
             Class<?> resClazz = Class.forName(metadataReader.getClassMetadata().getClassName());
             StaticResHandler staticResHandler = beanFactory.getBean(StaticResHandler.class);
-            staticResHandler.getClass2StaticResDefinitionMap().put(resClazz,new StaticResDefinition());
+            StaticResDefinition staticResDefinition = new StaticResDefinition();
+            staticResDefinition.setBeanFactory(beanFactory);
+            staticResHandler.getClass2StaticResDefinitionMap().put(resClazz, staticResDefinition);
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(String.format("无法加载类[%s]",metadataReader.getClassMetadata().getClassName()));
         }
