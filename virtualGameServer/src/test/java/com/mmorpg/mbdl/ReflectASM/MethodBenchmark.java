@@ -36,7 +36,7 @@ public class MethodBenchmark {
                 .include(MethodBenchmark.class.getName())
                 .warmupIterations(3)
                 .measurementIterations(5)
-                .forks(5)
+                .forks(3)
                 .build();
 
         new Runner(opt).run();
