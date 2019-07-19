@@ -225,7 +225,11 @@ public class StaticResHandler implements BeanFactoryPostProcessor {
                 }else if (fields.size() < 1){
                     throw new RuntimeException(String.format("表格型资源类[%s]不包含@Id注解的字段，如非表格型资源，请在其@ResDef中把isTable设置为false",clazz.getSimpleName()));
                 }
-                Field idField = fields.toArray(new Field[0])[0];
+                Field idField = null;
+                for (Field field : fields) {
+                    idField = field;
+                    break;
+                }
                 staticResDefinition.setIdField(idField);
                 Class idBoxedType = null;
                 if (idField.getType().isPrimitive()){
