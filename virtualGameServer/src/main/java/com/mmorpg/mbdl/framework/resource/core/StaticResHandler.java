@@ -7,15 +7,15 @@ import com.mmorpg.mbdl.EnhanceStarter;
 import com.mmorpg.mbdl.framework.common.utils.SpringPropertiesUtil;
 import com.mmorpg.mbdl.framework.resource.annotation.Key;
 import com.mmorpg.mbdl.framework.resource.annotation.ResDef;
-import com.mmorpg.mbdl.framework.resource.exposed.*;
+import com.mmorpg.mbdl.framework.resource.exposed.AbstractMetadataReaderPostProcessor;
+import com.mmorpg.mbdl.framework.resource.exposed.BaseResResolver;
+import com.mmorpg.mbdl.framework.resource.exposed.IStaticRes;
+import com.mmorpg.mbdl.framework.resource.exposed.ResPostProcessor;
 import com.mmorpg.mbdl.framework.resource.impl.StaticRes;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.description.type.TypeDescription;
-import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.dynamic.loading.ClassLoadingStrategy;
-import net.bytebuddy.implementation.MethodDelegation;
-import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
@@ -281,28 +281,8 @@ public class StaticResHandler implements BeanFactoryPostProcessor {
                 } catch (InstantiationException | IllegalAccessException e) {
                     throw  new RuntimeException(String.format("生成%s的子类时发生异常",StaticRes.class.getSimpleName()),e);
                 }
-                TypeDescription.Generic genericIStaticRes =
-                        TypeDescription.Generic.Builder.parameterizedType(IStaticRes.class, idBoxedType, clazz).build();
-                DynamicType.Unloaded<?> unloaded = new ByteBuddy()
-                        .subclass(genericIStaticRes)
-                        .name(packageName + "." + IStaticRes.class.getSimpleName() + idBoxedType.getSimpleName() + clazz.getSimpleName())
-                        .method(ElementMatchers.isDeclaredBy(IStaticRes.class)).intercept(MethodDelegation.to(staticRes))
-                        .make();
-                // try {
-                //     unloaded.saveIn(new File("target"));
-                // } catch (IOException e) {
-                //     e.printStackTrace();
-                // }
-                Class<?> subClass = unloaded.load(getClass().getClassLoader(), ClassLoadingStrategy.Default.INJECTION).getLoaded();
-                staticResDefinition.setvClass(clazz);
-                try {
-                    IStaticRes instance = (IStaticRes)subClass.newInstance();
-                    staticRes.setFullFileName(staticResDefinition.getFullFileName());
-                    staticResDefinition.setStaticRes(staticRes);
-                    staticResDefinition.setiStaticRes(instance);
-                } catch (InstantiationException | IllegalAccessException e) {
-                    throw new RuntimeException(String.format("[%s]<%s,%s>类型的bean实例化失败",IStaticRes.class,idBoxedType.getSimpleName(),clazz.getSimpleName()),e);
-                }
+                staticRes.setFullFileName(staticResDefinition.getFullFileName());
+                staticResDefinition.setStaticRes(staticRes);
             }
             Map<String, StaticResDefinition> fullFileName2StaticResDefinition = staticResDefinitionFactory.getFullFileName2StaticResDefinition();
             String fullFileName = staticResDefinition.getFullFileName();
