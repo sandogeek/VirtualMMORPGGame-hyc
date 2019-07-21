@@ -88,6 +88,9 @@ public class StaticResDefinition {
 
     @CanIgnoreReturnValue
     public ImmutableMap.Builder add(Object value) {
+        if (value.getClass() != vClass) {
+            throw new RuntimeException(String.format("添加的对象类型错误，%s的%s添加了类型为%s的对象", fullFileName, StaticResDefinition.class.getSimpleName(), value.getClass().getSimpleName()));
+        }
         try {
             Object key = idField.get(value);
             key2ResourceBuilder.put(key, value);
