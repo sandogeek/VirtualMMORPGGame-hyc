@@ -33,6 +33,7 @@ public class StaticResDefinition {
      * 实际存储静态资源数据的对象
      */
     private StaticRes staticRes;
+    private Field key2ResourceField;
     private ImmutableMap.Builder key2ResourceBuilder = ImmutableMap.builder();
     private ConfigurableListableBeanFactory beanFactory;
 
@@ -60,6 +61,12 @@ public class StaticResDefinition {
 
     public void setStaticRes(StaticRes staticRes) {
         this.staticRes = staticRes;
+        try {
+            key2ResourceField = this.staticRes.getClass().getDeclaredField("key2Resource");
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        }
+        key2ResourceField.setAccessible(true);
     }
 
     public void setBeanFactory(ConfigurableListableBeanFactory beanFactory) {
@@ -80,7 +87,11 @@ public class StaticResDefinition {
 
     public ImmutableMap finish() {
         ImmutableMap immutableMap = key2ResourceBuilder.build();
-        staticRes.setKey2Resource(immutableMap);
+        try {
+            key2ResourceField.set(staticRes, immutableMap);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
         String resBeanName = StringUtils.uncapitalize(staticRes.getClass().getSimpleName());
         beanFactory.registerSingleton(resBeanName, staticRes);
         return immutableMap;

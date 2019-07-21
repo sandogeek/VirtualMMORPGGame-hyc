@@ -14,8 +14,11 @@ import com.mmorpg.mbdl.framework.resource.exposed.ResPostProcessor;
 import com.mmorpg.mbdl.framework.resource.impl.StaticRes;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import net.bytebuddy.ByteBuddy;
+import net.bytebuddy.description.modifier.Visibility;
 import net.bytebuddy.description.type.TypeDescription;
+import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.dynamic.loading.ClassLoadingStrategy;
+import net.bytebuddy.implementation.FieldAccessor;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
@@ -275,10 +278,16 @@ public class StaticResHandler implements BeanFactoryPostProcessor {
 
                 TypeDescription.Generic genericStaticRes =
                         TypeDescription.Generic.Builder.parameterizedType(StaticRes.class, idBoxedType, clazz).build();
+                TypeDescription.Generic mapKey2Resource =
+                        TypeDescription.Generic.Builder.parameterizedType(Map.class, idBoxedType, clazz).build();
                 String packageName = clazz.getPackage().getName();
-                Class<?> staticResSubClass = new ByteBuddy().subclass(genericStaticRes)
+                DynamicType.Unloaded<?> staticResUnloaded = new ByteBuddy().subclass(genericStaticRes)
                         .name(packageName + "." + StaticRes.class.getSimpleName() + idBoxedType.getSimpleName() + clazz.getSimpleName())
-                        .make().load(getClass().getClassLoader(), ClassLoadingStrategy.Default.INJECTION).getLoaded();
+                        .defineField("key2Resource", mapKey2Resource, Visibility.PRIVATE)
+                        .defineMethod("getKey2Resource", mapKey2Resource, Visibility.PUBLIC)
+                        .intercept(FieldAccessor.ofField("key2Resource"))
+                        .make();
+                Class<?> staticResSubClass = staticResUnloaded.load(getClass().getClassLoader(), ClassLoadingStrategy.Default.INJECTION).getLoaded();
                 StaticRes staticRes = null;
                 try {
                     staticRes = (StaticRes) staticResSubClass.newInstance();
