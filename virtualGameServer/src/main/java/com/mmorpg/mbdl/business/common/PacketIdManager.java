@@ -30,8 +30,11 @@ public class PacketIdManager {
 
     public static final short PING_HEART_BEAT = 1001;
     public static final short PONG_HEART_BEAT = 1002;
-
     public static final short GLOBAL_MESSAGE = 1003;
+    /**
+     * 热更
+     */
+    public static final short HOT_RELOAD_REQ = 1004;
     /** login */
     public static final short LOGIN_AUTH_REQ = 10001;
     public static final short LOGIN_RESULT_RESP = 10002;
