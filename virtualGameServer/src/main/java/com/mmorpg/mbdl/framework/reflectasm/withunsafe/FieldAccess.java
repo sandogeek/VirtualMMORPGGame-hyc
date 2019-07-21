@@ -94,14 +94,6 @@ public abstract class FieldAccess {
 		return fieldTypes.length;
 	}
 
-	public Field[] getFields () {
-		return fields;
-	}
-
-	public void setFields (Field[] fields) {
-		this.fields = fields;
-	}
-
     /**
      * ！！！注意：如果是基础类型，不要调用此方法设置值，请调用相应的setXxx方法赋值
      * @param instance
