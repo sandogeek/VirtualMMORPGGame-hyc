@@ -288,13 +288,22 @@
             <version>2.6.2</version>
         </dependency>
 
-        <!--使用：http://www.unitils.org/tutorial-reflectionassert.html-->
-        <!-- https://mvnrepository.com/artifact/org.unitils/unitils-core -->
-        <!--<dependency>-->
-            <!--<groupId>org.unitils</groupId>-->
-            <!--<artifactId>unitils-core</artifactId>-->
-            <!--<version>3.4.6</version>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>io.protostuff</groupId>
+            <artifactId>protostuff-core</artifactId>
+            <version>1.5.9</version>
+        </dependency>
+        <dependency>
+            <groupId>io.protostuff</groupId>
+            <artifactId>protostuff-runtime</artifactId>
+            <version>1.5.9</version>
+        </dependency>
+        <dependency>
+            <groupId>io.protostuff</groupId>
+            <artifactId>protostuff-api</artifactId>
+            <version>1.5.9</version>
+        </dependency>
+
 
 
     </dependencies>

@@ -13,9 +13,9 @@ import java.util.Map;
  * @author Sando Geek
  * @since v1.0
  **/
-public abstract class StaticRes<K,V> implements IStaticRes<K,V> {
+public class StaticRes<K,V> implements IStaticRes<K,V> {
     /** 如果要热更，要注意并发访问带来的问题 */
-
+    private Map<K, V> key2Resource;
     /** 资源文件全路径名 */
     private transient String fullFileName;
 
@@ -31,7 +31,7 @@ public abstract class StaticRes<K,V> implements IStaticRes<K,V> {
 
     @Override
     public V get(K key, boolean throwExceptionNotExist) {
-        V res = getKey2Resource().get(key);
+        V res = key2Resource.get(key);
         if (res == null && throwExceptionNotExist){
             throw new IllegalArgumentException(String.format("资源文件[%s]中不存在键为[%s]的静态资源",fullFileName,key));
         }
@@ -40,7 +40,7 @@ public abstract class StaticRes<K,V> implements IStaticRes<K,V> {
 
     @Override
     public boolean containsKey(K key) {
-        return getKey2Resource().containsKey(key);
+        return key2Resource.containsKey(key);
     }
 
     @Override
@@ -48,17 +48,19 @@ public abstract class StaticRes<K,V> implements IStaticRes<K,V> {
         if (values != null) {
             return values;
         }
-        values = ((ImmutableMap<K, V>) getKey2Resource()).values().asList();
+        values = ((ImmutableMap<K, V>) key2Resource).values().asList();
         return values;
     }
 
     @Override
     public int size() {
-        ImmutableCollection<V> vs = values != null ? values : ((ImmutableMap<K, V>) getKey2Resource()).values();
+        ImmutableCollection<V> vs = values != null ? values : ((ImmutableMap<K, V>) key2Resource).values();
         return vs.size();
     }
 
-    public abstract Map<K,V> getKey2Resource();
+    // public ImmutableMap<K,V> getKey2Resource() {
+    //     return key2Resource;
+    // }
 
     public void setFullFileName(String fullFileName) {
         this.fullFileName = fullFileName;

@@ -62,7 +62,7 @@ public class StaticResDefinition {
     public void setStaticRes(StaticRes staticRes) {
         this.staticRes = staticRes;
         try {
-            key2ResourceField = this.staticRes.getClass().getDeclaredField("key2Resource");
+            key2ResourceField = this.staticRes.getClass().getSuperclass().getDeclaredField("key2Resource");
         } catch (NoSuchFieldException e) {
             e.printStackTrace();
         }
@@ -88,13 +88,17 @@ public class StaticResDefinition {
     public ImmutableMap finish() {
         ImmutableMap immutableMap = key2ResourceBuilder.build();
         try {
-            key2ResourceField.set(staticRes, immutableMap);
+            setKey2Resource(immutableMap);
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
         String resBeanName = StringUtils.uncapitalize(staticRes.getClass().getSimpleName());
         beanFactory.registerSingleton(resBeanName, staticRes);
         return immutableMap;
+    }
+
+    public void setKey2Resource(ImmutableMap immutableMap) throws IllegalAccessException {
+        key2ResourceField.set(staticRes, immutableMap);
     }
 
     @CanIgnoreReturnValue
