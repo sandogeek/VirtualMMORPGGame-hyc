@@ -3,7 +3,7 @@ package com.mmorpg.mbdl.ReflectASM;
 public class UserService {
     private int statePrivate;
     int state;
-    Integer stateInteger;
+    public int stateInteger;
     static long longStatic;
     public int update(int n,String a){
         int hash = n + a.hashCode();

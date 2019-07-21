@@ -43,6 +43,16 @@ public class MethodBenchmark {
     }
 
     /**
+     * 直接调用
+     *
+     * @throws Exception
+     */
+    @Benchmark
+    public void testDirect() throws Exception {
+        target.update(1, "sandogeek");
+    }
+
+    /**
      * JDK反射调用方法
      *
      * @throws Exception
