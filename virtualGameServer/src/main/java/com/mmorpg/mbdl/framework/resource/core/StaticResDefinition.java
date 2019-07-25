@@ -161,10 +161,10 @@ public class StaticResDefinition {
             setImmutableMap();
         } catch (IOException e) {
             e.printStackTrace();
-            logger.error("静态资源[{}]从缓存文件中更新,更新失败", fullFileName);
+            logger.error("静态资源[{}]从缓存文件中加载,加载失败", fullFileName);
             return false;
         }
-        logger.info("静态资源[{}]从缓存文件中更新,更新成功", fullFileName);
+        logger.info("静态资源[{}]从缓存文件中加载,加载成功", fullFileName);
         return true;
     }
 
