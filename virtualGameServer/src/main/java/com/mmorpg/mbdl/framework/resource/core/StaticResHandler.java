@@ -169,7 +169,7 @@ public class StaticResHandler implements BeanFactoryPostProcessor {
                             // 没从缓存读取，说明缓存文件是旧的，重新生成缓存文件
                             staticResDefinition.writeToFile();
                         }
-                        ImmutableMap immutableMap = staticResDefinition.finish();
+                        ImmutableMap immutableMap = staticResDefinition.registerToBeanFactory();
                         resPostProcessors.forEach(resPostProcessor -> immutableMap.values().forEach(resPostProcessor::postProcess));
                     } catch (Exception e) {
                         throw new RuntimeException(String.format("静态资源[%s]解析失败", staticResDefinition.getFullFileName()), e);

@@ -106,25 +106,24 @@ public class StaticResDefinition {
         }
     }
 
-    public ImmutableMap finish() {
-        ImmutableMap immutableMap = setAndGetImmutableMap();
+    public ImmutableMap registerToBeanFactory() throws IllegalAccessException {
         String resBeanName = StringUtils.uncapitalize(staticRes.getClass().getSimpleName());
         beanFactory.registerSingleton(resBeanName, staticRes);
-        return immutableMap;
+        return (ImmutableMap) key2ResourceField.get(staticRes);
     }
 
     /**
      * 设置{@link StaticRes}的存储map，并返回该map
      * @return
      */
-    private ImmutableMap setAndGetImmutableMap() {
+    public void setImmutableMap() {
         ImmutableMap immutableMap = key2ResourceBuilder.build();
         setKey2Resource(immutableMap);
         key2ResourceBuilder = ImmutableMap.builder();
-        return immutableMap;
     }
 
     public void writeToFile() {
+        setImmutableMap();
         try {
             if (!tempFile.exists()) {
                 FileUtils.createFile(tempFile);
@@ -156,6 +155,7 @@ public class StaticResDefinition {
             this.version = version;
             List<?> values = ProtostuffUtils.parseListFrom(inputStream, vClass);
             values.forEach(this::add);
+            setImmutableMap();
         } catch (IOException e) {
             e.printStackTrace();
             logger.error("静态资源[{}]从缓存文件中更新,更新失败", fullFileName);
