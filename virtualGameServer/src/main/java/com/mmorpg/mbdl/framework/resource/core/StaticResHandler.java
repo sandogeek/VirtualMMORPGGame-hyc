@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.mmorpg.mbdl.EnhanceStarter;
 import com.mmorpg.mbdl.framework.common.utils.SpringPropertiesUtil;
+import com.mmorpg.mbdl.framework.common.utils.StringUtil;
 import com.mmorpg.mbdl.framework.resource.annotation.Key;
 import com.mmorpg.mbdl.framework.resource.annotation.ResDef;
 import com.mmorpg.mbdl.framework.resource.exposed.AbstractMetadataReaderPostProcessor;
@@ -117,11 +118,10 @@ public class StaticResHandler implements BeanFactoryPostProcessor {
             Resource[] resources;
             ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
             try {
-                resources = resourcePatternResolver.getResources(ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX +
-                        "**/*" + baseResResolver.suffix());
+                String locationPattern = StringUtil.fommat("file:{}**/*{}", IStaticResUtil.getRunParentPath(), baseResResolver.suffix());
+                resources = resourcePatternResolver.getResources(locationPattern);
             } catch (IOException e) {
                 String message = String.format("获取后缀为[%s]的资源时发生IO异常", baseResResolver.suffix());
-                logger.error(message);
                 throw new RuntimeException(message);
             }
             Map<String, StaticResDefinition> fileName2StaticResDefinition = beanFactory
@@ -141,7 +141,7 @@ public class StaticResHandler implements BeanFactoryPostProcessor {
             Runnable resourceLoadTask = () -> {
                 Arrays.stream(resources).parallel().filter(Resource::isReadable).map((res)->{
                     String filename = res.getFilename();
-                    // 初始化StaticResDefinition的List<Resource> resources字段
+                    // 初始化StaticResDefinition的Resource resources字段
                     StaticResDefinition staticResDefinitionResult = Optional.ofNullable(fileName2StaticResDefinition.get(filename)).orElseGet(() -> {
                         String resPathRelative2ClassPath = IStaticResUtil.getResPathRelative2ClassPath((FileSystemResource) res);
                         return fileName2StaticResDefinition.get(resPathRelative2ClassPath);
@@ -164,7 +164,11 @@ public class StaticResHandler implements BeanFactoryPostProcessor {
                 }).filter(Objects::nonNull).forEach((staticResDefinition -> {
                     logger.debug("静态资源{}成功关联到类[{}]",staticResDefinition.getFullFileName(),staticResDefinition.getvClass().getSimpleName());
                     try {
-                        baseResResolver.resolve(staticResDefinition);
+                        if (!staticResDefinition.tryParseFromPbstuffFile()) {
+                            baseResResolver.resolve(staticResDefinition);
+                            // 没从缓存读取，说明缓存文件是旧的，重新生成缓存文件
+                            staticResDefinition.writeToFile();
+                        }
                         ImmutableMap immutableMap = staticResDefinition.finish();
                         resPostProcessors.forEach(resPostProcessor -> immutableMap.values().forEach(resPostProcessor::postProcess));
                     } catch (Exception e) {
@@ -276,14 +280,9 @@ public class StaticResHandler implements BeanFactoryPostProcessor {
 
                 TypeDescription.Generic genericStaticRes =
                         TypeDescription.Generic.Builder.parameterizedType(StaticRes.class, idBoxedType, clazz).build();
-                // TypeDescription.Generic mapKey2Resource =
-                //         TypeDescription.Generic.Builder.parameterizedType(Map.class, idBoxedType, clazz).build();
                 String packageName = clazz.getPackage().getName();
                 DynamicType.Unloaded<?> staticResUnloaded = new ByteBuddy().subclass(genericStaticRes)
                         .name(packageName + "." + StaticRes.class.getSimpleName() + idBoxedType.getSimpleName() + clazz.getSimpleName())
-                        // .defineField("key2Resource", mapKey2Resource, Visibility.PRIVATE)
-                        // .defineMethod("getKey2Resource", mapKey2Resource, Visibility.PUBLIC)
-                        // .intercept(FieldAccessor.ofField("key2Resource"))
                         .make();
                 Class<?> staticResSubClass = staticResUnloaded.load(getClass().getClassLoader(), ClassLoadingStrategy.Default.INJECTION).getLoaded();
                 StaticRes staticRes = null;

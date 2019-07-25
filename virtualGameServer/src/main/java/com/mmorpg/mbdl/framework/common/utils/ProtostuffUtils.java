@@ -12,6 +12,10 @@ import io.protostuff.ProtostuffIOUtil;
 import io.protostuff.Schema;
 import io.protostuff.runtime.RuntimeSchema;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -40,6 +44,17 @@ public class ProtostuffUtils {
         } finally {
             buffer.clear();
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> int writeListTo(OutputStream out, List<T> messages) throws IOException {
+        LinkedBuffer buffer = LinkedBuffer.allocate(LinkedBuffer.DEFAULT_BUFFER_SIZE);
+        Schema<T> schema = (Schema<T>) getSchema(messages.get(0).getClass());
+        return ProtostuffIOUtil.writeListTo(out, messages, schema, buffer);
+    }
+
+    public static <T> List<T> parseListFrom(final InputStream in, Class<T> clz) throws IOException {
+        return ProtostuffIOUtil.parseListFrom(in, getSchema(clz));
     }
 
     /**
