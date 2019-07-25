@@ -144,6 +144,9 @@ public class StaticResDefinition {
      * 从.pbstuff格式的文件中解析
      */
     public boolean tryParseFromPbstuffFile() {
+        if (!tempFile.exists()) {
+            return false;
+        }
         try (BufferedInputStream bufferedInputStream = new BufferedInputStream(new FileInputStream(tempFile));
              DataInputStream inputStream = new DataInputStream(bufferedInputStream);
         ) {
