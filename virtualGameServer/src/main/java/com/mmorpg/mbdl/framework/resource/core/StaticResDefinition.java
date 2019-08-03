@@ -151,8 +151,8 @@ public class StaticResDefinition {
              DataInputStream inputStream = new DataInputStream(bufferedInputStream);
         ) {
             long version = inputStream.readLong();
-            if (this.version > version) {
-                // 缓存文件过时了
+            if (this.version != version) {
+                // 版本不一致
                 return false;
             }
             this.version = version;
