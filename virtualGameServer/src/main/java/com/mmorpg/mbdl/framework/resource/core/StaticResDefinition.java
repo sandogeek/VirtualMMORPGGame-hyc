@@ -11,6 +11,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.util.StringUtils;
+import org.xerial.snappy.SnappyInputStream;
+import org.xerial.snappy.SnappyOutputStream;
 
 import java.io.*;
 import java.lang.reflect.Field;
@@ -31,7 +33,7 @@ public class StaticResDefinition {
     /**
      * 版本（最后修改时间）
      */
-    private long version;
+    private long[] version = new long[1];
     /** V的实际类型 */
     private Class<?> vClass;
 
@@ -100,7 +102,7 @@ public class StaticResDefinition {
     public void setResource(Resource resource) {
         this.resource = resource;
         try {
-            this.version = resource.getFile().lastModified();
+            this.version[0] = resource.getFile().lastModified();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -131,8 +133,10 @@ public class StaticResDefinition {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        try (DataOutputStream outputStream = new DataOutputStream(new FileOutputStream(tempFile))) {
-            outputStream.writeLong(version);
+
+        try (FileOutputStream fileOutputStream = new FileOutputStream(tempFile);
+             SnappyOutputStream outputStream = new SnappyOutputStream(fileOutputStream);) {
+            outputStream.write(version);
             ProtostuffUtils.writeListTo(outputStream, staticRes.values());
             logger.info("资源[{}]生成新的缓存文件[{}]", fullFileName, tempFile.getAbsolutePath());
         } catch (IOException e) {
@@ -148,14 +152,14 @@ public class StaticResDefinition {
             return false;
         }
         try (BufferedInputStream bufferedInputStream = new BufferedInputStream(new FileInputStream(tempFile));
-             DataInputStream inputStream = new DataInputStream(bufferedInputStream);
+             SnappyInputStream inputStream = new SnappyInputStream(bufferedInputStream);
         ) {
-            long version = inputStream.readLong();
-            if (this.version != version) {
+            long[] versionFromFile = new long[1];
+            int size = inputStream.read(versionFromFile);
+            if (this.version[0] != versionFromFile[0]) {
                 // 版本不一致
                 return false;
             }
-            this.version = version;
             List<?> values = ProtostuffUtils.parseListFrom(inputStream, vClass);
             values.forEach(this::add);
             setImmutableMap();
