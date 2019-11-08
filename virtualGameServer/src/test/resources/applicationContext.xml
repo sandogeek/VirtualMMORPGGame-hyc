@@ -67,6 +67,10 @@
         </property>
     </bean>
 
+    <redisson:client>
+        <redisson:single-server address="redis://192.168.30.131:9221"/>
+    </redisson:client>
+
     <!-- 事务管理器 -->
     <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
         <property name="entityManagerFactory" ref="entityManagerFactory"/>
