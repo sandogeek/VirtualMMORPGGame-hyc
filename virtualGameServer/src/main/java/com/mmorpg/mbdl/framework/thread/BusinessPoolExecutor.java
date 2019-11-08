@@ -6,13 +6,14 @@ import com.mmorpg.mbdl.framework.thread.task.AbstractTask;
 import com.mmorpg.mbdl.framework.thread.task.DelayedTask;
 import com.mmorpg.mbdl.framework.thread.task.FixedRateTask;
 import com.mmorpg.mbdl.framework.thread.task.TaskQueue;
+import io.netty.util.concurrent.DefaultEventExecutorGroup;
+import io.netty.util.concurrent.EventExecutorGroup;
+import io.netty.util.concurrent.ScheduledFuture;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.io.Serializable;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
@@ -24,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 public class BusinessPoolExecutor {
     /** 业务线程池 */
     // TODO 深入学习netty后对比决定是否换用netty的线程池
-    private ScheduledThreadPoolExecutor businessThreadPool;
+    private EventExecutorGroup businessThreadPool;
     /** 业务所有的任务队列 */
     private ITimeOutHashMap<Serializable, TaskQueue> businessThreadPoolTaskQueues;
 
@@ -35,7 +36,7 @@ public class BusinessPoolExecutor {
     // @Value("${server.config.taskQueue.timeout}") TODO 自带的不能注入long，自行实现新的注入方式
     private long timeout = 1;
     @Value("${server.config.thread.name}")
-    private String threadNameFommat;
+    private String threadNameFormat;
 
     private static BusinessPoolExecutor self;
     public static BusinessPoolExecutor getInstance(){
@@ -45,8 +46,8 @@ public class BusinessPoolExecutor {
     private void init(){
         self = this;
         ThreadFactory namedThreadFactory = new ThreadFactoryBuilder()
-                .setNameFormat(threadNameFommat+"%2d").build();
-        this.businessThreadPool = new ScheduledThreadPoolExecutor(poolSize,namedThreadFactory);
+                .setNameFormat(threadNameFormat +"%2d").build();
+        this.businessThreadPool = new DefaultEventExecutorGroup(poolSize, namedThreadFactory);
         this.businessThreadPoolTaskQueues = new TimeOutCaffeineMap<>(timeout, TimeUnit.MINUTES,(key) ->
                 new TaskQueue(businessThreadPool)
         );
@@ -89,7 +90,7 @@ public class BusinessPoolExecutor {
      * @return ScheduledFuture可用于控制任务以及检查状态
      */
     private ScheduledFuture<?> addTask(AbstractTask runnable) {
-        return businessThreadPool.schedule(runnable,0,TimeUnit.NANOSECONDS);
+        return businessThreadPool.schedule(runnable, 0, TimeUnit.NANOSECONDS);
     }
     /**
      * 添加延时执行任务

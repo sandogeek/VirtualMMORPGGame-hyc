@@ -2,10 +2,10 @@ package com.mmorpg.mbdl.framework.thread.task;
 
 import com.google.common.collect.Lists;
 import com.mmorpg.mbdl.framework.thread.BusinessPoolExecutor;
+import io.netty.util.concurrent.EventExecutorGroup;
 
 import java.util.Queue;
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 /**
  * 任务队列<br>
@@ -13,13 +13,17 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
  * @author sando
  */
 public class TaskQueue {
-    // 与此任务队列相关的线程池
-    private final ScheduledThreadPoolExecutor scheduledThreadPoolExecutor;
-    // 存放任务的队列
+    /**
+     * 与此任务队列相关的线程池
+     */
+    private final EventExecutorGroup executors;
+    /**
+     * 存放任务的队列
+     */
     private Queue<AbstractTask> queue;
 
-    public TaskQueue(ScheduledThreadPoolExecutor scheduledThreadPoolExecutor) {
-        this.scheduledThreadPoolExecutor = scheduledThreadPoolExecutor;
+    public TaskQueue(EventExecutorGroup executors) {
+        this.executors = executors;
         this.queue = Lists.newLinkedList();
     }
 
