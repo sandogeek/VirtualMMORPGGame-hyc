@@ -36,15 +36,8 @@ public class WsSession extends AbstractSession {
     }
 
     @Override
-    public Serializable selectDispatcherId(){
-        if (roleId ==null){
-            if (tempDispatcherId ==null){
-                // -1 到 -16
-                tempDispatcherId = getId().hashCode()% tempDispatcherIdMaxValue - tempDispatcherIdMaxValue;
-            }
-            return tempDispatcherId;
-        }
-        return roleId;
+    public Serializable selectDispatcherId() {
+        return null;
     }
 
     public void setTempDispatcherIdMaxValue(Long tempDispatcherIdMaxValue) {
@@ -104,7 +97,6 @@ public class WsSession extends AbstractSession {
     public void close() {
         channel.close().addListener( future -> {
             SyncEventBus.getInstance().post(new SessionCloseEvent(this));
-            // logger.info("SessionCloseEvent post成功");
         } );
     }
 

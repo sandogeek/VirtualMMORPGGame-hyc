@@ -2,7 +2,9 @@ package com.mmorpg.mbdl.framework.communicate.websocket.model;
 
 import io.netty.channel.ChannelId;
 
-public abstract class AbstractSession implements ISession {
+import java.io.Serializable;
+
+public abstract class AbstractSession<T extends Serializable> implements ISession<T> {
     private ChannelId id;
     private String ip;
     /**

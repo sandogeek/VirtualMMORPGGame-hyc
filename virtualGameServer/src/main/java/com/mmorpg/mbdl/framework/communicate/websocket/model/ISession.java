@@ -6,12 +6,12 @@ import io.netty.channel.ChannelId;
 
 import java.io.Serializable;
 
-public interface ISession {
+public interface ISession<K extends Serializable> {
     /**
      * 选择分发器Id
      * @return
      */
-    Serializable selectDispatcherId();
+    K selectDispatcherId();
 
     /**
      * 获取Session的id（其实是ChannelId）

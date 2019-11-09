@@ -4,9 +4,10 @@ import java.io.Serializable;
 
 /**
  * 普通任务
+ * @author Sando
  */
-public abstract class Task extends AbstractTask {
-    public Task(Serializable dispatcherId) {
+public abstract class BaseNormalTask<K extends Serializable> extends AbstractTask<K> {
+    public BaseNormalTask(K dispatcherId) {
         super(dispatcherId);
     }
 

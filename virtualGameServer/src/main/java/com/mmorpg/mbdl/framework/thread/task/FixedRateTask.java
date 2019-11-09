@@ -3,14 +3,18 @@ package com.mmorpg.mbdl.framework.thread.task;
 import java.io.Serializable;
 import java.util.concurrent.TimeUnit;
 
-public abstract class FixedRateTask extends AbstractTask {
+/**
+ * 固定频率执行的任务
+ * @param <K> 任务分发主键的类型
+ */
+public abstract class FixedRateTask<K extends Serializable> extends AbstractTask<K> {
     private long initalDelay;
     private long period;
     private TimeUnit timeUnit;
 
-    public FixedRateTask(Serializable dispatcherId,long initalDelay, long period, TimeUnit timeUnit) {
+    public FixedRateTask(K dispatcherId, long initDelay, long period, TimeUnit timeUnit) {
         super(dispatcherId);
-        this.initalDelay = initalDelay;
+        this.initalDelay = initDelay;
         this.period = period;
         this.timeUnit = timeUnit;
         // 默认不打印日志
@@ -21,8 +25,8 @@ public abstract class FixedRateTask extends AbstractTask {
         return initalDelay;
     }
 
-    public void setInitalDelay(long initalDelay) {
-        this.initalDelay = initalDelay;
+    public void setInitalDelay(long initDelay) {
+        this.initalDelay = initDelay;
     }
 
     public long getPeriod() {

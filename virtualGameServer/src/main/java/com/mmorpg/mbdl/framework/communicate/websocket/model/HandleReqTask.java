@@ -1,6 +1,6 @@
 package com.mmorpg.mbdl.framework.communicate.websocket.model;
 
-import com.mmorpg.mbdl.framework.thread.task.Task;
+import com.mmorpg.mbdl.framework.thread.task.BaseNormalTask;
 
 import java.io.Serializable;
 
@@ -8,12 +8,12 @@ import java.io.Serializable;
  * 处理请求包任务
  * @author sando
  */
-public class HandleReqTask extends Task {
+public class HandleReqTask<K extends Serializable> extends BaseNormalTask<K> {
     private PacketMethodDifinition packetMethodDifinition;
     private ISession session;
     private AbstractPacket abstractPacket;
     // 使用ChannelId获取队列，玩家频繁上下线的情况下会导致产生大量无用队列，因此应使用PlayerId拿TaskQueue
-    public HandleReqTask(Serializable dispatcherId,PacketMethodDifinition packetMethodDifinition, ISession session, AbstractPacket abstractPacket){
+    public HandleReqTask(K dispatcherId,PacketMethodDifinition packetMethodDifinition, ISession session, AbstractPacket abstractPacket){
         super(dispatcherId);
         this.setISession(session);
         this.setPacketMethodDefinition(packetMethodDifinition);
@@ -32,7 +32,7 @@ public class HandleReqTask extends Task {
     public void execute() {
         SessionState expectedState = packetMethodDifinition.getPacketMethodAnno().state();
         // 第二次状态校验，主要是为了处理未登录前同时发过来两个登录或者注册等请求的状况
-        if (expectedState!=SessionState.ANY) {
+        if (expectedState != SessionState.ANY) {
             if (session.getState() != expectedState) {
                 getTargetLogger().warn("HandleReqTask任务执行失败，当前wsSession的状态[{}]与方法{}期待的状态[{}]不符",
                         packetMethodDifinition.getAbstractPacketClazz().getSimpleName(),

@@ -12,8 +12,8 @@ import java.util.concurrent.TimeUnit;
  * @author Sando Geek
  * @since v1.0
  **/
-public class PersistenceDelayedTask extends DelayedTask {
-    public PersistenceDelayedTask(Serializable dispatcherId, long delay, TimeUnit timeUnit) {
+public class PersistenceDelayedTask<K extends Serializable> extends DelayedTask<Serializable> {
+    public PersistenceDelayedTask(K dispatcherId, long delay, TimeUnit timeUnit) {
         super(dispatcherId, delay, timeUnit);
     }
 

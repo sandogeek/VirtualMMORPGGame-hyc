@@ -1,6 +1,5 @@
 package com.mmorpg.mbdl.framework.thread.task;
 
-import com.mmorpg.mbdl.framework.thread.BusinessPoolExecutor;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,17 +11,17 @@ import java.util.concurrent.TimeUnit;
  * 抽象的任务runnable
  * @author sando
  */
-public abstract class AbstractTask implements Runnable {
+public abstract class AbstractTask<K extends Serializable> implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(AbstractTask.class);
     private long maxDelay = TimeUnit.NANOSECONDS.convert(2,TimeUnit.MILLISECONDS);
     private long maxExecute = TimeUnit.NANOSECONDS.convert(3,TimeUnit.MILLISECONDS);
     private Logger targetLogger = logger;
-    private Serializable dispatcherId;
+    private K dispatcherId;
     private boolean executeParallel = false;
-    // private TaskQueue taskQueue = TaskDispatcher.getInstance().getOrCreateTaskQueue(getDispatcherId());
+    private TaskQueue<K> taskQueue;
 
 
-    public AbstractTask(Serializable dispatcherId) {
+    public AbstractTask(K dispatcherId) {
         this.dispatcherId = dispatcherId;
     }
 
@@ -42,7 +41,7 @@ public abstract class AbstractTask implements Runnable {
      * 必须保证唯一性，不能是hashcode因为有可能有hash冲突，导致不同的玩家或者Channel使用同一TaskQueue
      * @return
      */
-    public Serializable getDispatcherId(){
+    public K getDispatcherId(){
         return dispatcherId;
     }
 
@@ -110,7 +109,7 @@ public abstract class AbstractTask implements Runnable {
         try{
             execute();
         }catch (Throwable e){
-            logger.error("任务:{}执行失败，抛出异常",taskName(),e);
+            logger.error("队列[{}] 任务:{}执行失败，抛出异常",  getTaskQueue().getKey(), taskName(), e);
         }finally {
             stopWatch.stop();
             long executeTime = stopWatch.getNanoTime();
@@ -167,7 +166,11 @@ public abstract class AbstractTask implements Runnable {
         return this;
     }
 
-    public TaskQueue getTaskQueue() {
-        return BusinessPoolExecutor.getInstance().getOrCreateTaskQueue(getDispatcherId());
+    public void setTaskQueue(TaskQueue taskQueue) {
+        this.taskQueue = taskQueue;
+    }
+
+    public TaskQueue<K> getTaskQueue() {
+        return taskQueue;
     }
 }
