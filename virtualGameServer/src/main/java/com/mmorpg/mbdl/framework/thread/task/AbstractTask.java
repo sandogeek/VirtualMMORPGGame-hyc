@@ -1,5 +1,6 @@
 package com.mmorpg.mbdl.framework.thread.task;
 
+import com.mmorpg.mbdl.framework.thread.ThreadUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -105,6 +106,7 @@ public abstract class AbstractTask<K extends Serializable> implements Runnable {
         stopWatch.stop();
         long delayTime = stopWatch.getNanoTime();
         stopWatch.reset();
+        ThreadUtils.setCurrentThreadTask(this);
         stopWatch.start();
         try{
             execute();
@@ -166,7 +168,7 @@ public abstract class AbstractTask<K extends Serializable> implements Runnable {
         return this;
     }
 
-    public void setTaskQueue(TaskQueue taskQueue) {
+    public void setTaskQueue(TaskQueue<K> taskQueue) {
         this.taskQueue = taskQueue;
     }
 
