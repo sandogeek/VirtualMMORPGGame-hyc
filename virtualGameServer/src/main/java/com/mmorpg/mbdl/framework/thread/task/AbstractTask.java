@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
  * @author sando
  */
 public abstract class AbstractTask<K extends Dispatchable<? extends Serializable>> implements Runnable {
-    private static final Logger logger = LoggerFactory.getLogger(AbstractTask.class);
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private long maxDelay = TimeUnit.NANOSECONDS.convert(2,TimeUnit.MILLISECONDS);
     private long maxExecute = TimeUnit.NANOSECONDS.convert(3,TimeUnit.MILLISECONDS);
     private Logger targetLogger = logger;
@@ -111,13 +111,14 @@ public abstract class AbstractTask<K extends Dispatchable<? extends Serializable
         try{
             execute();
         }catch (Throwable e){
-            logger.error("队列[{}] 任务:{}执行失败，抛出异常",  getTaskQueue().getKey(), taskName(), e);
+            logger.error("队列[{}] 任务:{}执行失败，抛出异常", dispatcher, taskName(), e);
         }finally {
             stopWatch.stop();
             long executeTime = stopWatch.getNanoTime();
             if (this.isLogOrNot()){
                 log(delayTime,executeTime);
             }
+            ThreadUtils.removeCurrentThreadTask();
             // 不是并行执行的情况下才会把队列下一个任务加入线程池
             if (!isExecuteParallel()){
                 getTaskQueue().andThen();

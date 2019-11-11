@@ -17,7 +17,7 @@ public class ThreadUtils {
     /**
      * 当前线程正在执行哪个Task
      */
-    private static Map<Thread, AbstractTask<? extends Dispatchable<? extends Serializable>>> threadTaskQueueMap = new ConcurrentHashMap<>();
+    private static Map<Thread, AbstractTask<? extends Dispatchable<? extends Serializable>>> thread2AbstractTask = new ConcurrentHashMap<>();
 
     /**
      * 获取当前线程正在执行的任务的可分发对象
@@ -34,7 +34,7 @@ public class ThreadUtils {
      * @return
      */
     public static AbstractTask<? extends Dispatchable<? extends Serializable>> currentThreadTask() {
-        AbstractTask<? extends Dispatchable<? extends Serializable>> abstractTask = threadTaskQueueMap.get(Thread.currentThread());
+        AbstractTask<? extends Dispatchable<? extends Serializable>> abstractTask = thread2AbstractTask.get(Thread.currentThread());
         if (abstractTask == null) {
             throw new RuntimeException("此方法必须在任务中AbstractTask任务内运行的代码中调用");
         }
@@ -47,7 +47,14 @@ public class ThreadUtils {
      * @param abstractTask
      */
     public static void setCurrentThreadTask(AbstractTask<? extends Dispatchable<? extends Serializable>> abstractTask) {
-        threadTaskQueueMap.put(Thread.currentThread(), abstractTask);
+        thread2AbstractTask.put(Thread.currentThread(), abstractTask);
+    }
+
+    /**
+     * 移除当前线程对应的{@link AbstractTask},任务结束时调用
+     */
+    public static void removeCurrentThreadTask() {
+        thread2AbstractTask.remove(Thread.currentThread());
     }
 
     private ThreadUtils() {

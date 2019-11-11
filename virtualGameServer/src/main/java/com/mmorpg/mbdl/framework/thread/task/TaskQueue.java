@@ -30,6 +30,7 @@ public class TaskQueue<K extends Dispatchable<? extends Serializable>> {
     private Queue<AbstractTask<K>> queue;
 
     public TaskQueue(K key, BusinessPoolExecutor<K, ? extends ScheduledExecutorService> businessPoolExecutor) {
+        this.key = key;
         this.businessPoolExecutor = businessPoolExecutor;
         this.queue = Lists.newLinkedList();
     }
