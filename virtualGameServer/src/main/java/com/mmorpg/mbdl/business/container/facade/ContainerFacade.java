@@ -6,8 +6,8 @@ import com.mmorpg.mbdl.business.container.packet.GetPackContentReq;
 import com.mmorpg.mbdl.business.container.packet.UseItemReq;
 import com.mmorpg.mbdl.business.container.service.ContainerService;
 import com.mmorpg.mbdl.business.role.event.RoleLogoutEvent;
+import com.mmorpg.mbdl.business.role.model.Role;
 import com.mmorpg.mbdl.framework.communicate.websocket.annotation.PacketHandler;
-import com.mmorpg.mbdl.framework.communicate.websocket.model.ISession;
 
 /**
  * @author Sando Geek
@@ -15,12 +15,12 @@ import com.mmorpg.mbdl.framework.communicate.websocket.model.ISession;
  **/
 @PacketHandler
 public class ContainerFacade {
-    public void handleGetPackContentReq(ISession session, GetPackContentReq getPackContentReq) {
-        ContainerService.getInstance().handleGetPackContentReq(session,getPackContentReq);
+    public void handleGetPackContentReq(Role role, GetPackContentReq getPackContentReq) {
+        ContainerService.getInstance().handleGetPackContentReq(role, getPackContentReq);
     }
 
-    public void handleUseItemReq(ISession session, UseItemReq useItemReq) {
-        ContainerService.getInstance().handleUseItemReq(session,useItemReq);
+    public void handleUseItemReq(Role role, UseItemReq useItemReq) {
+        ContainerService.getInstance().handleUseItemReq(role, useItemReq);
     }
 
     @Subscribe

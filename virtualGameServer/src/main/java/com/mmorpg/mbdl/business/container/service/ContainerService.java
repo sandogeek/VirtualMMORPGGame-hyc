@@ -12,9 +12,7 @@ import com.mmorpg.mbdl.business.container.packet.UseItemResp;
 import com.mmorpg.mbdl.business.container.packet.VO.ItemUiInfo;
 import com.mmorpg.mbdl.business.container.res.ItemRes;
 import com.mmorpg.mbdl.business.role.event.RoleLogoutEvent;
-import com.mmorpg.mbdl.business.role.manager.RoleManager;
 import com.mmorpg.mbdl.business.role.model.Role;
-import com.mmorpg.mbdl.framework.communicate.websocket.model.ISession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -48,8 +46,7 @@ public class ContainerService {
         ContainerManager.getInstance().updateEntity(roleLogoutEvent.getRole().getContainerEntity());
     }
 
-    public void handleGetPackContentReq(ISession session, GetPackContentReq getPackContentReq) {
-        Role role = RoleManager.getInstance().getRoleBySession(session);
+    public void handleGetPackContentReq(Role role, GetPackContentReq getPackContentReq) {
         Container packContainer = role.getContainerEntity().getType2ContainerMap().get(ContainerType.PACK);
         Collection<AbstractItem> abstractItems = packContainer.getAll();
         GetPackContentResp getPackContentResp = new GetPackContentResp();
@@ -63,8 +60,7 @@ public class ContainerService {
         role.sendPacket(getPackContentResp);
     }
 
-    public void handleUseItemReq(ISession session, UseItemReq useItemReq) {
-        Role role = RoleManager.getInstance().getRoleBySession(session);
+    public void handleUseItemReq(Role role, UseItemReq useItemReq) {
         UseItemResp useItemResp = new UseItemResp();
         Container packContainer = role.getContainerEntity().getType2ContainerMap().get(ContainerType.PACK);
         // 只有物品最大堆叠数为1时物品使用请求提供ObjectId
