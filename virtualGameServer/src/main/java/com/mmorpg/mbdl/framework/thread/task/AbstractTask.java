@@ -20,7 +20,7 @@ public abstract class AbstractTask<K extends Dispatchable<? extends Serializable
     private Logger targetLogger = logger;
     private K dispatcher;
     private boolean executeParallel = false;
-    private TaskQueue<K> taskQueue;
+    private TaskQueue<? extends Serializable> taskQueue;
 
 
     public AbstractTask(K dispatcher) {
@@ -169,11 +169,11 @@ public abstract class AbstractTask<K extends Dispatchable<? extends Serializable
         return this;
     }
 
-    public void setTaskQueue(TaskQueue<K> taskQueue) {
+    public void setTaskQueue(TaskQueue<? extends Serializable> taskQueue) {
         this.taskQueue = taskQueue;
     }
 
-    public TaskQueue<K> getTaskQueue() {
+    public TaskQueue<? extends Serializable> getTaskQueue() {
         return taskQueue;
     }
 }

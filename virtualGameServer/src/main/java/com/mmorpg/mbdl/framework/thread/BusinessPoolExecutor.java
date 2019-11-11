@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
  * @param <K> 线程池中任务队列的主键类型
  * @param <V> 使用的线程池类型
  */
-public class BusinessPoolExecutor<K extends Dispatchable<? extends Serializable>, V extends ScheduledExecutorService> {
+public class BusinessPoolExecutor<K extends Serializable, V extends ScheduledExecutorService> {
     /** 业务线程池 */
     private V businessThreadPool;
     /** 业务所有的任务队列 */
@@ -40,7 +40,7 @@ public class BusinessPoolExecutor<K extends Dispatchable<? extends Serializable>
         return businessThreadPoolTaskQueues.getOrCreate(dispatcherId);
     }
 
-    public ScheduledFuture<?> executeTask(AbstractTask<K> abstractTask){
+    public ScheduledFuture<?> executeTask(AbstractTask<? extends Dispatchable<K>> abstractTask){
         Preconditions.checkNotNull(abstractTask);
         switch (abstractTask.taskType()) {
             case TASK:{
@@ -64,7 +64,7 @@ public class BusinessPoolExecutor<K extends Dispatchable<? extends Serializable>
      * @param runnable 任务
      * @return ScheduledFuture可用于控制任务以及检查状态
      */
-    private ScheduledFuture<?> addTask(AbstractTask<K> runnable) {
+    private ScheduledFuture<?> addTask(AbstractTask<? extends Dispatchable<K>> runnable) {
         return businessThreadPool.schedule(runnable, 0, TimeUnit.NANOSECONDS);
     }
     /**
@@ -74,7 +74,7 @@ public class BusinessPoolExecutor<K extends Dispatchable<? extends Serializable>
      * @param timeUnit 使用的时间单位
      * @return ScheduledFuture可用于控制任务以及检查状态
      */
-    private ScheduledFuture<?> addDelayedTask(AbstractTask<K> runnable, long delay, TimeUnit timeUnit) {
+    private ScheduledFuture<?> addDelayedTask(AbstractTask<? extends Dispatchable<K>> runnable, long delay, TimeUnit timeUnit) {
         return businessThreadPool.schedule(runnable,delay,timeUnit);
     }
     /**
@@ -85,7 +85,7 @@ public class BusinessPoolExecutor<K extends Dispatchable<? extends Serializable>
      * @param timeUnit 时间单位
      * @return ScheduledFuture可用于控制任务以及检查状态
      */
-    private ScheduledFuture<?> addFixedRateTask(AbstractTask<K> runnable, long initDelay, long period, TimeUnit timeUnit) {
+    private ScheduledFuture<?> addFixedRateTask(AbstractTask<? extends Dispatchable<K>> runnable, long initDelay, long period, TimeUnit timeUnit) {
         return businessThreadPool.scheduleAtFixedRate(runnable,initDelay,period,timeUnit);
     }
 }

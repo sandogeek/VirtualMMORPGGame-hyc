@@ -28,7 +28,7 @@ public class TaskDispatcher {
     private String threadNameFormat;
     @Value("${server.config.thread.poolSize}")
     private int poolSize;
-    private BusinessPoolExecutor<Dispatchable<? extends Serializable>, EventExecutorGroup> businessPoolExecutor;
+    private BusinessPoolExecutor<Serializable, EventExecutorGroup> businessPoolExecutor;
 
     private static TaskDispatcher self;
     public static TaskDispatcher getInstance(){
@@ -54,7 +54,7 @@ public class TaskDispatcher {
      * @param intoThreadPoolDirectly 是否直接分发到线程池，而不是加到队列
      * @return 如果任务分发成功并被提交到线程池，返回ScheduledFuture，否则抛出异常
      */
-    public ScheduledFuture<?> dispatch(AbstractTask<Dispatchable<? extends Serializable>> abstractTask, boolean intoThreadPoolDirectly){
+    public ScheduledFuture<?> dispatch(AbstractTask<Dispatchable<Serializable>> abstractTask, boolean intoThreadPoolDirectly){
         if (abstractTask == null){
             throw new IllegalArgumentException("分发了一个空任务");
         }
@@ -76,7 +76,7 @@ public class TaskDispatcher {
                 }
             }
         }
-        TaskQueue<Dispatchable<? extends Serializable>> taskQueue = businessPoolExecutor.getOrCreateTaskQueue(abstractTask.getDispatcher());
+        TaskQueue<Serializable> taskQueue = businessPoolExecutor.getOrCreateTaskQueue(abstractTask.getDispatcher().dispatchId());
         abstractTask.setTaskQueue(taskQueue);
         return (ScheduledFuture<?>)taskQueue.submit(abstractTask);
     }
@@ -86,7 +86,7 @@ public class TaskDispatcher {
      * 如果是HandleReqTask，根据@PacketMethod决定分发到队列还是分发到线程池
      * @param abstractTask
      */
-    public ScheduledFuture<?> dispatch(AbstractTask<Dispatchable<? extends Serializable>> abstractTask){
+    public ScheduledFuture<?> dispatch(AbstractTask<Dispatchable<Serializable>> abstractTask){
        return dispatch(abstractTask,false);
     }
 }

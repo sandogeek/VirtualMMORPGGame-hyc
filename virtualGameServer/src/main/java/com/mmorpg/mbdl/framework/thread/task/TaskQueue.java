@@ -15,7 +15,7 @@ import java.util.concurrent.ScheduledFuture;
  * @author sando
  * @param <K> 任务队列的唯一标识的类型
  */
-public class TaskQueue<K extends Dispatchable<? extends Serializable>> {
+public class TaskQueue<K extends Serializable> {
     /**
      * 此任务队列的唯一标识
      */
@@ -27,7 +27,7 @@ public class TaskQueue<K extends Dispatchable<? extends Serializable>> {
     /**
      * 存放任务的队列
      */
-    private Queue<AbstractTask<K>> queue;
+    private Queue<AbstractTask<? extends Dispatchable<K>>> queue;
 
     public TaskQueue(K key, BusinessPoolExecutor<K, ? extends ScheduledExecutorService> businessPoolExecutor) {
         this.key = key;
@@ -43,7 +43,7 @@ public class TaskQueue<K extends Dispatchable<? extends Serializable>> {
      * 获取并给真正的ScheduledFuture赋值）
      * @return
      */
-    public ScheduledFuture<?> submit(AbstractTask<K> abstractTask){
+    public ScheduledFuture<?> submit(AbstractTask<? extends Dispatchable<K>> abstractTask){
         synchronized (this){
             this.queue.add(abstractTask);
             if (queue.size()==1){
@@ -58,7 +58,7 @@ public class TaskQueue<K extends Dispatchable<? extends Serializable>> {
      * 任务队列中可以并行执行的任务，直接交给线程池，而不是加到队尾
      * @return
      */
-    public ScheduledFuture<?> executeParallel(AbstractTask<K> abstractTask){
+    public ScheduledFuture<?> executeParallel(AbstractTask<? extends Dispatchable<K>> abstractTask){
         return businessPoolExecutor.executeTask(abstractTask);
     }
     /**

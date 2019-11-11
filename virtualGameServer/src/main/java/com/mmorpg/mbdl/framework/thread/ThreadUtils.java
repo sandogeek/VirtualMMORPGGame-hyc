@@ -25,7 +25,7 @@ public class ThreadUtils {
      * @return
      */
     public static Dispatchable<? extends Serializable> currentThreadDispatchable() {
-        return currentThreadTask().getTaskQueue().getKey();
+        return currentThreadTask().getDispatcher();
     }
 
     /**

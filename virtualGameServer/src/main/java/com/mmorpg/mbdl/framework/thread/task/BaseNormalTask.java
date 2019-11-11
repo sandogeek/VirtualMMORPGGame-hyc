@@ -9,8 +9,8 @@ import java.io.Serializable;
  * @author Sando
  */
 public abstract class BaseNormalTask<K extends Dispatchable<? extends Serializable>> extends AbstractTask<K> {
-    public BaseNormalTask(K dispatcherId) {
-        super(dispatcherId);
+    public BaseNormalTask(K dispatcher) {
+        super(dispatcher);
     }
 
     @Override
