@@ -47,7 +47,7 @@ public class TaskExecutorGroup {
 
     /**
      * 根据dispatcherId获取线程池
-     * @param dispatcherId 分配器id，通常定义在{@link AbstractTask#getDispatcherId()}
+     * @param dispatcherId 分配器id，通常定义在{@link AbstractTask#getDispatcher()}
      * @return 线程池
      */
     private static ScheduledThreadPoolExecutor getExecutor(int dispatcherId) {
@@ -60,7 +60,7 @@ public class TaskExecutorGroup {
      * @return ScheduledFuture可用于控制任务以及检查状态
      */
     public static Future<?> addTask(AbstractTask runnable) {
-        return getExecutor(runnable.getDispatcherId().hashCode()).submit(runnable);
+        return getExecutor(runnable.getDispatcher().hashCode()).submit(runnable);
     }
 
     /**
@@ -77,7 +77,7 @@ public class TaskExecutorGroup {
      * @return ScheduledFuture可用于控制任务以及检查状态
      */
     public static ScheduledFuture<?> addDelayedTask(AbstractTask runnable, long delay, TimeUnit timeUnit) {
-        return getExecutor(runnable.getDispatcherId().hashCode()).schedule(runnable,delay,timeUnit);
+        return getExecutor(runnable.getDispatcher().hashCode()).schedule(runnable,delay,timeUnit);
     }
 
     /**
@@ -95,7 +95,7 @@ public class TaskExecutorGroup {
      * @return ScheduledFuture可用于控制任务以及检查状态
      */
     public static ScheduledFuture<?> addFixedRateTask(AbstractTask runnable, long initalDelay, long period, TimeUnit timeUnit) {
-        return getExecutor(runnable.getDispatcherId().hashCode()).scheduleAtFixedRate(runnable,initalDelay,period,timeUnit);
+        return getExecutor(runnable.getDispatcher().hashCode()).scheduleAtFixedRate(runnable,initalDelay,period,timeUnit);
     }
 
     /**

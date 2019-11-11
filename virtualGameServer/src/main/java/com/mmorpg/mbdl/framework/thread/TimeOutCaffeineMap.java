@@ -3,6 +3,7 @@ package com.mmorpg.mbdl.framework.thread;
 import com.github.benmanes.caffeine.cache.CacheLoader;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;
+import com.mmorpg.mbdl.framework.thread.interfaces.ITimeOutHashMap;
 
 import java.util.concurrent.TimeUnit;
 

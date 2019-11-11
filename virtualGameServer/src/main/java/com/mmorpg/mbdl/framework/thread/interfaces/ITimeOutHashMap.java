@@ -1,4 +1,4 @@
-package com.mmorpg.mbdl.framework.thread;
+package com.mmorpg.mbdl.framework.thread.interfaces;
 
 /**
  * 依据时间缓存的map

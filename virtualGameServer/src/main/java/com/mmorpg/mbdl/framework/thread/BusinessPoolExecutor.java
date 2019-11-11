@@ -1,6 +1,8 @@
 package com.mmorpg.mbdl.framework.thread;
 
 import com.google.common.base.Preconditions;
+import com.mmorpg.mbdl.framework.thread.interfaces.Dispatchable;
+import com.mmorpg.mbdl.framework.thread.interfaces.ITimeOutHashMap;
 import com.mmorpg.mbdl.framework.thread.task.AbstractTask;
 import com.mmorpg.mbdl.framework.thread.task.DelayedTask;
 import com.mmorpg.mbdl.framework.thread.task.FixedRateTask;
@@ -17,7 +19,7 @@ import java.util.concurrent.TimeUnit;
  * @param <K> 线程池中任务队列的主键类型
  * @param <V> 使用的线程池类型
  */
-public class BusinessPoolExecutor<K extends Serializable, V extends ScheduledExecutorService> {
+public class BusinessPoolExecutor<K extends Dispatchable<? extends Serializable>, V extends ScheduledExecutorService> {
     /** 业务线程池 */
     private V businessThreadPool;
     /** 业务所有的任务队列 */
@@ -50,7 +52,7 @@ public class BusinessPoolExecutor<K extends Serializable, V extends ScheduledExe
             }
             case FIXED_RATE_TASK:{
                 FixedRateTask fixedRateTask = (FixedRateTask)abstractTask;
-                return addFixedRateTask(abstractTask,fixedRateTask.getInitalDelay(),fixedRateTask.getPeriod(),fixedRateTask.getTimeUnit());
+                return addFixedRateTask(abstractTask,fixedRateTask.getInitDelay(),fixedRateTask.getPeriod(),fixedRateTask.getTimeUnit());
             }
             default:
                 throw new IllegalArgumentException(String.format("此类型[%s]的任务没有合适的处理方法",abstractTask.getClass().getSimpleName()));

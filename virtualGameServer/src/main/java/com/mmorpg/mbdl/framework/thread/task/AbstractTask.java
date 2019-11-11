@@ -1,6 +1,7 @@
 package com.mmorpg.mbdl.framework.thread.task;
 
 import com.mmorpg.mbdl.framework.thread.ThreadUtils;
+import com.mmorpg.mbdl.framework.thread.interfaces.Dispatchable;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,18 +13,18 @@ import java.util.concurrent.TimeUnit;
  * 抽象的任务runnable
  * @author sando
  */
-public abstract class AbstractTask<K extends Serializable> implements Runnable {
+public abstract class AbstractTask<K extends Dispatchable<? extends Serializable>> implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(AbstractTask.class);
     private long maxDelay = TimeUnit.NANOSECONDS.convert(2,TimeUnit.MILLISECONDS);
     private long maxExecute = TimeUnit.NANOSECONDS.convert(3,TimeUnit.MILLISECONDS);
     private Logger targetLogger = logger;
-    private K dispatcherId;
+    private K dispatcher;
     private boolean executeParallel = false;
     private TaskQueue<K> taskQueue;
 
 
-    public AbstractTask(K dispatcherId) {
-        this.dispatcherId = dispatcherId;
+    public AbstractTask(K dispatcher) {
+        this.dispatcher = dispatcher;
     }
 
     /**
@@ -31,7 +32,6 @@ public abstract class AbstractTask<K extends Serializable> implements Runnable {
      */
     private boolean logOrNot = true;
     private StopWatch stopWatch = new StopWatch();
-
     {
         // 创建时开始计时
         stopWatch.start();
@@ -42,8 +42,8 @@ public abstract class AbstractTask<K extends Serializable> implements Runnable {
      * 必须保证唯一性，不能是hashcode因为有可能有hash冲突，导致不同的玩家或者Channel使用同一TaskQueue
      * @return
      */
-    public K getDispatcherId(){
-        return dispatcherId;
+    public K getDispatcher(){
+        return dispatcher;
     }
 
     public boolean isExecuteParallel() {

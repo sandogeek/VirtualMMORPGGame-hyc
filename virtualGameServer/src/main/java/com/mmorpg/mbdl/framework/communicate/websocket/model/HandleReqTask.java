@@ -1,5 +1,6 @@
 package com.mmorpg.mbdl.framework.communicate.websocket.model;
 
+import com.mmorpg.mbdl.framework.thread.interfaces.Dispatchable;
 import com.mmorpg.mbdl.framework.thread.task.BaseNormalTask;
 
 import java.io.Serializable;
@@ -8,7 +9,7 @@ import java.io.Serializable;
  * 处理请求包任务
  * @author sando
  */
-public class HandleReqTask<K extends Serializable> extends BaseNormalTask<K> {
+public class HandleReqTask<K extends Dispatchable<? extends Serializable>> extends BaseNormalTask<K> {
     private PacketMethodDifinition packetMethodDifinition;
     private ISession session;
     private AbstractPacket abstractPacket;

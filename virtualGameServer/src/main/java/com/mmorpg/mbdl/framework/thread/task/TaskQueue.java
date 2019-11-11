@@ -2,6 +2,7 @@ package com.mmorpg.mbdl.framework.thread.task;
 
 import com.google.common.collect.Lists;
 import com.mmorpg.mbdl.framework.thread.BusinessPoolExecutor;
+import com.mmorpg.mbdl.framework.thread.interfaces.Dispatchable;
 
 import java.io.Serializable;
 import java.util.Queue;
@@ -14,7 +15,7 @@ import java.util.concurrent.ScheduledFuture;
  * @author sando
  * @param <K> 任务队列的唯一标识的类型
  */
-public class TaskQueue<K extends Serializable> {
+public class TaskQueue<K extends Dispatchable<? extends Serializable>> {
     /**
      * 此任务队列的唯一标识
      */

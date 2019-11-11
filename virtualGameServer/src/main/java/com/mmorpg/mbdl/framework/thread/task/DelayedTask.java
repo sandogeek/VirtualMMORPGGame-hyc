@@ -1,12 +1,14 @@
 package com.mmorpg.mbdl.framework.thread.task;
 
+import com.mmorpg.mbdl.framework.thread.interfaces.Dispatchable;
+
 import java.io.Serializable;
 import java.util.concurrent.TimeUnit;
 
 /**
  * 延迟执行的任务,由于任务延迟执行，所以不能放到玩家队列上，否则将导致玩家请求处理长时间延后
  */
-public abstract class DelayedTask<K extends Serializable> extends AbstractTask<K> {
+public abstract class DelayedTask<K extends Dispatchable<? extends Serializable>> extends AbstractTask<K> {
     private long delay;
     private TimeUnit timeUnit;
 
