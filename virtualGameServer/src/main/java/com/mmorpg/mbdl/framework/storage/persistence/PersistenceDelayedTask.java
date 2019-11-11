@@ -1,5 +1,6 @@
 package com.mmorpg.mbdl.framework.storage.persistence;
 
+import com.mmorpg.mbdl.framework.thread.interfaces.Dispatchable;
 import com.mmorpg.mbdl.framework.thread.task.DelayedTask;
 import org.springframework.util.ObjectUtils;
 
@@ -12,9 +13,9 @@ import java.util.concurrent.TimeUnit;
  * @author Sando Geek
  * @since v1.0
  **/
-public class PersistenceDelayedTask<K extends Serializable> extends DelayedTask<Serializable> {
-    public PersistenceDelayedTask(K dispatcherId, long delay, TimeUnit timeUnit) {
-        super(dispatcherId, delay, timeUnit);
+public class PersistenceDelayedTask<K extends Dispatchable<? extends Serializable>> extends DelayedTask<K> {
+    public PersistenceDelayedTask(K dispatcher, long delay, TimeUnit timeUnit) {
+        super(dispatcher, delay, timeUnit);
     }
 
     @Override

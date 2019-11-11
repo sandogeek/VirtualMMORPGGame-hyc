@@ -1,18 +1,13 @@
 package com.mmorpg.mbdl.framework.communicate.websocket.model;
 
+import com.mmorpg.mbdl.framework.thread.interfaces.Dispatchable;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelId;
 
 import java.io.Serializable;
 
-public interface ISession<K extends Serializable> {
-    /**
-     * 选择分发器Id
-     * @return
-     */
-    K selectDispatcherId();
-
+public interface ISession<K extends Serializable> extends Dispatchable<K> {
     /**
      * 获取Session的id（其实是ChannelId）
      * @return channel().id()

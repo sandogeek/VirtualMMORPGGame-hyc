@@ -10,7 +10,6 @@ import io.netty.channel.ChannelFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.Serializable;
 import java.net.InetSocketAddress;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -19,7 +18,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * 收到第一个包时生成一个会话
  * @author sando
  */
-public class WsSession extends AbstractSession {
+public class WsSession extends AbstractSession<Long> {
     private Logger logger = LoggerFactory.getLogger(WsSession.class);
     private Channel channel;
     private Long roleId;
@@ -36,8 +35,8 @@ public class WsSession extends AbstractSession {
     }
 
     @Override
-    public Serializable selectDispatcherId() {
-        return null;
+    public Long dispatchId() {
+        return getRoleId();
     }
 
     public void setTempDispatcherIdMaxValue(Long tempDispatcherIdMaxValue) {

@@ -14,8 +14,8 @@ public class HandleReqTask<K extends Dispatchable<? extends Serializable>> exten
     private ISession session;
     private AbstractPacket abstractPacket;
     // 使用ChannelId获取队列，玩家频繁上下线的情况下会导致产生大量无用队列，因此应使用PlayerId拿TaskQueue
-    public HandleReqTask(K dispatcherId,PacketMethodDifinition packetMethodDifinition, ISession session, AbstractPacket abstractPacket){
-        super(dispatcherId);
+    public HandleReqTask(K dispatcher,PacketMethodDifinition packetMethodDifinition, ISession session, AbstractPacket abstractPacket){
+        super(dispatcher);
         this.setISession(session);
         this.setPacketMethodDefinition(packetMethodDifinition);
         this.setAbstractPacket(abstractPacket);
