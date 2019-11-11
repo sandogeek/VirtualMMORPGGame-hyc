@@ -322,7 +322,7 @@ public class Role extends AbstractCreature {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("角色名称", roleEntity.getName())
+                .add("角色", roleEntity.getName())
                 .toString();
     }
 

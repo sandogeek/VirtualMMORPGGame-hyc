@@ -56,4 +56,9 @@ public abstract class AbstractSceneObject implements Dispatchable<Long> {
     public Long dispatchId() {
         return objectId;
     }
+
+    @Override
+    public String toString() {
+        return String.format("[%s][%s]", this.getClass().getSimpleName(), name);
+    }
 }
