@@ -6,10 +6,13 @@ import com.mmorpg.mbdl.business.chat.packet.ChatResp;
 import com.mmorpg.mbdl.business.role.manager.RoleManager;
 import com.mmorpg.mbdl.business.role.model.Role;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.ISession;
+import com.mmorpg.mbdl.framework.thread.ThreadUtils;
 import com.mmorpg.mbdl.framework.thread.interfaces.Dispatchable;
 import com.mmorpg.mbdl.framework.thread.task.AbstractTask;
 import com.mmorpg.mbdl.framework.thread.task.BaseNormalTask;
 import com.mmorpg.mbdl.framework.thread.task.TaskDispatcher;
+import com.mmorpg.mbdl.framework.thread.task.TaskQueue;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -44,14 +47,15 @@ public class ChatService {
     public void handleChatReq(ISession session, ChatReq chatReq){
         long targetId = chatReq.getTargetId();
         Long dispatcherId;
-        AbstractTask<Dispatchable<? extends Serializable>> task = null;
+        AbstractTask<Dispatchable<Serializable>> task = null;
         if (targetId == 0L) {
             // 世界聊天
             dispatcherId = 0L;
+            TaskQueue<? extends Serializable> sessionTaskQueue = ThreadUtils.currentThreadTask().getTaskQueue();
             /**
              * 每个聊天请求生成新的任务，根据频道ID拿到对应的队列，然后把任务分发到这个队列中即可保证所有玩家显示的消息的顺序一致
              */
-            task = new BaseNormalTask(RoleManager.getInstance().getRoleBySession(session)) {
+            task = new BaseNormalTask<Role>(RoleManager.getInstance().getRoleBySession(session)) {
 
                 @Override
                 public String taskName() {
@@ -60,11 +64,15 @@ public class ChatService {
 
                 @Override
                 public void execute() {
+                    TaskQueue<? extends Serializable> roleTaskQueue = ThreadUtils.currentThreadTask().getTaskQueue();
+                    if (sessionTaskQueue == roleTaskQueue) {
+                        LoggerFactory.getLogger(ChatService.class).error("使用的是同一个队列");
+                    }
                     ChatResp chatResp = new ChatResp();
                     chatResp.setResult(true);
                     RoleManager.getInstance().getRoleBySession(session).sendPacket(chatResp);
                     Role role = RoleManager.getInstance().getRoleBySession(session);
-                    ChatMessage chatMessage = new ChatMessage(session.getRoleId(), role.getName(), 0, chatReq.getContent());
+                    ChatMessage chatMessage = new ChatMessage(role.getRoleId(), role.getName(), 0, chatReq.getContent());
                     RoleManager.getInstance().getSession2Role().values().stream().filter(role1 -> !role.equals(role1)).forEach(roleTemp -> {
                         roleTemp.sendPacket(chatMessage);
                     });
