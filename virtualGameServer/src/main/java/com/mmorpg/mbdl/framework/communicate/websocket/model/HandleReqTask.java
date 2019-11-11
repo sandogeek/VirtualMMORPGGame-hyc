@@ -33,17 +33,29 @@ public class HandleReqTask<K extends Dispatchable<? extends Serializable>> exten
     public void execute() {
         SessionState expectedState = packetMethodDifinition.getPacketMethodAnno().state();
         // 第二次状态校验，主要是为了处理未登录前同时发过来两个登录或者注册等请求的状况
+        String s = packetMethodDifinition.getBean().getClass().getSimpleName() + "."
+                + packetMethodDifinition.getMethod().getName() + "(...)";
         if (expectedState != SessionState.ANY) {
             if (session.getState() != expectedState) {
                 getTargetLogger().warn("HandleReqTask任务执行失败，当前wsSession的状态[{}]与方法{}期待的状态[{}]不符",
                         packetMethodDifinition.getAbstractPacketClazz().getSimpleName(),
-                        session.getState(),packetMethodDifinition.getBean().getClass().getSimpleName()+"."
-                                +packetMethodDifinition.getMethod().getName()+"(...)",expectedState);
+                        session.getState(), s,expectedState);
                 return;
             }
         }
+        Class<?> parameterType = packetMethodDifinition.getMethod().getParameterTypes()[0];
+        Dispatchable user = session.getUser();
+        Object obj;
+        if (user != null && user.getClass() == parameterType) {
+            obj = packetMethodDifinition.invoke(user, abstractPacket);
+        } else if (parameterType.isAssignableFrom(session.getClass())) {
+            obj = packetMethodDifinition.invoke(session, abstractPacket);
+        } else {
+            throw new RuntimeException(String.format("接受到[%s]类型的包时, session尚未绑定用户, 因此%s第一个参数类型必须为[%s]",
+                        abstractPacket.getClass().getSimpleName(), s, ISession.class.getSimpleName()
+                    ));
+        }
 
-        Object obj = packetMethodDifinition.invoke(session,abstractPacket);
         if (obj != null){
             session.sendPacket((AbstractPacket) obj);
         }

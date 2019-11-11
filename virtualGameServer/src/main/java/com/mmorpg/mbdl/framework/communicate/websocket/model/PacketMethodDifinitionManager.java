@@ -3,6 +3,7 @@ package com.mmorpg.mbdl.framework.communicate.websocket.model;
 import com.google.common.base.Predicate;
 import com.mmorpg.mbdl.framework.communicate.websocket.annotation.PacketHandler;
 import com.mmorpg.mbdl.framework.communicate.websocket.annotation.PacketMethod;
+import com.mmorpg.mbdl.framework.thread.interfaces.Dispatchable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -44,9 +45,6 @@ public class PacketMethodDifinitionManager implements BeanPostProcessor {
             Set<Method> methods=getAllMethods(clazz, withAnyParametersAssignableFrom(AbstractPacket.class));
             if (methods.size()==0){
                 return bean;
-                // java.lang.String message = java.lang.String.format("类[%s]带@PacketHandler但却没有任何带AbstractPacket参数的方法",clazz.toString());
-                // logger.error(message);
-                // throw new RuntimeException(message);
             }
             for (Method method : methods) {
                 if (method.getParameterTypes().length!=2){
@@ -54,9 +52,9 @@ public class PacketMethodDifinitionManager implements BeanPostProcessor {
                             method.getDeclaringClass().getSimpleName()+"::"+method.getName());
                     throw new IllegalArgumentException(message);
                 }
-                if ( !ISession.class.isAssignableFrom(method.getParameterTypes()[0])){
-                    java.lang.String message = java.lang.String.format("方法[%s]第一个参数的类型必须为ISession或其子类",
-                            method.getDeclaringClass().getSimpleName()+"::"+method.getName());
+                if ( !Dispatchable.class.isAssignableFrom(method.getParameterTypes()[0])){
+                    java.lang.String message = java.lang.String.format("方法[%s]第一个参数的类型必须为[%s]或其子类",
+                            method.getDeclaringClass().getSimpleName()+"::"+method.getName(), Dispatchable.class.getSimpleName());
                     throw new IllegalArgumentException(message);
                 }
                 Class<?> abstractPacketClazz = method.getParameterTypes()[1];

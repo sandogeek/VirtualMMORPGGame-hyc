@@ -3,10 +3,12 @@ package com.mmorpg.mbdl.framework.communicate.websocket.model;
 
 import com.mmorpg.mbdl.framework.communicate.websocket.annotation.PacketMethod;
 import com.mmorpg.mbdl.framework.reflectasm.withunsafe.MethodAccess;
+import com.mmorpg.mbdl.framework.thread.interfaces.Dispatchable;
 import org.reflections.ReflectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.Set;
 
@@ -41,12 +43,11 @@ public class PacketMethodDifinition {
         packetMethodDifinition.setAbstractPacketClazz(aClazz);
         return packetMethodDifinition;
     }
-    public Object invoke(ISession session,AbstractPacket abstractPacket){
+    public Object invoke(Dispatchable<? extends Serializable> dispatchable, AbstractPacket abstractPacket){
         /** 高性能反射调用
          *  {@link com.mmorpg.mbdl.ReflectASM.BenchMarkTest#main()}
          */
-        Object obj= methodAccess.invoke(bean,methodIndex,session,abstractPacket);
-        return obj;
+        return methodAccess.invoke(bean,methodIndex, dispatchable, abstractPacket);
     }
     public Object getBean() {
         return bean;

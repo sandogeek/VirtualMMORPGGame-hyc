@@ -1,7 +1,8 @@
 package com.mmorpg.mbdl.framework.communicate.websocket.handler;
 
 import com.mmorpg.mbdl.framework.communicate.websocket.model.*;
-import com.mmorpg.mbdl.framework.communicate.websocket.model.HandleReqTask;
+import com.mmorpg.mbdl.framework.thread.interfaces.Dispatchable;
+import com.mmorpg.mbdl.framework.thread.task.AbstractTask;
 import com.mmorpg.mbdl.framework.thread.task.TaskDispatcher;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -28,13 +29,15 @@ public class AbstractPacketDispatcherHandler extends SimpleChannelInboundHandler
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, AbstractPacket abstractPacket) throws Exception {
         // 不能在netty worker线程池作业务处理,如果当前请求处理发生阻塞，那么这条（4条之一）worker线程就会被阻塞
+        ISession session = SessionManager.getIntance().getSession(ctx.channel().id());
+        Dispatchable user = session.getUser();
         PacketMethodDifinition packetMethodDifinition = PacketMethodDifinitionManager.getIntance().getPacketMethodDifinition(abstractPacket);
         if (packetMethodDifinition==null) {
             logger.error("请求包[{}]没有对应的@PacketMethod方法处理",abstractPacket.getClass().getSimpleName());
             return;
         }
         SessionState expectedState = packetMethodDifinition.getPacketMethodAnno().state();
-        ISession session = SessionManager.getIntance().getSession(ctx.channel().id());
+
         boolean executeParallel = packetMethodDifinition.getPacketMethodAnno().executeParallel();
         // 状态校验，不符合要求的请求直接不生成任务
         if (expectedState!=SessionState.ANY){
@@ -46,9 +49,14 @@ public class AbstractPacketDispatcherHandler extends SimpleChannelInboundHandler
                 return;
             }
         }
-        TaskDispatcher.getInstance().dispatch(
-                new HandleReqTask(session, packetMethodDifinition, session,abstractPacket)
-                        .setMaxExecuteTime(30,TimeUnit.MILLISECONDS),executeParallel);
+        AbstractTask abstractTask;
+        if (user == null) {
+            abstractTask = new HandleReqTask(user, packetMethodDifinition, session, abstractPacket);
+        } else {
+            abstractTask = new HandleReqTask(session, packetMethodDifinition, session, abstractPacket);
+        }
+        abstractTask = abstractTask.setMaxExecuteTime(30, TimeUnit.MILLISECONDS);
+        TaskDispatcher.getInstance().dispatch(abstractTask, executeParallel);
         // TaskExecutorGroup.addTask(new HandleReqTask(packetMethodDifinition,session,abstractPacket));
     }
 

@@ -46,41 +46,28 @@ public interface ISession<K extends Serializable> extends Dispatchable<K> {
      */
     ChannelFuture sendPacket(AbstractPacket abstractPacket,boolean flushNow);
 
-    // /**
-    //  * 获取上次发送ping包的时间
-    //  * @return nano时间
-    //  */
-    // long getLastSendPing();
-    //
-    // /**
-    //  * 获取上次接收Pong包的时间
-    //  * @return
-    //  */
-    // long getLastRescPong();
-
     /**
      * 关闭session
      */
     void close();
 
-    // String getUid(); java.rmi.server.UID
     /**
-     * 获取角色id
-     * @return 角色id
+     * 绑定user用户
+     * @param user
      */
-    Long getRoleId();
+    void bindUser(Dispatchable<K> user);
+
+    /**
+     * 获取session用户
+     * @return
+     */
+    Dispatchable<K> getUser();
 
     /**
      * 获取Channel
      * @return Channel
      */
     Channel getChannel();
-
-    /**
-     * 设置角色id
-     * @param roleId 角色id
-     */
-    void setRoleId(Long roleId);
 
     /**
      * 获取账号

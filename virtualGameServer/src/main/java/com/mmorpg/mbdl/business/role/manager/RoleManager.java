@@ -137,6 +137,7 @@ public class RoleManager {
         Role role = new Role(roleEntity.getId(), roleEntity.getName());
         role.setRoleEntity(roleEntity);
         role.setSession(session);
+        session.bindUser(role);
         role.init();
         role.bindEntity();
         if (getSession2Role().values().contains(role)){

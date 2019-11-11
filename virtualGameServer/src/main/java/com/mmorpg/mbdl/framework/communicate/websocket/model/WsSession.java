@@ -3,6 +3,7 @@ package com.mmorpg.mbdl.framework.communicate.websocket.model;
 import com.mmorpg.mbdl.framework.common.utils.JsonUtil;
 import com.mmorpg.mbdl.framework.event.core.SyncEventBus;
 import com.mmorpg.mbdl.framework.event.preset.SessionCloseEvent;
+import com.mmorpg.mbdl.framework.thread.interfaces.Dispatchable;
 import com.mmorpg.mbdl.framework.thread.task.DelayedTask;
 import com.mmorpg.mbdl.framework.thread.task.TaskDispatcher;
 import io.netty.channel.Channel;
@@ -21,7 +22,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class WsSession extends AbstractSession<Long> {
     private Logger logger = LoggerFactory.getLogger(WsSession.class);
     private Channel channel;
-    private Long roleId;
+    private Dispatchable<Long> user;
     private String account;
     /** 临时分发器Id，用于未登录时使用 */
     private Long tempDispatcherId;
@@ -32,11 +33,22 @@ public class WsSession extends AbstractSession<Long> {
     public WsSession(Channel channel) {
         super(channel.id(), ((InetSocketAddress) channel.remoteAddress()).getAddress().getHostAddress());
         this.channel = channel;
+        tempDispatcherId = channel.hashCode() % tempDispatcherIdMaxValue;
     }
 
     @Override
     public Long dispatchId() {
-        return getRoleId();
+        return user != null ? user.dispatchId() : tempDispatcherId;
+    }
+
+    @Override
+    public void bindUser(Dispatchable<Long> user) {
+        this.user = user;
+    }
+
+    @Override
+    public Dispatchable<Long> getUser() {
+        return user;
     }
 
     public void setTempDispatcherIdMaxValue(Long tempDispatcherIdMaxValue) {
@@ -51,7 +63,7 @@ public class WsSession extends AbstractSession<Long> {
     @Override
     public ChannelFuture sendPacket(AbstractPacket abstractPacket,boolean flushNow){
         if (!channel.isActive()) {
-            logger.warn("发包失败：发包时channel={}已inActive, roleId={}", channel, roleId);
+            logger.warn("发包失败：发包时channel={}已inActive, user={}", channel, user);
             return null;
         }
         ChannelFuture future;
@@ -97,20 +109,6 @@ public class WsSession extends AbstractSession<Long> {
         channel.close().addListener( future -> {
             SyncEventBus.getInstance().post(new SessionCloseEvent(this));
         } );
-    }
-
-    @Override
-    public Long getRoleId() {
-        return roleId;
-    }
-
-    /**
-     * 设置玩家playerId
-     * @param roleId 玩家id
-     */
-    @Override
-    public void setRoleId(Long roleId){
-        this.roleId = roleId;
     }
 
     @Override

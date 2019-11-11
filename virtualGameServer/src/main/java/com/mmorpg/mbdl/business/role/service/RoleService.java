@@ -92,7 +92,6 @@ public class RoleService {
             roleUiInfoResp.setRoleType(role.getRoleEntity().getRoleType());
             chooseRoleResp.setRoleUiInfoResp(roleUiInfoResp);
         }
-        session.setRoleId(roleEntity.getId());
         session.setState(SessionState.GAMEING);
         return chooseRoleResp;
     }
