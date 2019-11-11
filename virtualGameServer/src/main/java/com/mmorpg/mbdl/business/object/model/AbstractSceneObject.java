@@ -1,5 +1,7 @@
 package com.mmorpg.mbdl.business.object.model;
 
+import com.mmorpg.mbdl.framework.thread.interfaces.Dispatchable;
+
 import java.util.Objects;
 
 /**
@@ -8,7 +10,7 @@ import java.util.Objects;
  * @author Sando Geek
  * @since v1.0 2018/12/11
  **/
-public abstract class AbstractSceneObject {
+public abstract class AbstractSceneObject implements Dispatchable<Long> {
     /**
      * 唯一id
      */
@@ -48,5 +50,10 @@ public abstract class AbstractSceneObject {
     @Override
     public int hashCode() {
         return Objects.hash(objectId);
+    }
+
+    @Override
+    public Long dispatchId() {
+        return objectId;
     }
 }

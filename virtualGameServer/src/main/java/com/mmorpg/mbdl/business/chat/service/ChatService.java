@@ -3,9 +3,10 @@ package com.mmorpg.mbdl.business.chat.service;
 import com.mmorpg.mbdl.business.chat.packet.ChatMessage;
 import com.mmorpg.mbdl.business.chat.packet.ChatReq;
 import com.mmorpg.mbdl.business.chat.packet.ChatResp;
-import com.mmorpg.mbdl.business.role.model.Role;
 import com.mmorpg.mbdl.business.role.manager.RoleManager;
+import com.mmorpg.mbdl.business.role.model.Role;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.ISession;
+import com.mmorpg.mbdl.framework.thread.interfaces.Dispatchable;
 import com.mmorpg.mbdl.framework.thread.task.AbstractTask;
 import com.mmorpg.mbdl.framework.thread.task.BaseNormalTask;
 import com.mmorpg.mbdl.framework.thread.task.TaskDispatcher;
@@ -43,14 +44,14 @@ public class ChatService {
     public void handleChatReq(ISession session, ChatReq chatReq){
         long targetId = chatReq.getTargetId();
         Long dispatcherId;
-        AbstractTask<Serializable> task = null;
+        AbstractTask<Dispatchable<? extends Serializable>> task = null;
         if (targetId == 0L) {
             // 世界聊天
             dispatcherId = 0L;
             /**
              * 每个聊天请求生成新的任务，根据频道ID拿到对应的队列，然后把任务分发到这个队列中即可保证所有玩家显示的消息的顺序一致
              */
-            task = new BaseNormalTask(dispatcherId) {
+            task = new BaseNormalTask(RoleManager.getInstance().getRoleBySession(session)) {
 
                 @Override
                 public String taskName() {

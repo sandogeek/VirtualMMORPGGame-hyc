@@ -111,7 +111,7 @@ public class RoleService {
             return;
         }
         // logout事件转移到业务池处理
-        TaskDispatcher.getInstance().dispatch(new BaseNormalTask<Long>(role.getRoleId()) {
+        TaskDispatcher.getInstance().dispatch(new BaseNormalTask<Role>(role) {
             @Override
             public String taskName() {
                 return "Logout事件";
