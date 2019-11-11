@@ -14,8 +14,8 @@ public abstract class FixedRateTask<K extends Dispatchable<? extends Serializabl
     private long period;
     private TimeUnit timeUnit;
 
-    public FixedRateTask(K dispatcherId, long initDelay, long period, TimeUnit timeUnit) {
-        super(dispatcherId);
+    public FixedRateTask(K dispatcher, long initDelay, long period, TimeUnit timeUnit) {
+        super(dispatcher);
         this.initDelay = initDelay;
         this.period = period;
         this.timeUnit = timeUnit;

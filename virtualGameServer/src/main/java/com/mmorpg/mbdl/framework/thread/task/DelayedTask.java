@@ -12,8 +12,8 @@ public abstract class DelayedTask<K extends Dispatchable<? extends Serializable>
     private long delay;
     private TimeUnit timeUnit;
 
-    public DelayedTask(K dispatcherId, long delay, TimeUnit timeUnit) {
-        super(dispatcherId);
+    public DelayedTask(K dispatcher, long delay, TimeUnit timeUnit) {
+        super(dispatcher);
         this.delay = delay;
         this.timeUnit = timeUnit;
     }
