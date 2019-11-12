@@ -50,7 +50,7 @@ public class AbstractPacketDispatcherHandler extends SimpleChannelInboundHandler
             }
         }
         AbstractTask abstractTask;
-        if (user == null) {
+        if (user != null) {
             abstractTask = new HandleReqTask(user, packetMethodDifinition, session, abstractPacket);
         } else {
             abstractTask = new HandleReqTask(session, packetMethodDifinition, session, abstractPacket);
