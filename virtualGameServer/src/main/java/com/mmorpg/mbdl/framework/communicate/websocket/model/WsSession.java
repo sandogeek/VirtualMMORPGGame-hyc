@@ -81,7 +81,12 @@ public class WsSession extends AbstractSession<Long> {
         }
         future = channel.write(abstractPacket);
         future.addListener(futureTemp -> {
-            String logContent = String.format("账号<%s>,发包[%s] 内容：%s",account, abstractPacket.getClass().getSimpleName(), JsonUtil.object2String(abstractPacket));
+            String logContent;
+            if (user != null) {
+                logContent = String.format("to %s,[%s]%s", user, abstractPacket.getClass().getSimpleName(), JsonUtil.object2String(abstractPacket));
+            } else {
+                logContent = String.format("to %s,[%s]%s", this, abstractPacket.getClass().getSimpleName(), JsonUtil.object2String(abstractPacket));
+            }
             if (futureTemp.isSuccess()) {
                 logger.debug(logContent);
             } else if (futureTemp.cause() != null) {
