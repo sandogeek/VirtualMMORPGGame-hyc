@@ -1,6 +1,5 @@
 package com.mmorpg.mbdl.business.role.model;
 
-import com.google.common.base.MoreObjects;
 import com.mmorpg.mbdl.business.container.entity.ContainerEntity;
 import com.mmorpg.mbdl.business.container.manager.ContainerManager;
 import com.mmorpg.mbdl.business.equip.entity.EquipEntity;
@@ -321,9 +320,7 @@ public class Role extends AbstractCreature {
 
     @Override
     public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("角色", roleEntity.getName())
-                .toString();
+        return String.format("角色[%s]", roleEntity.getName());
     }
 
 }
