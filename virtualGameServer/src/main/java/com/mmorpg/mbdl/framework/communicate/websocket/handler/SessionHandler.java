@@ -28,8 +28,7 @@ public class SessionHandler extends ChannelInboundHandlerAdapter {
     }
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        WsSession wsSession = new WsSession(ctx.channel());
-        wsSession.setTempDispatcherIdMaxValue(tempDispatcherIdMaxValue);
+        WsSession wsSession = new WsSession(ctx.channel(), tempDispatcherIdMaxValue);
         sessionManager.add(wsSession);
         logger.debug("会话[channelId={}]创建成功",ctx.channel().id());
         super.channelActive(ctx);

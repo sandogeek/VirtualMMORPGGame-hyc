@@ -8,6 +8,7 @@ import com.mmorpg.mbdl.framework.thread.task.DelayedTask;
 import com.mmorpg.mbdl.framework.thread.task.TaskDispatcher;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,14 +27,25 @@ public class WsSession extends AbstractSession<Long> {
     private String account;
     /** 临时分发器Id，用于未登录时使用 */
     private Long tempDispatcherId;
-    private Long tempDispatcherIdMaxValue;
     /** 是否生成新的DelayedTask */
     private AtomicBoolean generateDelayedTask = new AtomicBoolean(true);
+
+    public WsSession(ChannelId id, String ip, Channel channel) {
+        super(id, ip);
+        this.channel = channel;
+        tempDispatcherId = channel.hashCode() % 32L;
+    }
+
+    public WsSession(Channel channel, Long tempDispatcherIdMaxValue) {
+        super(channel.id(), ((InetSocketAddress) channel.remoteAddress()).getAddress().getHostAddress());
+        this.channel = channel;
+        tempDispatcherId = channel.hashCode() % tempDispatcherIdMaxValue;
+    }
 
     public WsSession(Channel channel) {
         super(channel.id(), ((InetSocketAddress) channel.remoteAddress()).getAddress().getHostAddress());
         this.channel = channel;
-        tempDispatcherId = channel.hashCode() % tempDispatcherIdMaxValue;
+
     }
 
     @Override
@@ -49,10 +61,6 @@ public class WsSession extends AbstractSession<Long> {
     @Override
     public Dispatchable<Long> getUser() {
         return user;
-    }
-
-    public void setTempDispatcherIdMaxValue(Long tempDispatcherIdMaxValue) {
-        this.tempDispatcherIdMaxValue = tempDispatcherIdMaxValue;
     }
 
     @Override
