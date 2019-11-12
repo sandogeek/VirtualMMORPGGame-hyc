@@ -46,9 +46,6 @@ public class HandleReqTask<K extends Dispatchable<? extends Serializable>> exten
         Dispatchable user = session.getUser();
         Object obj;
         if (user != null && user.getClass() == parameterType) {
-            if (user.dispatchId() != session.dispatchId()) {
-                throw new RuntimeException(String.format("session绑定的用户[%s]的分发Id与session不一致", user.getClass().getSimpleName()));
-            }
             obj = packetMethodDifinition.invoke(user, abstractPacket);
         } else if (parameterType.isAssignableFrom(session.getClass())) {
             obj = packetMethodDifinition.invoke(session, abstractPacket);
