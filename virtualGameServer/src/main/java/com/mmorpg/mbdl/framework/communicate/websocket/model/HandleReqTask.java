@@ -25,7 +25,7 @@ public class HandleReqTask<K extends Dispatchable<? extends Serializable>> exten
 
     @Override
     public String taskName() {
-        return String.format("账号<%s>,处理请求包[%s]结束", session.getAccount(), packetMethodDifinition.getAbstractPacketClazz().getSimpleName());
+        return String.format("处理请求包[%s]结束", packetMethodDifinition.getAbstractPacketClazz().getSimpleName());
     }
 
     @Override

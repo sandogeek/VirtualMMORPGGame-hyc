@@ -128,4 +128,13 @@ public class WsSession extends AbstractSession<Long> {
     public void setAccount(String account) {
         this.account = account;
     }
+
+    @Override
+    public String toString() {
+        String result = String.format("%s[ip=%s]", WsSession.class.getSimpleName(), getIp());
+        if (account != null) {
+            result += String.format("[account=%s]", account);
+        }
+        return result;
+    }
 }
