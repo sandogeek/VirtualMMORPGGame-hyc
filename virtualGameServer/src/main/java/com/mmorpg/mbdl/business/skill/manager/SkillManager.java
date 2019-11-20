@@ -19,9 +19,6 @@ import com.mmorpg.mbdl.business.skill.res.SkillRes;
 import com.mmorpg.mbdl.business.skill.util.GameMathUtil;
 import com.mmorpg.mbdl.framework.resource.exposed.IStaticRes;
 import com.mmorpg.mbdl.framework.storage.core.IStorage;
-import com.mmorpg.mbdl.framework.thread.task.DelayedTask;
-import com.mmorpg.mbdl.framework.thread.task.TaskDispatcher;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -67,17 +64,6 @@ public class SkillManager implements IRoleEntityManager<SkillEntity> {
     }
 
     public void useSkill(Role role, SkillRes skillRes, AbstractCreature target) {
-        TaskDispatcher.getInstance().dispatch(new DelayedTask<Role, Long>(role, 50, TimeUnit.MILLISECONDS) {
-            @Override
-            public String taskName() {
-                return "延迟任务测试";
-            }
-
-            @Override
-            public void execute() {
-                LoggerFactory.getLogger(SkillManager.class).error("测试成功");
-            }
-        });
         // 检查cd
         ConcurrentHashMap<Integer, Long> key2lastUseTime = cache.get(role.getRoleId());
         Long lastUseTime = key2lastUseTime.get(skillRes.getSkillId());
