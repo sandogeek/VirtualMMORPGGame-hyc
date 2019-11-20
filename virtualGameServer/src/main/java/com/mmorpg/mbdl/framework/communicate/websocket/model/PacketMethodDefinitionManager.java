@@ -19,11 +19,11 @@ import java.util.Set;
 import static org.reflections.ReflectionUtils.getAllMethods;
 
 @Component
-public class PacketMethodDifinitionManager implements BeanPostProcessor {
-    private static final Logger logger = LoggerFactory.getLogger(PacketMethodDifinitionManager.class);
+public class PacketMethodDefinitionManager implements BeanPostProcessor {
+    private static final Logger logger = LoggerFactory.getLogger(PacketMethodDefinitionManager.class);
 
-    private static PacketMethodDifinitionManager self;
-    public static PacketMethodDifinitionManager getIntance(){
+    private static PacketMethodDefinitionManager self;
+    public static PacketMethodDefinitionManager getIntance(){
         return self;
     }
     @PostConstruct
@@ -33,7 +33,7 @@ public class PacketMethodDifinitionManager implements BeanPostProcessor {
     private Map<Class<?>, PacketMethodDefinition> class2PacketMethodDifinition = new HashMap<>();
     private Map<Class<?>, Method> class2Method = new HashMap<>();
 
-    public PacketMethodDefinition getPacketMethodDifinition(AbstractPacket abstractPacket){
+    public PacketMethodDefinition getPacketMethodDefinition(AbstractPacket abstractPacket){
         return class2PacketMethodDifinition.get(abstractPacket.getClass());
     }
 
@@ -75,7 +75,7 @@ public class PacketMethodDifinitionManager implements BeanPostProcessor {
                 }
                 class2Method.put(abstractPacketClazz,method);
                 class2PacketMethodDifinition.put(abstractPacketClazz,
-                        PacketMethodDefinition.valueOf(bean,method,abstractPacketClazz,method.getAnnotation(PacketMethod.class)));
+                        PacketMethodDefinition.valueOf(bean,method, method.getParameterTypes()[0], abstractPacketClazz,method.getAnnotation(PacketMethod.class)));
             }
         }
         return bean;

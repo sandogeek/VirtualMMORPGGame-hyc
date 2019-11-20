@@ -31,7 +31,7 @@ public class AbstractPacketDispatcherHandler extends SimpleChannelInboundHandler
         // 不能在netty worker线程池作业务处理,如果当前请求处理发生阻塞，那么这条（4条之一）worker线程就会被阻塞
         ISession<Long> session = SessionManager.getInstance().getSession(ctx.channel().id());
         Dispatchable<Long> user = session.getUser();
-        PacketMethodDefinition packetMethodDefinition = PacketMethodDifinitionManager.getIntance().getPacketMethodDifinition(abstractPacket);
+        PacketMethodDefinition packetMethodDefinition = PacketMethodDefinitionManager.getIntance().getPacketMethodDefinition(abstractPacket);
         if (packetMethodDefinition ==null) {
             logger.error("请求包[{}]没有对应的@PacketMethod方法处理",abstractPacket.getClass().getSimpleName());
             return;
@@ -50,7 +50,8 @@ public class AbstractPacketDispatcherHandler extends SimpleChannelInboundHandler
             }
         }
         AbstractTask<Dispatchable<Long>, Long> abstractTask;
-        if (user != null) {
+        Class<?> firstParameterType = packetMethodDefinition.getFirstParameterType();
+        if (user != null && firstParameterType.isAssignableFrom(user.getClass())) {
             abstractTask = new HandleReqTask<>(user, packetMethodDefinition, session, abstractPacket);
         } else {
             abstractTask = new HandleReqTask<>(session, packetMethodDefinition, session, abstractPacket);

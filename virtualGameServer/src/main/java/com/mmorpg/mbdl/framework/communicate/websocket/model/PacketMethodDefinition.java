@@ -25,23 +25,37 @@ public class PacketMethodDefinition {
     }
     private Object bean;
     private Method method;
+    /**
+     * 第一个参数的类型
+     */
+    private Class<?> firstParameterType;
     private MethodAccess methodAccess;
     private int methodIndex;
-    // 日志打印用，AbstractPacket的类对象
+    /**
+     * 日志打印用，AbstractPacket的类对象
+     */
     private Class<?> abstractPacketClazz;
     private PacketMethod packetMethodAnno;
-    // 如果没有@PacketMethod那么此方法上的注解作为默认注解
+
+    /**
+     * 如果没有@PacketMethod那么此方法上的注解作为默认注解
+     */
     @PacketMethod
     private void temp(){
     }
-    public static PacketMethodDefinition valueOf(Object object, Method method, Class<?> aClazz, PacketMethod packetMethodAnno){
+    public static PacketMethodDefinition valueOf(Object object, Method method, Class<?> firstParameterType, Class<?> clazz, PacketMethod packetMethodAnno){
         PacketMethodDefinition packetMethodDefinition = new PacketMethodDefinition();
-        packetMethodDefinition.setBean(object);
-        packetMethodDefinition.setMethodAccess(MethodAccess.access(object.getClass()));
-        packetMethodDefinition.setMethodIndex(packetMethodDefinition.getMethodAccess().getIndex(method.getName()));
-        packetMethodDefinition.setMethod(method);
-        packetMethodDefinition.setPacketMethodAnno(packetMethodAnno);
-        packetMethodDefinition.setAbstractPacketClazz(aClazz);
+        packetMethodDefinition.firstParameterType = firstParameterType;
+        packetMethodDefinition.bean = object;
+        packetMethodDefinition.methodAccess = MethodAccess.access(object.getClass());
+        packetMethodDefinition.methodIndex = packetMethodDefinition.getMethodAccess().getIndex(method.getName());
+        packetMethodDefinition.method = method;
+        if (packetMethodAnno == null) {
+            packetMethodDefinition.packetMethodAnno = packetMethodAnnoStatic;
+        } else {
+            packetMethodDefinition.packetMethodAnno = packetMethodAnno;
+        }
+        packetMethodDefinition.abstractPacketClazz = clazz;
         return packetMethodDefinition;
     }
     public Object invoke(Dispatchable<? extends Serializable> dispatchable, AbstractPacket abstractPacket){
@@ -54,16 +68,8 @@ public class PacketMethodDefinition {
         return bean;
     }
 
-    public void setBean(Object bean) {
-        this.bean = bean;
-    }
-
     public Method getMethod() {
         return method;
-    }
-
-    public void setMethod(Method method) {
-        this.method = method;
     }
 
     public PacketMethod getPacketMethodAnno() {
@@ -74,31 +80,11 @@ public class PacketMethodDefinition {
         return methodAccess;
     }
 
-    public void setMethodAccess(MethodAccess methodAccess) {
-        this.methodAccess = methodAccess;
-    }
-
-    public int getMethodIndex() {
-        return methodIndex;
-    }
-
-    public void setMethodIndex(int methodIndex) {
-        this.methodIndex = methodIndex;
-    }
-
-    public void setPacketMethodAnno(PacketMethod packetMethodAnno) {
-        if (packetMethodAnno == null){
-            this.packetMethodAnno = packetMethodAnnoStatic;
-            return;
-        }
-        this.packetMethodAnno = packetMethodAnno;
-    }
-
     public Class<?> getAbstractPacketClazz() {
         return abstractPacketClazz;
     }
 
-    public void setAbstractPacketClazz(Class<?> abstractPacketClazz) {
-        this.abstractPacketClazz = abstractPacketClazz;
+    public Class<?> getFirstParameterType() {
+        return firstParameterType;
     }
 }
