@@ -1,8 +1,6 @@
 package com.mmorpg.mbdl.framework.thread.task;
 
 import com.mmorpg.mbdl.framework.thread.interfaces.Dispatchable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.util.concurrent.TimeUnit;
@@ -13,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 public abstract class DelayedTask<E extends Dispatchable<T>, T extends Serializable> extends AbstractTask<E, T> {
     private long delay;
     private TimeUnit timeUnit;
+    private boolean logOrNotOrigin;
     /**
      * 当前需要运行的任务
      */
@@ -22,33 +21,33 @@ public abstract class DelayedTask<E extends Dispatchable<T>, T extends Serializa
         super(dispatcher);
         this.delay = delay;
         this.timeUnit = timeUnit;
-        // 存储原设置
-        boolean logOrNot = isLogOrNot();
+        logOrNotOrigin = isLogOrNot();
         // 不打日志，不暴露这里的处理
-        setLogOrNot(true);
-        Logger logger = LoggerFactory.getLogger(this.getClass());
-        this.currentRunnable = () -> {
-            logger.error("开始添加延时任务");
-            getExecutor().addDelayedTask(() -> {
-                logger.error("延时完毕");
-                TaskQueue<T> taskQueue = getTaskQueue();
-                if (taskQueue == null) {
-                    this.execute();
-                    return;
-                }
-                // 恢复原来的日志设置
-                setLogOrNot(logOrNot);
-                Runnable execute = this::execute;
-                setCurrentRunnable(execute);
-                // 归队执行
-                taskQueue.submit(this);
-            }, delay, timeUnit);
-        };
+        setLogOrNot(false);
     }
 
     @Override
     protected void beforeExecute() {
-        currentRunnable.run();
+        DelayedTask<E, T> delayedTask = this;
+        getExecutor().addDelayedTask(() -> {
+            TaskQueue<T> taskQueue = getTaskQueue();
+            if (taskQueue == null) {
+                this.execute();
+                return;
+            }
+            // 归队执行
+            taskQueue.submit(new AbstractTask<Dispatchable<T>, T>(delayedTask.getDispatcher()) {
+                @Override
+                public String taskName() {
+                    return delayedTask.taskName();
+                }
+
+                @Override
+                public void execute() {
+                    delayedTask.execute();
+                }
+            }.setLogOrNot(logOrNotOrigin));
+        }, delay, timeUnit);
     }
 
     public long getDelay() {

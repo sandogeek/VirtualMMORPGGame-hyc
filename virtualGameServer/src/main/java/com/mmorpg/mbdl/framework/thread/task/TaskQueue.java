@@ -45,6 +45,7 @@ public class TaskQueue<T extends Serializable> {
      */
     public ScheduledFuture<?> submit(AbstractTask<? extends Dispatchable<T>, T> abstractTask){
         synchronized (queue) {
+            abstractTask.setTaskQueue(this);
             this.queue.add(abstractTask);
             if (queue.size()==1){
                 // 只有一个任务的话，说明是刚加的，立即送到线程池里的队列执行

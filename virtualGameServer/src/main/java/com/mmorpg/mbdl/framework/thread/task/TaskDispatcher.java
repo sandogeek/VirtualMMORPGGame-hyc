@@ -68,7 +68,6 @@ public class TaskDispatcher {
         }
 
         TaskQueue<Long> taskQueue = businessPoolExecutor.getOrCreateTaskQueue(abstractTask.getDispatcher().dispatchId());
-        abstractTask.setTaskQueue(taskQueue);
         return (ScheduledFuture<?>)taskQueue.submit(abstractTask);
     }
 

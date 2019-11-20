@@ -104,26 +104,28 @@ public abstract class AbstractTask<E extends Dispatchable<T>, T extends Serializ
     @Override
     public void run() {
         // TODO 统计超时任务
-        stopWatch.stop();
-        long delayTime = stopWatch.getNanoTime();
-        stopWatch.reset();
-        ThreadUtils.setCurrentThreadTask(this);
-        stopWatch.start();
-        try{
-            beforeExecute();
-        }catch (Throwable e){
-            logger.error("[{}] 任务:{}执行失败，抛出异常", dispatcher, taskName(), e);
-        }finally {
+        try {
             stopWatch.stop();
-            long executeTime = stopWatch.getNanoTime();
-            if (this.isLogOrNot()){
-                log(delayTime,executeTime);
+            long delayTime = stopWatch.getNanoTime();
+            stopWatch.reset();
+            ThreadUtils.setCurrentThreadTask(this);
+            stopWatch.start();
+            try{
+                beforeExecute();
+            } finally {
+                stopWatch.stop();
+                long executeTime = stopWatch.getNanoTime();
+                if (this.isLogOrNot()){
+                    log(delayTime,executeTime);
+                }
+                ThreadUtils.removeCurrentThreadTask();
+                // 不是并行执行的情况下才会把队列下一个任务加入线程池
+                if (!isExecuteParallel()){
+                    getTaskQueue().andThen();
+                }
             }
-            ThreadUtils.removeCurrentThreadTask();
-            // 不是并行执行的情况下才会把队列下一个任务加入线程池
-            if (!isExecuteParallel()){
-                getTaskQueue().andThen();
-            }
+        } catch (Exception e) {
+            logger.error("[{}] 任务:{}执行失败，抛出异常", dispatcher, taskName(), e);
         }
     }
 
