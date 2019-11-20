@@ -11,43 +11,42 @@ import java.util.concurrent.TimeUnit;
 public abstract class DelayedTask<E extends Dispatchable<T>, T extends Serializable> extends AbstractTask<E, T> {
     private long delay;
     private TimeUnit timeUnit;
-    private boolean logOrNotOrigin;
     /**
      * 当前需要运行的任务
      */
     private Runnable currentRunnable;
 
     public DelayedTask(E dispatcher, long delay, TimeUnit timeUnit) {
-        super(dispatcher);
+        super(dispatcher, false);
         this.delay = delay;
         this.timeUnit = timeUnit;
-        logOrNotOrigin = isLogOrNot();
-        // 不打日志，不暴露这里的处理
-        setLogOrNot(false);
+        // 记录任务创建时间
+        stopWatch.start();
+
+        this.currentRunnable = () -> {
+            getExecutor().addDelayedTask(() -> {
+                TaskQueue<T> taskQueue = getTaskQueue();
+                if (taskQueue == null) {
+                    this.execute();
+                    return;
+                }
+                setCurrentRunnable(this::execute);
+                // 开始计时
+                setCountTime(true);
+                // 归队执行
+                taskQueue.submit(this);
+            }, delay, timeUnit);
+        };
+    }
+
+    @Override
+    public long getMaxDelayTime() {
+        return super.getMaxDelayTime() + TimeUnit.NANOSECONDS.convert(delay,timeUnit);
     }
 
     @Override
     protected void beforeExecute() {
-        DelayedTask<E, T> delayedTask = this;
-        getExecutor().addDelayedTask(() -> {
-            TaskQueue<T> taskQueue = getTaskQueue();
-            if (taskQueue == null) {
-                this.execute();
-                return;
-            }
-            // 归队执行
-            taskQueue.submit(new AbstractTask<Dispatchable<T>, T>(delayedTask.getDispatcher()) {
-                @Override
-                public String taskName() {
-                    return delayedTask.taskName();
-                }
-
-                @Override
-                public void execute() {
-                    delayedTask.execute();
-                }
-            }.setLogOrNot(logOrNotOrigin));
-        }, delay, timeUnit);
+       currentRunnable.run();
     }
 
     public long getDelay() {

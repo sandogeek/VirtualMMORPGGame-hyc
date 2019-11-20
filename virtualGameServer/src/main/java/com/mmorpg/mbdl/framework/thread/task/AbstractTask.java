@@ -20,6 +20,17 @@ public abstract class AbstractTask<E extends Dispatchable<T>, T extends Serializ
     private long maxDelay = TimeUnit.NANOSECONDS.convert(2,TimeUnit.MILLISECONDS);
     private long maxExecute = TimeUnit.NANOSECONDS.convert(3,TimeUnit.MILLISECONDS);
     private Logger targetLogger = logger;
+    private long delayTime;
+    /**
+     * 此次执行是否计时
+     */
+    protected boolean countTime;
+    /**
+     * 是否打印日志
+     */
+    private boolean logOrNot = true;
+    protected StopWatch stopWatch = new StopWatch();
+
     private E dispatcher;
     private boolean executeParallel = false;
     private TaskQueue<T> taskQueue;
@@ -27,17 +38,16 @@ public abstract class AbstractTask<E extends Dispatchable<T>, T extends Serializ
 
 
     public AbstractTask(E dispatcher) {
-        this.dispatcher = dispatcher;
+        this(dispatcher, true);
     }
 
-    /**
-     * 是否打印日志
-     */
-    private boolean logOrNot = true;
-    private StopWatch stopWatch = new StopWatch();
-    {
-        // 创建时开始计时
-        stopWatch.start();
+    public AbstractTask(E dispatcher, boolean countTime) {
+        this.dispatcher = dispatcher;
+        this.countTime = countTime;
+        if (countTime) {
+            // 计时
+            stopWatch.start();
+        }
     }
 
     /**
@@ -105,17 +115,19 @@ public abstract class AbstractTask<E extends Dispatchable<T>, T extends Serializ
     public void run() {
         // TODO 统计超时任务
         try {
-            stopWatch.stop();
-            long delayTime = stopWatch.getNanoTime();
-            stopWatch.reset();
+            if (countTime) {
+                stopWatch.stop();
+                delayTime = stopWatch.getNanoTime();
+                stopWatch.reset();
+                stopWatch.start();
+            }
             ThreadUtils.setCurrentThreadTask(this);
-            stopWatch.start();
             try{
                 beforeExecute();
             } finally {
-                stopWatch.stop();
-                long executeTime = stopWatch.getNanoTime();
-                if (this.isLogOrNot()){
+                if (this.isLogOrNot() && countTime) {
+                    stopWatch.stop();
+                    long executeTime = stopWatch.getNanoTime();
                     log(delayTime,executeTime);
                 }
                 ThreadUtils.removeCurrentThreadTask();
@@ -193,5 +205,9 @@ public abstract class AbstractTask<E extends Dispatchable<T>, T extends Serializ
 
     public PoolExecutor<T, ? extends ScheduledExecutorService> getExecutor() {
         return executor;
+    }
+
+    public void setCountTime(boolean countTime) {
+        this.countTime = countTime;
     }
 }
