@@ -1,8 +1,7 @@
 package com.mmorpg.mbdl.framework.thread.task;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import com.mmorpg.mbdl.framework.communicate.websocket.model.HandleReqTask;
-import com.mmorpg.mbdl.framework.thread.BusinessPoolExecutor;
+import com.mmorpg.mbdl.framework.thread.PoolExecutor;
 import com.mmorpg.mbdl.framework.thread.interfaces.Dispatchable;
 import io.netty.util.concurrent.DefaultEventExecutorGroup;
 import io.netty.util.concurrent.EventExecutorGroup;
@@ -13,7 +12,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.io.Serializable;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
@@ -28,7 +26,7 @@ public class TaskDispatcher {
     private String threadNameFormat;
     @Value("${server.config.thread.poolSize}")
     private int poolSize;
-    private BusinessPoolExecutor<Serializable, EventExecutorGroup> businessPoolExecutor;
+    private PoolExecutor<Long, EventExecutorGroup> businessPoolExecutor;
 
     private static TaskDispatcher self;
     public static TaskDispatcher getInstance(){
@@ -45,7 +43,7 @@ public class TaskDispatcher {
             poolSize = (processors <= 4) ? processors * 2 : processors + 8;
         }
         DefaultEventExecutorGroup eventExecutors = new DefaultEventExecutorGroup(poolSize, namedThreadFactory);
-        businessPoolExecutor = new BusinessPoolExecutor<>(eventExecutors, 1, TimeUnit.MINUTES);
+        businessPoolExecutor = new PoolExecutor<>(eventExecutors, 1, TimeUnit.MINUTES);
     }
 
     /**
@@ -54,10 +52,11 @@ public class TaskDispatcher {
      * @param intoThreadPoolDirectly 是否直接分发到线程池，而不是加到队列
      * @return 如果任务分发成功并被提交到线程池，返回ScheduledFuture，否则抛出异常
      */
-    public ScheduledFuture<?> dispatch(AbstractTask<Dispatchable<Serializable>> abstractTask, boolean intoThreadPoolDirectly){
+    public <E extends Dispatchable<Long>> ScheduledFuture<?> dispatch(AbstractTask<E, Long> abstractTask, boolean intoThreadPoolDirectly){
         if (abstractTask == null){
             throw new IllegalArgumentException("分发了一个空任务");
         }
+        abstractTask.setExecutor(businessPoolExecutor);
         if (intoThreadPoolDirectly){
             abstractTask.setExecuteParallel(true);
             return (ScheduledFuture<?>) businessPoolExecutor.executeTask(abstractTask);
@@ -65,18 +64,10 @@ public class TaskDispatcher {
         // dispatcherId为null的任务并行执行
         if (abstractTask.getDispatcher()==null){
             abstractTask.setExecuteParallel(true);
-            return (ScheduledFuture<?>)businessPoolExecutor.executeTask(abstractTask);
+            return (ScheduledFuture<?>) businessPoolExecutor.executeTask(abstractTask);
         }
-        // 如果不是请求处理任务，校验其是否占用了未登录时使用的队列
-        if (!(abstractTask instanceof HandleReqTask)){
-            Serializable dispatcherId = abstractTask.getDispatcher().dispatchId();
-            if (dispatcherId instanceof Long){
-                if ((Long)dispatcherId < 0){
-                    throw new IllegalArgumentException("任务分发失败，dispatcherId小于0，dispatcherId小于0的队列预留给未登录前的请求使用");
-                }
-            }
-        }
-        TaskQueue<Serializable> taskQueue = businessPoolExecutor.getOrCreateTaskQueue(abstractTask.getDispatcher().dispatchId());
+
+        TaskQueue<Long> taskQueue = businessPoolExecutor.getOrCreateTaskQueue(abstractTask.getDispatcher().dispatchId());
         abstractTask.setTaskQueue(taskQueue);
         return (ScheduledFuture<?>)taskQueue.submit(abstractTask);
     }
@@ -86,7 +77,7 @@ public class TaskDispatcher {
      * 如果是HandleReqTask，根据@PacketMethod决定分发到队列还是分发到线程池
      * @param abstractTask
      */
-    public ScheduledFuture<?> dispatch(AbstractTask<Dispatchable<Serializable>> abstractTask){
+    public <E extends Dispatchable<Long>> ScheduledFuture<?> dispatch(AbstractTask<E, Long> abstractTask){
        return dispatch(abstractTask,false);
     }
 }

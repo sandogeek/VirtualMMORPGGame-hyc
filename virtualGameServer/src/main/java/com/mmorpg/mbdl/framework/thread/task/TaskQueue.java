@@ -1,7 +1,7 @@
 package com.mmorpg.mbdl.framework.thread.task;
 
 import com.google.common.collect.Lists;
-import com.mmorpg.mbdl.framework.thread.BusinessPoolExecutor;
+import com.mmorpg.mbdl.framework.thread.PoolExecutor;
 import com.mmorpg.mbdl.framework.thread.interfaces.Dispatchable;
 
 import java.io.Serializable;
@@ -13,25 +13,25 @@ import java.util.concurrent.ScheduledFuture;
  * 任务队列<br>
  * 玩家的任务通常串行执行，所以每个玩家一个队列,如果模块串行执行，也可以给模块一个队列
  * @author sando
- * @param <K> 任务队列的唯一标识的类型
+ * @param <T> 任务队列的唯一标识的类型
  */
-public class TaskQueue<K extends Serializable> {
+public class TaskQueue<T extends Serializable> {
     /**
      * 此任务队列的唯一标识
      */
-    private K key;
+    private T key;
     /**
      * 使用的业务线程池
      */
-    private final BusinessPoolExecutor<K, ? extends ScheduledExecutorService> businessPoolExecutor;
+    private final PoolExecutor<T, ? extends ScheduledExecutorService> poolExecutor;
     /**
      * 存放任务的队列
      */
-    private Queue<AbstractTask<? extends Dispatchable<K>>> queue;
+    private final Queue<AbstractTask<? extends Dispatchable<T>, T>> queue;
 
-    public TaskQueue(K key, BusinessPoolExecutor<K, ? extends ScheduledExecutorService> businessPoolExecutor) {
+    public TaskQueue(T key, PoolExecutor<T, ? extends ScheduledExecutorService> poolExecutor) {
         this.key = key;
-        this.businessPoolExecutor = businessPoolExecutor;
+        this.poolExecutor = poolExecutor;
         this.queue = Lists.newLinkedList();
     }
 
@@ -43,40 +43,37 @@ public class TaskQueue<K extends Serializable> {
      * 获取并给真正的ScheduledFuture赋值）
      * @return
      */
-    public ScheduledFuture<?> submit(AbstractTask<? extends Dispatchable<K>> abstractTask){
-        synchronized (this){
+    public ScheduledFuture<?> submit(AbstractTask<? extends Dispatchable<T>, T> abstractTask){
+        synchronized (queue) {
             this.queue.add(abstractTask);
             if (queue.size()==1){
                 // 只有一个任务的话，说明是刚加的，立即送到线程池里的队列执行
-                return businessPoolExecutor.executeTask(abstractTask);
+                return poolExecutor.executeTask(abstractTask);
             }
         }
         return null;
     }
 
     /**
-     * 任务队列中可以并行执行的任务，直接交给线程池，而不是加到队尾
-     * @return
-     */
-    public ScheduledFuture<?> executeParallel(AbstractTask<? extends Dispatchable<K>> abstractTask){
-        return businessPoolExecutor.executeTask(abstractTask);
-    }
-    /**
      * 执行完一个任务后的处理
      * @return
      */
     public void andThen() {
-        synchronized (this){
+        synchronized (queue) {
             // 移除执行完毕的任务
             queue.poll();
             if (!queue.isEmpty()) {
                 // 有任务继续执行
-                businessPoolExecutor.executeTask(queue.peek());
+                poolExecutor.executeTask(queue.peek());
             }
         }
     }
 
-    public K getKey() {
+    public T getKey() {
         return key;
+    }
+
+    public PoolExecutor<T, ? extends ScheduledExecutorService> getPoolExecutor() {
+        return poolExecutor;
     }
 }

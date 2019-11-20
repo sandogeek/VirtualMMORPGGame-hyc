@@ -30,10 +30,10 @@ public class PacketMethodDifinitionManager implements BeanPostProcessor {
     private void init(){
         self = this;
     }
-    private Map<Class<?>, PacketMethodDifinition> class2PacketMethodDifinition = new HashMap<>();
+    private Map<Class<?>, PacketMethodDefinition> class2PacketMethodDifinition = new HashMap<>();
     private Map<Class<?>, Method> class2Method = new HashMap<>();
 
-    public PacketMethodDifinition getPacketMethodDifinition(AbstractPacket abstractPacket){
+    public PacketMethodDefinition getPacketMethodDifinition(AbstractPacket abstractPacket){
         return class2PacketMethodDifinition.get(abstractPacket.getClass());
     }
 
@@ -75,7 +75,7 @@ public class PacketMethodDifinitionManager implements BeanPostProcessor {
                 }
                 class2Method.put(abstractPacketClazz,method);
                 class2PacketMethodDifinition.put(abstractPacketClazz,
-                        PacketMethodDifinition.valueOf(bean,method,abstractPacketClazz,method.getAnnotation(PacketMethod.class)));
+                        PacketMethodDefinition.valueOf(bean,method,abstractPacketClazz,method.getAnnotation(PacketMethod.class)));
             }
         }
         return bean;

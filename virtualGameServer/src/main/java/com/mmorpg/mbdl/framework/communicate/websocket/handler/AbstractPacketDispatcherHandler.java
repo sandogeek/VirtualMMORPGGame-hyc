@@ -29,35 +29,35 @@ public class AbstractPacketDispatcherHandler extends SimpleChannelInboundHandler
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, AbstractPacket abstractPacket) throws Exception {
         // 不能在netty worker线程池作业务处理,如果当前请求处理发生阻塞，那么这条（4条之一）worker线程就会被阻塞
-        ISession session = SessionManager.getIntance().getSession(ctx.channel().id());
-        Dispatchable user = session.getUser();
-        PacketMethodDifinition packetMethodDifinition = PacketMethodDifinitionManager.getIntance().getPacketMethodDifinition(abstractPacket);
-        if (packetMethodDifinition==null) {
+        ISession<Long> session = SessionManager.getInstance().getSession(ctx.channel().id());
+        Dispatchable<Long> user = session.getUser();
+        PacketMethodDefinition packetMethodDefinition = PacketMethodDifinitionManager.getIntance().getPacketMethodDifinition(abstractPacket);
+        if (packetMethodDefinition ==null) {
             logger.error("请求包[{}]没有对应的@PacketMethod方法处理",abstractPacket.getClass().getSimpleName());
             return;
         }
-        SessionState expectedState = packetMethodDifinition.getPacketMethodAnno().state();
+        SessionState expectedState = packetMethodDefinition.getPacketMethodAnno().state();
 
-        boolean executeParallel = packetMethodDifinition.getPacketMethodAnno().executeParallel();
+        boolean executeParallel = packetMethodDefinition.getPacketMethodAnno().executeParallel();
         // 状态校验，不符合要求的请求直接不生成任务
         if (expectedState!=SessionState.ANY){
             if (session.getState() != expectedState){
                 logger.warn("HandleReqTask[{}]分发失败，当前wsSession的状态[{}]与方法{}期待的状态[{}]不符",
-                        packetMethodDifinition.getAbstractPacketClazz().getSimpleName(),
-                        session.getState(),packetMethodDifinition.getBean().getClass().getSimpleName()+"."
-                                +packetMethodDifinition.getMethod().getName()+"(...)",expectedState);
+                        packetMethodDefinition.getAbstractPacketClazz().getSimpleName(),
+                        session.getState(), packetMethodDefinition.getBean().getClass().getSimpleName()+"."
+                                + packetMethodDefinition.getMethod().getName()+"(...)",expectedState);
                 return;
             }
         }
-        AbstractTask abstractTask;
+        AbstractTask<Dispatchable<Long>, Long> abstractTask;
         if (user != null) {
-            abstractTask = new HandleReqTask(user, packetMethodDifinition, session, abstractPacket);
+            abstractTask = new HandleReqTask<>(user, packetMethodDefinition, session, abstractPacket);
         } else {
-            abstractTask = new HandleReqTask(session, packetMethodDifinition, session, abstractPacket);
+            abstractTask = new HandleReqTask<>(session, packetMethodDefinition, session, abstractPacket);
         }
         abstractTask = abstractTask.setMaxExecuteTime(30, TimeUnit.MILLISECONDS);
         TaskDispatcher.getInstance().dispatch(abstractTask, executeParallel);
-        // TaskExecutorGroup.addTask(new HandleReqTask(packetMethodDifinition,session,abstractPacket));
+        // TaskExecutorGroup.addTask(new HandleReqTask(packetMethodDefinition,session,abstractPacket));
     }
 
 }

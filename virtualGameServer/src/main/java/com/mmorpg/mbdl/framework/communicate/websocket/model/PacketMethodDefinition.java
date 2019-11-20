@@ -14,12 +14,13 @@ import java.util.Set;
 
 /**
  * PacketMethod方法定义
+ * @author Sando
  */
-public class PacketMethodDifinition {
-    private static final Logger logger = LoggerFactory.getLogger(PacketMethodDifinition.class);
+public class PacketMethodDefinition {
+    private static final Logger logger = LoggerFactory.getLogger(PacketMethodDefinition.class);
     private static PacketMethod packetMethodAnnoStatic;
     static {
-        Set<Method> methods = ReflectionUtils.getAllMethods(PacketMethodDifinition.class,ReflectionUtils.withAnnotation(PacketMethod.class));
+        Set<Method> methods = ReflectionUtils.getAllMethods(PacketMethodDefinition.class,ReflectionUtils.withAnnotation(PacketMethod.class));
         packetMethodAnnoStatic =((Method)methods.toArray()[0]).getAnnotation(PacketMethod.class);
     }
     private Object bean;
@@ -33,15 +34,15 @@ public class PacketMethodDifinition {
     @PacketMethod
     private void temp(){
     }
-    public static PacketMethodDifinition valueOf(Object object,Method method,Class<?> aClazz,PacketMethod packetMethodAnno){
-        PacketMethodDifinition packetMethodDifinition = new PacketMethodDifinition();
-        packetMethodDifinition.setBean(object);
-        packetMethodDifinition.setMethodAccess(MethodAccess.access(object.getClass()));
-        packetMethodDifinition.setMethodIndex(packetMethodDifinition.getMethodAccess().getIndex(method.getName()));
-        packetMethodDifinition.setMethod(method);
-        packetMethodDifinition.setPacketMethodAnno(packetMethodAnno);
-        packetMethodDifinition.setAbstractPacketClazz(aClazz);
-        return packetMethodDifinition;
+    public static PacketMethodDefinition valueOf(Object object, Method method, Class<?> aClazz, PacketMethod packetMethodAnno){
+        PacketMethodDefinition packetMethodDefinition = new PacketMethodDefinition();
+        packetMethodDefinition.setBean(object);
+        packetMethodDefinition.setMethodAccess(MethodAccess.access(object.getClass()));
+        packetMethodDefinition.setMethodIndex(packetMethodDefinition.getMethodAccess().getIndex(method.getName()));
+        packetMethodDefinition.setMethod(method);
+        packetMethodDefinition.setPacketMethodAnno(packetMethodAnno);
+        packetMethodDefinition.setAbstractPacketClazz(aClazz);
+        return packetMethodDefinition;
     }
     public Object invoke(Dispatchable<? extends Serializable> dispatchable, AbstractPacket abstractPacket){
         /** 高性能反射调用

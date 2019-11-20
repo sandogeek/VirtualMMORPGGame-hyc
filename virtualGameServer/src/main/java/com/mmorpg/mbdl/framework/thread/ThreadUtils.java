@@ -15,7 +15,7 @@ public class ThreadUtils {
     /**
      * 当前线程正在执行哪个Task
      */
-    private static ThreadLocal<AbstractTask<? extends Dispatchable<? extends Serializable>>> taskThreadLocal = new ThreadLocal<>();
+    private static ThreadLocal<AbstractTask<? extends Dispatchable<? extends Serializable>, ? extends Serializable>> taskThreadLocal = new ThreadLocal<>();
 
     /**
      * 获取当前线程正在执行的任务的可分发对象
@@ -31,8 +31,8 @@ public class ThreadUtils {
      * @throws RuntimeException 此方法必须在任务中{@link AbstractTask}包裹的代码中调用
      * @return
      */
-    public static AbstractTask<? extends Dispatchable<? extends Serializable>> currentThreadTask() {
-        AbstractTask<? extends Dispatchable<? extends Serializable>> abstractTask = taskThreadLocal.get();
+    public static AbstractTask<? extends Dispatchable<? extends Serializable>, ? extends Serializable> currentThreadTask() {
+        AbstractTask<? extends Dispatchable<? extends Serializable>, ? extends Serializable> abstractTask = taskThreadLocal.get();
         if (abstractTask == null) {
             throw new RuntimeException("此方法必须在任务中AbstractTask任务内运行的代码中调用");
         }
@@ -44,7 +44,7 @@ public class ThreadUtils {
      * 设置当前线程正在执行的抽象任务
      * @param abstractTask
      */
-    public static void setCurrentThreadTask(AbstractTask<? extends Dispatchable<? extends Serializable>> abstractTask) {
+    public static <T extends Serializable> void setCurrentThreadTask(AbstractTask<? extends Dispatchable<T>, T> abstractTask) {
         taskThreadLocal.set(abstractTask);
     }
 

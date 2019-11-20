@@ -4,8 +4,6 @@ import com.google.common.base.Preconditions;
 import com.mmorpg.mbdl.framework.thread.interfaces.Dispatchable;
 import com.mmorpg.mbdl.framework.thread.interfaces.ITimeOutHashMap;
 import com.mmorpg.mbdl.framework.thread.task.AbstractTask;
-import com.mmorpg.mbdl.framework.thread.task.DelayedTask;
-import com.mmorpg.mbdl.framework.thread.task.FixedRateTask;
 import com.mmorpg.mbdl.framework.thread.task.TaskQueue;
 
 import java.io.Serializable;
@@ -19,13 +17,13 @@ import java.util.concurrent.TimeUnit;
  * @param <K> 线程池中任务队列的主键类型
  * @param <V> 使用的线程池类型
  */
-public class BusinessPoolExecutor<K extends Serializable, V extends ScheduledExecutorService> {
+public class PoolExecutor<K extends Serializable, V extends ScheduledExecutorService> {
     /** 业务线程池 */
     private V businessThreadPool;
     /** 业务所有的任务队列 */
     private ITimeOutHashMap<K, TaskQueue<K>> businessThreadPoolTaskQueues;
 
-    public BusinessPoolExecutor(V businessThreadPool, long timeout, TimeUnit timeUnit) {
+    public PoolExecutor(V businessThreadPool, long timeout, TimeUnit timeUnit) {
         this.businessThreadPool = businessThreadPool;
         this.businessThreadPoolTaskQueues = new TimeOutCaffeineMap<>(timeout, timeUnit,
                 (key) -> new TaskQueue<>(key, this));
@@ -40,23 +38,9 @@ public class BusinessPoolExecutor<K extends Serializable, V extends ScheduledExe
         return businessThreadPoolTaskQueues.getOrCreate(dispatcherId);
     }
 
-    public ScheduledFuture<?> executeTask(AbstractTask<? extends Dispatchable<K>> abstractTask){
+    public ScheduledFuture<?> executeTask(AbstractTask<? extends Dispatchable<K>, K> abstractTask){
         Preconditions.checkNotNull(abstractTask);
-        switch (abstractTask.taskType()) {
-            case TASK:{
-                return addTask(abstractTask);
-            }
-            case DELAYED_TASK:{
-                DelayedTask delayedTask = (DelayedTask)abstractTask;
-                return addDelayedTask(abstractTask,delayedTask.getDelay(),delayedTask.getTimeUnit());
-            }
-            case FIXED_RATE_TASK:{
-                FixedRateTask fixedRateTask = (FixedRateTask)abstractTask;
-                return addFixedRateTask(abstractTask,fixedRateTask.getInitDelay(),fixedRateTask.getPeriod(),fixedRateTask.getTimeUnit());
-            }
-            default:
-                throw new IllegalArgumentException(String.format("此类型[%s]的任务没有合适的处理方法",abstractTask.getClass().getSimpleName()));
-        }
+        return addTask(abstractTask);
     }
 
     /**
@@ -64,7 +48,7 @@ public class BusinessPoolExecutor<K extends Serializable, V extends ScheduledExe
      * @param runnable 任务
      * @return ScheduledFuture可用于控制任务以及检查状态
      */
-    private ScheduledFuture<?> addTask(AbstractTask<? extends Dispatchable<K>> runnable) {
+    public ScheduledFuture<?> addTask(AbstractTask<? extends Dispatchable<K>, K> runnable) {
         return businessThreadPool.schedule(runnable, 0, TimeUnit.NANOSECONDS);
     }
     /**
@@ -74,7 +58,7 @@ public class BusinessPoolExecutor<K extends Serializable, V extends ScheduledExe
      * @param timeUnit 使用的时间单位
      * @return ScheduledFuture可用于控制任务以及检查状态
      */
-    private ScheduledFuture<?> addDelayedTask(AbstractTask<? extends Dispatchable<K>> runnable, long delay, TimeUnit timeUnit) {
+    public ScheduledFuture<?> addDelayedTask(Runnable runnable, long delay, TimeUnit timeUnit) {
         return businessThreadPool.schedule(runnable,delay,timeUnit);
     }
     /**
@@ -85,7 +69,7 @@ public class BusinessPoolExecutor<K extends Serializable, V extends ScheduledExe
      * @param timeUnit 时间单位
      * @return ScheduledFuture可用于控制任务以及检查状态
      */
-    private ScheduledFuture<?> addFixedRateTask(AbstractTask<? extends Dispatchable<K>> runnable, long initDelay, long period, TimeUnit timeUnit) {
+    public ScheduledFuture<?> addFixedRateTask(Runnable runnable, long initDelay, long period, TimeUnit timeUnit) {
         return businessThreadPool.scheduleAtFixedRate(runnable,initDelay,period,timeUnit);
     }
 }

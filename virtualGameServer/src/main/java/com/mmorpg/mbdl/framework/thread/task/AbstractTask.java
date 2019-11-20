@@ -1,5 +1,6 @@
 package com.mmorpg.mbdl.framework.thread.task;
 
+import com.mmorpg.mbdl.framework.thread.PoolExecutor;
 import com.mmorpg.mbdl.framework.thread.ThreadUtils;
 import com.mmorpg.mbdl.framework.thread.interfaces.Dispatchable;
 import org.apache.commons.lang3.time.StopWatch;
@@ -7,23 +8,25 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
  * 抽象的任务runnable
  * @author sando
  */
-public abstract class AbstractTask<K extends Dispatchable<? extends Serializable>> implements Runnable {
+public abstract class AbstractTask<E extends Dispatchable<T>, T extends Serializable> implements Runnable {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private long maxDelay = TimeUnit.NANOSECONDS.convert(2,TimeUnit.MILLISECONDS);
     private long maxExecute = TimeUnit.NANOSECONDS.convert(3,TimeUnit.MILLISECONDS);
     private Logger targetLogger = logger;
-    private K dispatcher;
+    private E dispatcher;
     private boolean executeParallel = false;
-    private TaskQueue<? extends Serializable> taskQueue;
+    private TaskQueue<T> taskQueue;
+    private PoolExecutor<T, ? extends ScheduledExecutorService> executor;
 
 
-    public AbstractTask(K dispatcher) {
+    public AbstractTask(E dispatcher) {
         this.dispatcher = dispatcher;
     }
 
@@ -42,7 +45,7 @@ public abstract class AbstractTask<K extends Dispatchable<? extends Serializable
      * 必须保证唯一性，不能是hashcode因为有可能有hash冲突，导致不同的玩家或者Channel使用同一TaskQueue
      * @return
      */
-    public K getDispatcher(){
+    public E getDispatcher(){
         return dispatcher;
     }
 
@@ -53,8 +56,6 @@ public abstract class AbstractTask<K extends Dispatchable<? extends Serializable
     public void setExecuteParallel(boolean executeParallel){
         this.executeParallel = executeParallel;
     }
-
-    public abstract TaskType taskType();
 
     /**
      * 设置任务名称
@@ -109,9 +110,9 @@ public abstract class AbstractTask<K extends Dispatchable<? extends Serializable
         ThreadUtils.setCurrentThreadTask(this);
         stopWatch.start();
         try{
-            execute();
+            beforeExecute();
         }catch (Throwable e){
-            logger.error("队列[{}] 任务:{}执行失败，抛出异常", dispatcher, taskName(), e);
+            logger.error("[{}] 任务:{}执行失败，抛出异常", dispatcher, taskName(), e);
         }finally {
             stopWatch.stop();
             long executeTime = stopWatch.getNanoTime();
@@ -124,6 +125,13 @@ public abstract class AbstractTask<K extends Dispatchable<? extends Serializable
                 getTaskQueue().andThen();
             }
         }
+    }
+
+    /**
+     * 定义真正执行前的一些处理
+     */
+    protected void beforeExecute() {
+        execute();
     }
     /**
      * 最大延迟时间,默认2毫秒
@@ -143,7 +151,7 @@ public abstract class AbstractTask<K extends Dispatchable<? extends Serializable
         return maxExecute;
     }
 
-    public AbstractTask setMaxExecuteTime(long maxExecute, TimeUnit timeUnit) {
+    public AbstractTask<E, T> setMaxExecuteTime(long maxExecute, TimeUnit timeUnit) {
         this.maxExecute = TimeUnit.NANOSECONDS.convert(maxExecute,timeUnit);
         return this;
     }
@@ -160,20 +168,28 @@ public abstract class AbstractTask<K extends Dispatchable<? extends Serializable
         this.targetLogger = targetLogger;
     }
 
-    private boolean isLogOrNot() {
+    protected boolean isLogOrNot() {
         return logOrNot;
     }
 
-    public AbstractTask setLogOrNot(boolean logOrNot) {
+    public AbstractTask<E, T> setLogOrNot(boolean logOrNot) {
         this.logOrNot = logOrNot;
         return this;
     }
 
-    public void setTaskQueue(TaskQueue<? extends Serializable> taskQueue) {
+    public void setTaskQueue(TaskQueue<T> taskQueue) {
         this.taskQueue = taskQueue;
     }
 
-    public TaskQueue<? extends Serializable> getTaskQueue() {
+    public TaskQueue<T> getTaskQueue() {
         return taskQueue;
+    }
+
+    public void setExecutor(PoolExecutor<T, ? extends ScheduledExecutorService> executor) {
+        this.executor = executor;
+    }
+
+    public PoolExecutor<T, ? extends ScheduledExecutorService> getExecutor() {
+        return executor;
     }
 }

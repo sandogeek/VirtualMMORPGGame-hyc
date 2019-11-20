@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class SessionManager {
     private static final Logger logger = LoggerFactory.getLogger(SessionManager.class);
     private static SessionManager self;
-    public static SessionManager getIntance(){
+    public static SessionManager getInstance(){
         return self;
     }
     @PostConstruct
@@ -27,16 +27,16 @@ public class SessionManager {
         self = this;
     }
 
-    private ConcurrentHashMap<ChannelId, ISession> channelId2ISessions = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<ChannelId, ISession<Long>> channelId2Sessions = new ConcurrentHashMap<>();
 
     /**
      * 添加ISession
      */
-    public void add(ISession session){
-        if (channelId2ISessions.containsKey(session.getId())){
+    public void add(ISession<Long> session){
+        if (channelId2Sessions.containsKey(session.getId())){
             logger.error("session[channelId={},IP={}]重复注册",session.getId(),session.getIp());
         } else {
-            channelId2ISessions.put(session.getId(),session);
+            channelId2Sessions.put(session.getId(),session);
         }
     }
 
@@ -47,7 +47,7 @@ public class SessionManager {
     @AllowConcurrentEvents
     public void remove(SessionCloseEvent sessionCloseEvent){
         // logger.info("会话关闭事件触发成功！！！");
-        channelId2ISessions.remove(sessionCloseEvent.getSession().getId());
+        channelId2Sessions.remove(sessionCloseEvent.getSession().getId());
     }
 
     /**
@@ -55,7 +55,7 @@ public class SessionManager {
      * @param channelId
      * @return 对应的ISession
      */
-    public ISession getSession(ChannelId channelId){
-        return channelId2ISessions.get(channelId);
+    public ISession<Long> getSession(ChannelId channelId){
+        return channelId2Sessions.get(channelId);
     }
 }
