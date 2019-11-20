@@ -6,12 +6,10 @@ import com.mmorpg.mbdl.business.chat.packet.ChatResp;
 import com.mmorpg.mbdl.business.role.manager.RoleManager;
 import com.mmorpg.mbdl.business.role.model.Role;
 import com.mmorpg.mbdl.framework.thread.task.AbstractTask;
-import com.mmorpg.mbdl.framework.thread.task.DelayedTask;
 import com.mmorpg.mbdl.framework.thread.task.TaskDispatcher;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.util.concurrent.TimeUnit;
 
 /**
  * 聊天服务
@@ -72,16 +70,5 @@ public class ChatService {
 
         // 把消息提交到任务队列串行发出，以保证所有玩家看到的消息顺序一致
         TaskDispatcher.getInstance().dispatch(task);
-        TaskDispatcher.getInstance().dispatch(new DelayedTask<Role, Long>(role, 200, TimeUnit.MILLISECONDS) {
-            @Override
-            public String taskName() {
-                return "测试任务";
-            }
-
-            @Override
-            public void execute() {
-
-            }
-        });
     }
 }
