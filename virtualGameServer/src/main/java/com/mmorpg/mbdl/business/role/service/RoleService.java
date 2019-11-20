@@ -12,7 +12,7 @@ import com.mmorpg.mbdl.framework.communicate.websocket.model.ISession;
 import com.mmorpg.mbdl.framework.communicate.websocket.model.SessionState;
 import com.mmorpg.mbdl.framework.event.core.SyncEventBus;
 import com.mmorpg.mbdl.framework.event.preset.SessionCloseEvent;
-import com.mmorpg.mbdl.framework.thread.task.BaseNormalTask;
+import com.mmorpg.mbdl.framework.thread.task.AbstractTask;
 import com.mmorpg.mbdl.framework.thread.task.TaskDispatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -109,8 +109,8 @@ public class RoleService {
         if (role == null){
             return;
         }
-        // logout事件转移到业务池处理
-        TaskDispatcher.getInstance().dispatch(new BaseNormalTask<Role>(role) {
+        // logout事件转移到玩家队列处理
+        TaskDispatcher.getInstance().dispatch(new AbstractTask<Role, Long>(role) {
             @Override
             public String taskName() {
                 return "Logout事件";
