@@ -56,7 +56,6 @@ public class TaskDispatcher {
         if (abstractTask == null){
             throw new IllegalArgumentException("分发了一个空任务");
         }
-        abstractTask.setExecutor(businessPoolExecutor);
         if (intoThreadPoolDirectly){
             abstractTask.setExecuteParallel(true);
             return (ScheduledFuture<?>) businessPoolExecutor.executeTask(abstractTask);

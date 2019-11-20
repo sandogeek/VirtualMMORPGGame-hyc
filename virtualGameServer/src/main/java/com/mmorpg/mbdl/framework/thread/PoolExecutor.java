@@ -40,6 +40,7 @@ public class PoolExecutor<K extends Serializable, V extends ScheduledExecutorSer
 
     public ScheduledFuture<?> executeTask(AbstractTask<? extends Dispatchable<K>, K> abstractTask){
         Preconditions.checkNotNull(abstractTask);
+        abstractTask.setExecutor(this);
         return addTask(abstractTask);
     }
 
