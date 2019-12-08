@@ -1,13 +1,14 @@
 package com.mmorpg.mbdl.framework.thread.task;
 
-import com.google.common.collect.Lists;
 import com.mmorpg.mbdl.framework.thread.PoolExecutor;
 import com.mmorpg.mbdl.framework.thread.interfaces.Dispatchable;
 
 import java.io.Serializable;
+import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * 任务队列<br>
@@ -28,11 +29,15 @@ public class TaskQueue<T extends Serializable> {
      * 存放任务的队列
      */
     private final Queue<AbstractTask<? extends Dispatchable<T>, T>> queue;
+    /**
+     * 队列是否有任务在线程池中
+     */
+    private AtomicBoolean hasTaskInPool = new AtomicBoolean(false);
 
     public TaskQueue(T key, PoolExecutor<T, ? extends ScheduledExecutorService> poolExecutor) {
         this.key = key;
         this.poolExecutor = poolExecutor;
-        this.queue = Lists.newLinkedList();
+        this.queue = new LinkedList<>();
     }
 
     /**
@@ -44,12 +49,12 @@ public class TaskQueue<T extends Serializable> {
      * @return
      */
     public ScheduledFuture<?> submit(AbstractTask<? extends Dispatchable<T>, T> abstractTask){
-        synchronized (queue) {
-            abstractTask.setTaskQueue(this);
-            this.queue.add(abstractTask);
-            if (queue.size()==1){
-                // 只有一个任务的话，说明是刚加的，立即送到线程池里的队列执行
-                return poolExecutor.executeTask(abstractTask);
+        abstractTask.setTaskQueue(this);
+        if (hasTaskInPool.compareAndSet(false, true)) {
+            return poolExecutor.executeTask(abstractTask);
+        } else {
+            synchronized (queue) {
+                this.queue.offer(abstractTask);
             }
         }
         return null;
@@ -61,11 +66,11 @@ public class TaskQueue<T extends Serializable> {
      */
     public void andThen() {
         synchronized (queue) {
-            // 移除执行完毕的任务
-            queue.poll();
-            if (!queue.isEmpty()) {
-                // 有任务继续执行
-                poolExecutor.executeTask(queue.peek());
+            AbstractTask<? extends Dispatchable<T>, T> abstractTask = queue.poll();
+            if (abstractTask != null) {
+                poolExecutor.executeTask(abstractTask);
+            } else {
+                hasTaskInPool.set(false);
             }
         }
     }
